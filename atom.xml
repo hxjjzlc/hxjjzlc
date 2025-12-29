@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>化学酒精の迪克网站</title>
+  
+  <subtitle>Chemistry AlcoholのDick web</subtitle>
+  <link href="http://example.com/atom.xml" rel="self"/>
+  
+  <link href="http://example.com/"/>
+  <updated>2025-12-28T21:54:52.676Z</updated>
+  <id>http://example.com/</id>
+  
+  <author>
+    <name>Chemistry AlcoholのDick web</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title></title>
+    <link href="http://example.com/2025/12/29/%E9%94%9F%E6%96%A4%E6%8B%B7%E9%94%9F%E6%96%A4%E6%8B%B7%E9%94%9F%E6%96%A4%E6%8B%B7/"/>
+    <id>http://example.com/2025/12/29/%E9%94%9F%E6%96%A4%E6%8B%B7%E9%94%9F%E6%96%A4%E6%8B%B7%E9%94%9F%E6%96%A4%E6%8B%B7/</id>
+    <published>2025-12-28T17:58:39.925Z</published>
+    <updated>2025-12-28T21:54:52.676Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;DELTARUNE&quot;&gt;&lt;a href=&quot;#DELTARUNE&quot; class=&quot;headerlink&quot; title=&quot;DELTARUNE&quot;&gt;&lt;/a&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title></title>
+    <link href="http://example.com/2025/12/29/hello-world/"/>
+    <id>http://example.com/2025/12/29/hello-world/</id>
+    <published>2025-12-28T17:46:38.672Z</published>
+    <updated>2025-12-28T23:17:38.590Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;hr&gt;
+&lt;h2 id=&quot;本站介绍&quot;&gt;&lt;a href=&quot;#本站介绍&quot; class=&quot;headerlink&quot; title=&quot;本站介绍&quot;&gt;&lt;/a&gt;本站介绍&lt;/h2&gt;&lt;h1 id=&quot;这有啥好介绍的&quot;&gt;&lt;a href=&quot;#这有啥好介绍的&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+</feed>
