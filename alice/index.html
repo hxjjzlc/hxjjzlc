@@ -36,6 +36,7 @@
     color:var(--accent2);font-family:Consolas,"Cascadia Mono",monospace;
     background:rgba(77,208,196,.10);padding:1px 6px;border-radius:5px;font-size:12px;
   }
+  .sub .oria{font-size:12px;opacity:.66;letter-spacing:.2px}
   .badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
   .badge{
     font-size:11.5px;color:var(--muted);border:1px solid var(--border);
@@ -160,12 +161,13 @@
     <h1>✦ 爱丽丝语翻译器 ✦</h1>
     <div class="sub">
       把正常文字按 <code>UTF-8</code> 编码成字节流，再强行用 <code>Shift-JIS</code> 解码 ——<br>
-      得到的那串「伪日语乱码」，就是爱丽丝语。反方向即可还原。
+      得到的那串「伪日语乱码」，就是爱丽丝语。反方向即可还原。<br>
+      <span class="oria">灵感来源于寿司勇者トロ的同人 RPG《BLACKSOULS -黑童话与五魔姬-》。</span>
     </div>
     <div class="badges">
       <span class="badge"><b>纯前端</b> · 零后端</span>
       <span class="badge"><b>零依赖</b> · 无网络请求</span>
-      <span class="badge"><b>码表精确</b> · 与 Python 后端逐字节等价</span>
+      <span class="badge"><b>码表精确</b> · 逐字节校验</span>
       <span class="badge" id="apiBadge"><b>API</b> · 检测中…</span>
     </div>
   </header>
@@ -215,13 +217,11 @@
       日文与英文则可完美往返。
 
       <h3>为什么本页不需要后端？</h3>
-      网页版的浏览器原生只有 <code>utf-8</code> 编解码器，而 <code>shift_jis</code> 解码器
-      的错误处理与 Python 的 <code>cp932</code> 并不一致（非法字节组合的消耗规则、
-      <code>0xA0/0xFD-0xFF</code> 的私有区映射都不同）。所以本页<b>内嵌了一份由 Python 生成、
-      逐项校验过的 cp932 码表</b>（60 个前导字节 × 188 个尾随字节 = 11280 项），
-      在浏览器里按 Python 的规则手写解码器 —— 结果是：本页与
-      <code>E:\workspace\alice-translator</code> 的 Python 后端<b>逐字节等价</b>（1138 组用例
-      + 9408 条编码表条目 + 3097 组 UTF-8 编码，零差异）。
+      浏览器原生只有 <code>utf-8</code> 编解码器，而 <code>shift_jis</code> 解码器
+      的错误处理与算法所依据的 <code>cp932</code> 并不一致（非法字节组合的消耗规则、
+      <code>0xA0/0xFD-0xFF</code> 的私有区映射都不同）。所以本页<b>内嵌了一份逐项校验过的 cp932 码表</b>
+      （60 个前导字节 × 188 个尾随字节 = 11280 项），在浏览器里按同样的规则手写解码器 —— 结果是：
+      本页与该算法最初的 Python 实现<b>逐字节等价</b>（1138 组用例 + 9408 条编码表条目 + 3097 组 UTF-8 编码，零差异）。
 
       <h3>两处「浏览器 ≠ Python」的具体差异</h3>
       这两条是本页必须自带码表的原因，用 <code>你好</code> 一测就露馅：
@@ -311,7 +311,7 @@ https://hxjj.dpdns.org/alice/<b>?t=%E4%BD%A0%E5%A5%BD&amp;mode=from</b>
 
       <h3>能力边界（和真后端比）</h3>
       <table class="cmp">
-        <tr><th>能力</th><th>本页（无后端）</th><th>Python 后端 :5196</th></tr>
+        <tr><th>能力</th><th>本页（无后端）</th><th>自建服务端</th></tr>
         <tr><td>浏览器里调用</td><td>✓ 模块 / JSONP / fetch</td><td>✓ 需处理跨域</td></tr>
         <tr><td>跨站调用</td><td>✓ 脚本标签（JSONP）</td><td>△ 要自己开 CORS</td></tr>
         <tr><td>命令行 <code>curl</code></td><td>✗ 无服务器进程可访问</td><td>✓</td></tr>
@@ -341,7 +341,7 @@ https://hxjj.dpdns.org/alice/<b>?t=%E4%BD%A0%E5%A5%BD&amp;mode=from</b>
 
   <footer>
     纯前端 · 数据不出浏览器 · 有损翻译的不可逆性正是爱丽丝语的神秘之处<br>
-    <span style="opacity:.65">与本地 Python 后端（<code style="color:var(--accent2)">localhost:5196</code>）算法逐字节等价 · 自带调用 API</span>
+    <span style="opacity:.65">灵感来源：寿司勇者トロ《BLACKSOULS -黑童话与五魔姬-》 · 本站自制小工具</span>
   </footer>
 </div>
 

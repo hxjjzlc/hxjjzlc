@@ -6,7 +6,7 @@
   <link href="http://hxjj.dpdns.org/atom.xml" rel="self"/>
   
   <link href="http://hxjj.dpdns.org/"/>
-  <updated>2026-09-20T20:47:40.584Z</updated>
+  <updated>2026-09-20T21:02:26.960Z</updated>
   <id>http://hxjj.dpdns.org/</id>
   
   <author>
@@ -17,31 +17,27 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>爱丽丝语翻译器：无后端实现与 API 调用指南</title>
+    <title>爱丽丝语翻译器：把正常文字变成爱丽丝语</title>
     <link href="http://hxjj.dpdns.org/2026/09/21/alice-translator-guide/"/>
     <id>http://hxjj.dpdns.org/2026/09/21/alice-translator-guide/</id>
     <published>2026-09-20T20:47:18.000Z</published>
-    <updated>2026-09-20T20:47:40.584Z</updated>
+    <updated>2026-09-20T21:02:26.960Z</updated>
     
     
     <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;在线地址：**&lt;a href=&quot;https://hxjj.dpdns.org/alice/&quot;&gt;https://hxjj.dpdns.org/alice/&lt;/a&gt;**&lt;br&gt;用于对照的老后端：&lt;code&gt;http://localhost:5196&lt;/code&gt;（仅本机）&lt;/p&gt;
+&lt;p&gt;在线地址：**&lt;a href=&quot;https://hxjj.dpdns.org/alice/&quot;&gt;https://hxjj.dpdns.org/alice/&lt;/a&gt;**&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;把一段正常文字按 &lt;code&gt;UTF-8&lt;/code&gt; 编码成字节流，再强行用 &lt;code&gt;Shift-JIS&lt;/code&gt;（&lt;code&gt;cp932&lt;/code&gt;）去解码 —— 得到的那串伪日语乱码，就是「爱丽丝语」。反方向再来一次，就能还原。&lt;/p&gt;
-&lt;p&gt;原先这套东西跑在一个 Python 后端上。现在它变成了一张&lt;strong&gt;纯静态网页&lt;/strong&gt;：零服务器、零依赖、零网络请求，双击 HTML 就能用；而且它&lt;strong&gt;依然可以被程序调用&lt;/strong&gt;，有四种调用方式，下面会全部写清楚。&lt;/p&gt;</summary>
+&lt;p&gt;站里有个小工具，叫&lt;strong&gt;爱丽丝语翻译器&lt;/strong&gt;。它能把一段正常文字变成一串读不懂的伪日语乱码，也能把这串乱码还原回去。打开就能用，不用注册、不用安装，所有计算都在你自己的浏览器里完成。&lt;/p&gt;
+&lt;p&gt;「爱丽丝语」这个名字和点子的来源是同人 RPG《&lt;strong&gt;BLACKSOULS&lt;/strong&gt;》——寿司勇者トロ 2017 年的作品，把小红帽、爱丽丝这些熟悉的童话改写成了崩坏的黑童话，玩家在一名叫「爱丽丝」的少女引导下走进那个世界。这里的「爱丽丝语」借的就是这个意象：一段文字被带进梦里，回来时已经不完全是原来的样子了。&lt;/p&gt;</summary>
     
     
     
-    
-    <category term="编码" scheme="http://hxjj.dpdns.org/tags/%E7%BC%96%E7%A0%81/"/>
     
     <category term="乱码" scheme="http://hxjj.dpdns.org/tags/%E4%B9%B1%E7%A0%81/"/>
     
-    <category term="纯前端" scheme="http://hxjj.dpdns.org/tags/%E7%BA%AF%E5%89%8D%E7%AB%AF/"/>
-    
-    <category term="API" scheme="http://hxjj.dpdns.org/tags/API/"/>
-    
     <category term="爱丽丝语" scheme="http://hxjj.dpdns.org/tags/%E7%88%B1%E4%B8%BD%E4%B8%9D%E8%AF%AD/"/>
+    
+    <category term="小工具" scheme="http://hxjj.dpdns.org/tags/%E5%B0%8F%E5%B7%A5%E5%85%B7/"/>
     
   </entry>
   
