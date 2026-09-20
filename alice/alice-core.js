@@ -1,362 +1,15 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>爱丽丝语翻译器 · 纯前端版</title>
-<meta name="description" content="零后端、零依赖的爱丽丝语翻译器：把正常文字按 UTF-8 编码后用 Shift-JIS(cp932) 强行解码，得到伪日语乱码，可逆还原。自带无后端调用 API。">
-<style>
-  :root{
-    --bg:#0f1220; --bg2:#141930; --panel:#1a1f35; --panel2:#222845;
-    --border:#323a5e; --text:#e8eaf6; --muted:#9aa3c7;
-    --accent:#7c6cf0; --accent2:#4dd0c4; --danger:#ef6b8b; --warn:#ffb86b;
-    --radius:14px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    font-family:"Segoe UI","Microsoft YaHei",-apple-system,sans-serif;
-    background:
-      radial-gradient(1100px 500px at 12% -12%, rgba(124,108,240,.20), transparent 60%),
-      radial-gradient(900px 480px at 92% 6%, rgba(77,208,196,.14), transparent 62%),
-      var(--bg);
-    color:var(--text); min-height:100vh; padding:34px 18px 60px;
-    display:flex; flex-direction:column; align-items:center;
-    -webkit-font-smoothing:antialiased;
-  }
-  .wrap{width:100%;max-width:1080px}
-  header{text-align:center;margin-bottom:22px}
-  h1{
-    font-size:30px;letter-spacing:3px;font-weight:700;
-    background:linear-gradient(92deg,#a99bff,#7c6cf0 38%,#4dd0c4);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  .sub{color:var(--muted);font-size:13px;margin-top:10px;line-height:1.9}
-  .sub code{
-    color:var(--accent2);font-family:Consolas,"Cascadia Mono",monospace;
-    background:rgba(77,208,196,.10);padding:1px 6px;border-radius:5px;font-size:12px;
-  }
-  .badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
-  .badge{
-    font-size:11.5px;color:var(--muted);border:1px solid var(--border);
-    background:rgba(255,255,255,.03);padding:4px 11px;border-radius:999px;
-  }
-  .badge b{color:var(--accent2);font-weight:600}
-
-  .grid{display:grid;grid-template-columns:1fr 132px 1fr;gap:14px;align-items:stretch}
-  .card{
-    background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0));
-    background-color:var(--panel);
-    border:1px solid var(--border);border-radius:var(--radius);
-    padding:14px;display:flex;flex-direction:column;gap:10px;
-    box-shadow:0 10px 30px -18px rgba(0,0,0,.9);
-  }
-  .card .head{display:flex;justify-content:space-between;align-items:center;font-size:13px}
-  .card .head b{font-size:14px;font-weight:700}
-  .card .head span{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
-  textarea{
-    flex:1;min-height:250px;background:var(--panel2);border:1px solid var(--border);
-    border-radius:10px;color:var(--text);padding:13px;font-size:15px;line-height:1.75;
-    resize:vertical;outline:none;font-family:inherit;transition:border-color .15s,box-shadow .15s;
-  }
-  textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,108,240,.16)}
-  #alice{font-family:"MS Gothic","Yu Gothic",Consolas,monospace;letter-spacing:.4px}
-  .row{display:flex;gap:8px}
-  .row>.btn{flex:1}
-  .mid{display:flex;flex-direction:column;gap:10px;justify-content:center;align-items:center}
-  .btn{
-    cursor:pointer;border:none;border-radius:10px;padding:11px 14px;font-size:14px;
-    color:#fff;background:linear-gradient(135deg,var(--accent),#6355d8);
-    transition:filter .15s,transform .08s;white-space:nowrap;font-family:inherit;
-    box-shadow:0 8px 18px -12px var(--accent);
-  }
-  .btn:hover{filter:brightness(1.14)}
-  .btn:active{transform:scale(.97)}
-  .btn.ghost{background:var(--panel2);border:1px solid var(--border);color:var(--muted);box-shadow:none}
-  .btn.ghost:hover{color:var(--text);border-color:var(--accent)}
-  .btn.swap{
-    background:var(--panel2);border:1px solid var(--border);color:var(--accent2);
-    font-size:19px;padding:9px 18px;box-shadow:none;
-  }
-  .mid .hint{font-size:10.5px;color:var(--muted);text-align:center;line-height:1.6}
-
-  .status{
-    margin-top:12px;border:1px solid var(--border);background:var(--panel);
-    border-radius:12px;padding:11px 14px;font-size:12.5px;color:var(--muted);
-    display:flex;gap:10px;align-items:flex-start;line-height:1.7;
-  }
-  .status .dot{width:7px;height:7px;border-radius:50%;background:var(--accent2);margin-top:7px;flex:none}
-  .status.warn{border-color:rgba(255,184,107,.42);background:rgba(255,184,107,.07)}
-  .status.warn .dot{background:var(--warn)}
-  .status b{color:var(--text);font-weight:600}
-
-  details{margin-top:16px;border:1px solid var(--border);border-radius:12px;background:var(--panel);overflow:hidden}
-  summary{
-    cursor:pointer;padding:13px 16px;font-size:13.5px;color:var(--text);
-    list-style:none;display:flex;justify-content:space-between;align-items:center;
-  }
-  summary::-webkit-details-marker{display:none}
-  summary::after{content:"›";transform:rotate(90deg);color:var(--muted);transition:transform .2s;font-size:18px}
-  details[open] summary::after{transform:rotate(-90deg)}
-  .details-body{padding:2px 16px 16px;border-top:1px solid var(--border);font-size:13px;color:var(--muted);line-height:1.95}
-  .details-body h3{color:var(--text);font-size:13.5px;margin:14px 0 6px;font-weight:600}
-  .details-body code{
-    font-family:Consolas,monospace;background:rgba(255,255,255,.055);
-    padding:1px 6px;border-radius:5px;color:var(--accent2);font-size:12px;
-  }
-  .trace{
-    font-family:Consolas,"Cascadia Mono",monospace;font-size:12px;line-height:2;
-    background:var(--bg2);border:1px solid var(--border);border-radius:9px;
-    padding:11px 13px;margin-top:9px;max-height:260px;overflow:auto;white-space:pre-wrap;word-break:break-all;
-  }
-  .trace .b{color:#8b93b8}
-  .trace .c{color:var(--accent2)}
-  .trace .l{color:var(--warn)}
-  table.cmp{width:100%;border-collapse:collapse;margin-top:9px;font-size:12.5px}
-  table.cmp th,table.cmp td{border:1px solid var(--border);padding:7px 10px;text-align:left}
-  table.cmp th{background:rgba(255,255,255,.035);color:var(--text);font-weight:600}
-  table.cmp td code{background:none;padding:0}
-  footer{margin-top:30px;font-size:12px;color:var(--muted);text-align:center;line-height:1.9}
-  a{color:var(--accent2);text-decoration:none}
-  a:hover{text-decoration:underline}
-  .toast{
-    position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(18px);
-    background:var(--accent2);color:#06282a;padding:10px 22px;border-radius:999px;
-    font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;z-index:99;
-  }
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-  /* ---- API 文档区 ---- */
-  .codehead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:16px 0 0}
-  .codehead h3{margin:0!important}
-  .mini{
-    cursor:pointer;font-size:11.5px;padding:4px 11px;border-radius:7px;
-    border:1px solid var(--border);background:var(--panel2);color:var(--muted);
-    font-family:inherit;white-space:nowrap;transition:color .15s,border-color .15s;
-  }
-  .mini:hover{color:var(--text);border-color:var(--accent)}
-  pre.codeblk{
-    background:var(--bg2);border:1px solid var(--border);border-radius:9px;
-    padding:11px 13px;margin-top:8px;overflow:auto;
-    font-family:Consolas,"Cascadia Mono",monospace;font-size:12px;line-height:1.85;
-    color:#cfd6f5;white-space:pre;tab-size:2;
-  }
-  pre.codeblk em{color:var(--muted);font-style:normal}
-  pre.codeblk b{color:var(--accent2);font-weight:600}
-  @media (max-width:820px){
-    body{padding:22px 12px 44px}
-    h1{font-size:23px;letter-spacing:1.5px}
-    .grid{grid-template-columns:1fr;gap:11px}
-    .mid{flex-direction:row;flex-wrap:wrap}
-    .mid .hint{display:none}
-    textarea{min-height:170px}
-  }
-</style>
-</head>
-<body>
-<div class="wrap">
-
-  <header>
-    <h1>✦ 爱丽丝语翻译器 ✦</h1>
-    <div class="sub">
-      把正常文字按 <code>UTF-8</code> 编码成字节流，再强行用 <code>Shift-JIS</code> 解码 ——<br>
-      得到的那串「伪日语乱码」，就是爱丽丝语。反方向即可还原。
-    </div>
-    <div class="badges">
-      <span class="badge"><b>纯前端</b> · 零后端</span>
-      <span class="badge"><b>零依赖</b> · 无网络请求</span>
-      <span class="badge"><b>码表精确</b> · 与 Python 后端逐字节等价</span>
-      <span class="badge" id="apiBadge"><b>API</b> · 检测中…</span>
-    </div>
-  </header>
-
-  <div class="grid">
-    <div class="card">
-      <div class="head"><b>🈳 正常文字</b><span id="nCount">0 字</span></div>
-      <textarea id="normal" placeholder="在这里输入中文、English、日本語……" spellcheck="false"></textarea>
-      <div class="row">
-        <button class="btn" id="toAlice">翻译成爱丽丝语 →</button>
-        <button class="btn ghost" id="copyN">复制</button>
-      </div>
-    </div>
-
-    <div class="mid">
-      <button class="btn swap" id="swap" title="交换两侧内容">⇄</button>
-      <button class="btn" id="fromAlice">← 译回正常</button>
-      <div class="hint">双字节<br>强行解码<br>魔法</div>
-    </div>
-
-    <div class="card">
-      <div class="head"><b>🌀 爱丽丝语</b><span id="aCount">0 字</span></div>
-      <textarea id="alice" placeholder="ﾈｦﾄ・ﾈｦｽ・雫..." spellcheck="false"></textarea>
-      <div class="row">
-        <button class="btn ghost" id="copyA">复制</button>
-        <button class="btn ghost" id="clearA">清空</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="status" id="status"><span class="dot"></span><span id="statusText">输入文字后点击翻译。整个过程在你的浏览器里完成，不会发送任何数据。</span></div>
-
-  <details>
-    <summary>🔬 原理详解与字节级追踪</summary>
-    <div class="details-body">
-      <h3>它是怎么工作的？</h3>
-      同一串字节，用两套不同的码表去读，就会读出完全不同的字符。爱丽丝语正是利用了这一点：
-      <table class="cmp">
-        <tr><th>方向</th><th>第一步</th><th>第二步</th><th>结果</th></tr>
-        <tr><td>正常 → 爱丽丝语</td><td>UTF-8 编码</td><td>cp932 解码</td><td><code>你好</code> → <code>菴螂ｽ</code></td></tr>
-        <tr><td>爱丽丝语 → 正常</td><td>cp932 编码</td><td>UTF-8 解码</td><td><code>菴螂ｽ</code> → <code>你好</code></td></tr>
-      </table>
-
-      <h3>为什么会有损？</h3>
-      并非所有 UTF-8 字节序列都能在 cp932 里找到对应字符。找不到的字节会变成
-      <code>U+FFFD</code>（�），这部分信息在还原时<b>永久丢失</b>。中文因字节分布原因较易触发，
-      日文与英文则可完美往返。
-
-      <h3>为什么本页不需要后端？</h3>
-      网页版的浏览器原生只有 <code>utf-8</code> 编解码器，而 <code>shift_jis</code> 解码器
-      的错误处理与 Python 的 <code>cp932</code> 并不一致（非法字节组合的消耗规则、
-      <code>0xA0/0xFD-0xFF</code> 的私有区映射都不同）。所以本页<b>内嵌了一份由 Python 生成、
-      逐项校验过的 cp932 码表</b>（60 个前导字节 × 188 个尾随字节 = 11280 项），
-      在浏览器里按 Python 的规则手写解码器 —— 结果是：本页与
-      <code>E:\workspace\alice-translator</code> 的 Python 后端<b>逐字节等价</b>（1138 组用例
-      + 9408 条编码表条目 + 3097 组 UTF-8 编码，零差异）。
-
-      <h3>两处「浏览器 ≠ Python」的具体差异</h3>
-      这两条是本页必须自带码表的原因，用 <code>你好</code> 一测就露馅：
-      <table class="cmp">
-        <tr><th>差异</th><th>Python <code>cp932</code></th><th>浏览器 <code>shift_jis</code></th></tr>
-        <tr>
-          <td>单字节 <code>A0 / FD / FE / FF</code></td>
-          <td>映射到私有区 <code>U+F8F0</code>~<code>F8F3</code></td>
-          <td>判为非法 → <code>�</code></td>
-        </tr>
-        <tr>
-          <td>前导字节后跟未定义尾随字节（如 <code>87 E6</code>）</td>
-          <td><b>只消耗前导 1 字节</b>，再继续解析</td>
-          <td><b>吃掉 2 字节</b>，两字节一起报废</td>
-        </tr>
-      </table>
-      <p style="margin-top:9px">
-        于是 <code>你好</code> 的 UTF-8 字节里那个 <code>A0</code>，Python 会把它单独解成
-        <code>U+F8F0</code>（一个不可见的私有区字符，夹在 <code>菴</code> 与 <code>螂ｽ</code> 之间），
-        浏览器原生解码器却输出 <code>�</code> —— 同一串字节，两种结果。中文因为字节分布容易踩到这类边角，
-        日文与英文则基本碰不到。
-      </p>
-
-      <h3>字节级追踪</h3>
-      <div class="trace" id="trace">在上方输入文字后，这里会显示 UTF-8 字节如何被 cp932 一步步解读。</div>
-    </div>
-  </details>
-
-  <details id="apiBox">
-    <summary>🔌 无后端 API —— 在别的页面 / 项目里调用它</summary>
-    <div class="details-body">
-      这个页面没有服务器，但<b>依然可以被程序调用</b>。共有四种方式，按「谁在调用」挑一种即可。
-      全部计算都发生在调用者的浏览器里，请求不会携带你的文字去任何第三方。
-
-      <div class="codehead"><h3>① 同源页面调用（最推荐）：直接当 JS 模块用</h3>
-        <button class="mini cp" data-copy="c1">复制</button></div>
-      <pre class="codeblk" id="c1">&lt;script src="<b>/alice/alice-core.js</b>"&gt;&lt;/script&gt;
-&lt;script&gt;
-  AliceTranslate.<b>to</b>("爱丽丝语");        <em>// → "辷ｱ荳ｽ荳晁ｯｭ"（只要字符串）</em>
-  AliceTranslate.<b>from</b>("辷ｱ荳ｽ荳晁ｯｭ");  <em>// → "爱丽丝语"（反向还原）</em>
-
-  <em>// 需要丢失字符数等完整信息时：</em>
-  const r = AliceTranslate.<b>toAlice</b>("你好");
-  <em>// r = { ok:true, api:"alice-translator", version:"1.1.0",
-  //       mode:"to", input:"你好", result:"菴螂ｽ", lost:0, lossless:true }</em>
-&lt;/script&gt;</pre>
-
-      <div class="codehead"><h3>② 跨站调用：脚本标签 / JSONP 端点（不需要 CORS）</h3>
-        <button class="mini cp" data-copy="c2">复制</button></div>
-      <pre class="codeblk" id="c2">&lt;script&gt;
-  function onAlice(d) { console.log(d.result); }   <em>// 回调名任意</em>
-&lt;/script&gt;
-&lt;script src="https://hxjj.dpdns.org/alice/alice-core.js<b>?text=%E4%BD%A0%E5%A5%BD&amp;callback=onAlice</b>"&gt;&lt;/script&gt;
-
-<em>// 支持参数：text / q / t  = 要翻译的文字
-//           mode       = to（默认）| from
-//           callback   = 回调函数名，支持 a.b.c 形式
-//           target     = 直接把结果写进某个元素（id）的 value / textContent
-// 不带任何查询串时，这个文件就是普通库，不产生任何副作用。</em></pre>
-
-      <div class="codehead"><h3>③ 同源 fetch / JSON：真正的 HTTP 接口</h3>
-        <button class="mini cp" data-copy="c3">复制</button></div>
-      <pre class="codeblk" id="c3"><em>// 由 Service Worker 在浏览器内提供，路径 /alice/api</em>
-const r = await fetch("/alice/api?text=" + encodeURIComponent("世界")).then(f =&gt; f.json());
-r.result;   <em>// "荳也阜"</em>
-r.lost;     <em>// 0</em>
-
-<em>// 长文本用 POST，避免 URL 长度限制</em>
-const r2 = await fetch("/alice/api", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ text: "很长很长的一段文字……", mode: "to" })
-}).then(f =&gt; f.json());
-
-<em>// 不带 text 直接 GET /alice/api 会返回接口自描述（含版本与用法）</em></pre>
-
-      <div class="codehead"><h3>④ 页面深链：把翻译结果做成一串网址</h3>
-        <button class="mini cp" data-copy="c4">复制</button></div>
-      <pre class="codeblk" id="c4">https://hxjj.dpdns.org/alice/<b>?text=你好&amp;mode=to</b>
-https://hxjj.dpdns.org/alice/<b>?t=%E4%BD%A0%E5%A5%BD&amp;mode=from</b>
-
-<em>// 打开即自动翻译并填入输入框，可直接分享 / 放进 iframe</em></pre>
-
-      <div class="codehead"><h3>⑤ 现场自测：真的发一次请求</h3>
-        <button class="mini" id="tryApi">▶ 用当前输入试一次</button></div>
-      <pre class="codeblk" id="apiOut">点右边的按钮，会真的发一个 fetch("/alice/api?text=…") 并显示返回的 JSON。</pre>
-
-      <h3>能力边界（和真后端比）</h3>
-      <table class="cmp">
-        <tr><th>能力</th><th>本页（无后端）</th><th>Python 后端 :5196</th></tr>
-        <tr><td>浏览器里调用</td><td>✓ 模块 / JSONP / fetch</td><td>✓ 需处理跨域</td></tr>
-        <tr><td>跨站调用</td><td>✓ 脚本标签（JSONP）</td><td>△ 要自己开 CORS</td></tr>
-        <tr><td>命令行 <code>curl</code></td><td>✗ 无服务器进程可访问</td><td>✓</td></tr>
-        <tr><td>非浏览器客户端 / 机器人</td><td>✗</td><td>✓</td></tr>
-        <tr><td>要装的东西</td><td>无（一张静态页）</td><td>Python + 常驻进程</td></tr>
-      </table>
-      <p style="margin-top:9px">
-        一句话：<b>网页内能做的调用，无后端全都能做；网页外（curl、机器人、其它语言的程序）的调用，才必须要有后端。</b>
-        因为静态站点没有任何进程能在 HTTP 层返回 <code>text/plain</code> 或自定义响应头 ——
-        本页的 <code>/alice/api</code> 是靠 Service Worker 在<b>浏览器内部</b>拦下来的，
-        所以它只对装过这段脚本的浏览器有效。
-      </p>
-
-      <h3>接口返回格式</h3>
-      <pre class="codeblk">{
-  "ok": true,
-  "api": "alice-translator",
-  "version": "1.1.0",
-  "mode": "to",            <em>// to = 正常→爱丽丝语，from = 爱丽丝语→正常</em>
-  "input": "世界",
-  "result": "荳也阜",
-  "lost": 0,               <em>// 无法映射、永久丢失的字符数</em>
-  "lossless": true         <em>// lost === 0</em>
-}</pre>
-    </div>
-  </details>
-
-  <footer>
-    纯前端 · 数据不出浏览器 · 有损翻译的不可逆性正是爱丽丝语的神秘之处<br>
-    <span style="opacity:.65">与本地 Python 后端（<code style="color:var(--accent2)">localhost:5196</code>）算法逐字节等价 · 自带调用 API</span>
-  </footer>
-</div>
-
-<div class="toast" id="toast">已复制</div>
-
-<script>
+// ===========================================================================
+// 爱丽丝语核心 + 无后端 API —— 自动生成，请勿手改
+//   生成源：E:\workspace\skill\workbuddy\alice-translator-api\scripts
+//   用法①（库）：<script src="/alice/alice-core.js"></script> 后调用 AliceTranslate
+//   用法②（端点）：alice-core.js?text=你好&mode=to&callback=fn
+// ===========================================================================
 // 自动生成：Python cp932 双字节解码表（60 leads x 188 trails）
 var ALICE_LEADS=[129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252];
 var ALICE_TRAILS=[64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252];
 var ALICE_DBL="　、。，．・：；？！゛゜´｀¨＾￣＿ヽヾゝゞ〃仝々〆〇ー―‐／＼～∥｜…‥‘’“”（）〔〕［］｛｝〈〉《》「」『』【】＋－±×÷＝≠＜＞≦≧∞∴♂♀°′″℃￥＄￠￡％＃＆＊＠§☆★○●◎◇◆□■△▲▽▼※〒→←↑↓〓�����������∈∋⊆⊇⊂⊃∪∩��������∧∨￢⇒⇔∀∃�����������∠⊥⌒∂∇≡≒≪≫√∽∝∵∫∬�������Å‰♯♭♪†‡¶����◯���������������０１２３４５６７８９�������ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ������ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ����ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをん�����������ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ��������ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ��������αβγδεζηθικλμνξοπρστυφχψω��������������������������������������АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ���������������абвгдеёжзийклмнопрстуфхцчшщъыьэюя�������������─│┌┐┘└├┬┤┴┼━┃┏┓┛┗┣┳┫┻╋┠┯┨┷┿┝┰┥┸╂������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ�㍉㌔㌢㍍㌘㌧㌃㌶㍑㍗㌍㌦㌣㌫㍊㌻㎜㎝㎞㎎㎏㏄㎡��������㍻〝〟№㏍℡㊤㊥㊦㊧㊨㈱㈲㈹㍾㍽㍼≒≡∫∮∑√⊥∠∟⊿∵∩∪����������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������亜唖娃阿哀愛挨姶逢葵茜穐悪握渥旭葦芦鯵梓圧斡扱宛姐虻飴絢綾鮎或粟袷安庵按暗案闇鞍杏以伊位依偉囲夷委威尉惟意慰易椅為畏異移維緯胃萎衣謂違遺医井亥域育郁磯一壱溢逸稲茨芋鰯允印咽員因姻引飲淫胤蔭院陰隠韻吋右宇烏羽迂雨卯鵜窺丑碓臼渦嘘唄欝蔚鰻姥厩浦瓜閏噂云運雲荏餌叡営嬰影映曳栄永泳洩瑛盈穎頴英衛詠鋭液疫益駅悦謁越閲榎厭円園堰奄宴延怨掩援沿演炎焔煙燕猿縁艶苑薗遠鉛鴛塩於汚甥凹央奥往応押旺横欧殴王翁襖鴬鴎黄岡沖荻億屋憶臆桶牡乙俺卸恩温穏音下化仮何伽価佳加可嘉夏嫁家寡科暇果架歌河火珂禍禾稼箇花苛茄荷華菓蝦課嘩貨迦過霞蚊俄峨我牙画臥芽蛾賀雅餓駕介会解回塊壊廻快怪悔恢懐戒拐改魁晦械海灰界皆絵芥蟹開階貝凱劾外咳害崖慨概涯碍蓋街該鎧骸浬馨蛙垣柿蛎鈎劃嚇各廓拡撹格核殻獲確穫覚角赫較郭閣隔革学岳楽額顎掛笠樫橿梶鰍潟割喝恰括活渇滑葛褐轄且鰹叶椛樺鞄株兜竃蒲釜鎌噛鴨栢茅萱粥刈苅瓦乾侃冠寒刊勘勧巻喚堪姦完官寛干幹患感慣憾換敢柑桓棺款歓汗漢澗潅環甘監看竿管簡緩缶翰肝艦莞観諌貫還鑑間閑関陥韓館舘丸含岸巌玩癌眼岩翫贋雁頑顔願企伎危喜器基奇嬉寄岐希幾忌揮机旗既期棋棄機帰毅気汽畿祈季稀紀徽規記貴起軌輝飢騎鬼亀偽儀妓宜戯技擬欺犠疑祇義蟻誼議掬菊鞠吉吃喫桔橘詰砧杵黍却客脚虐逆丘久仇休及吸宮弓急救朽求汲泣灸球究窮笈級糾給旧牛去居巨拒拠挙渠虚許距鋸漁禦魚亨享京供侠僑兇競共凶協匡卿叫喬境峡強彊怯恐恭挟教橋況狂狭矯胸脅興蕎郷鏡響饗驚仰凝尭暁業局曲極玉桐粁僅勤均巾錦斤欣欽琴禁禽筋緊芹菌衿襟謹近金吟銀九倶句区狗玖矩苦躯駆駈駒具愚虞喰空偶寓遇隅串櫛釧屑屈掘窟沓靴轡窪熊隈粂栗繰桑鍬勲君薫訓群軍郡卦袈祁係傾刑兄啓圭珪型契形径恵慶慧憩掲携敬景桂渓畦稽系経継繋罫茎荊蛍計詣警軽頚鶏芸迎鯨劇戟撃激隙桁傑欠決潔穴結血訣月件倹倦健兼券剣喧圏堅嫌建憲懸拳捲検権牽犬献研硯絹県肩見謙賢軒遣鍵険顕験鹸元原厳幻弦減源玄現絃舷言諺限乎個古呼固姑孤己庫弧戸故枯湖狐糊袴股胡菰虎誇跨鈷雇顧鼓五互伍午呉吾娯後御悟梧檎瑚碁語誤護醐乞鯉交佼侯候倖光公功効勾厚口向后喉坑垢好孔孝宏工巧巷幸広庚康弘恒慌抗拘控攻昂晃更杭校梗構江洪浩港溝甲皇硬稿糠紅紘絞綱耕考肯肱腔膏航荒行衡講貢購郊酵鉱砿鋼閤降項香高鴻剛劫号合壕拷濠豪轟麹克刻告国穀酷鵠黒獄漉腰甑忽惚骨狛込此頃今困坤墾婚恨懇昏昆根梱混痕紺艮魂些佐叉唆嵯左差査沙瑳砂詐鎖裟坐座挫債催再最哉塞妻宰彩才採栽歳済災采犀砕砦祭斎細菜裁載際剤在材罪財冴坂阪堺榊肴咲崎埼碕鷺作削咋搾昨朔柵窄策索錯桜鮭笹匙冊刷察拶撮擦札殺薩雑皐鯖捌錆鮫皿晒三傘参山惨撒散桟燦珊産算纂蚕讃賛酸餐斬暫残仕仔伺使刺司史嗣四士始姉姿子屍市師志思指支孜斯施旨枝止死氏獅祉私糸紙紫肢脂至視詞詩試誌諮資賜雌飼歯事似侍児字寺慈持時次滋治爾璽痔磁示而耳自蒔辞汐鹿式識鴫竺軸宍雫七叱執失嫉室悉湿漆疾質実蔀篠偲柴芝屡蕊縞舎写射捨赦斜煮社紗者謝車遮蛇邪借勺尺杓灼爵酌釈錫若寂弱惹主取守手朱殊狩珠種腫趣酒首儒受呪寿授樹綬需囚収周宗就州修愁拾洲秀秋終繍習臭舟蒐衆襲讐蹴輯週酋酬集醜什住充十従戎柔汁渋獣縦重銃叔夙宿淑祝縮粛塾熟出術述俊峻春瞬竣舜駿准循旬楯殉淳準潤盾純巡遵醇順処初所暑曙渚庶緒署書薯藷諸助叙女序徐恕鋤除傷償勝匠升召哨商唱嘗奨妾娼宵将小少尚庄床廠彰承抄招掌捷昇昌昭晶松梢樟樵沼消渉湘焼焦照症省硝礁祥称章笑粧紹肖菖蒋蕉衝裳訟証詔詳象賞醤鉦鍾鐘障鞘上丈丞乗冗剰城場壌嬢常情擾条杖浄状畳穣蒸譲醸錠嘱埴飾拭植殖燭織職色触食蝕辱尻伸信侵唇娠寝審心慎振新晋森榛浸深申疹真神秦紳臣芯薪親診身辛進針震人仁刃塵壬尋甚尽腎訊迅陣靭笥諏須酢図厨逗吹垂帥推水炊睡粋翠衰遂酔錐錘随瑞髄崇嵩数枢趨雛据杉椙菅頗雀裾澄摺寸世瀬畝是凄制勢姓征性成政整星晴棲栖正清牲生盛精聖声製西誠誓請逝醒青静斉税脆隻席惜戚斥昔析石積籍績脊責赤跡蹟碩切拙接摂折設窃節説雪絶舌蝉仙先千占宣専尖川戦扇撰栓栴泉浅洗染潜煎煽旋穿箭線繊羨腺舛船薦詮賎践選遷銭銑閃鮮前善漸然全禅繕膳糎噌塑岨措曾曽楚狙疏疎礎祖租粗素組蘇訴阻遡鼠僧創双叢倉喪壮奏爽宋層匝惣想捜掃挿掻操早曹巣槍槽漕燥争痩相窓糟総綜聡草荘葬蒼藻装走送遭鎗霜騒像増憎臓蔵贈造促側則即息捉束測足速俗属賊族続卒袖其揃存孫尊損村遜他多太汰詑唾堕妥惰打柁舵楕陀駄騨体堆対耐岱帯待怠態戴替泰滞胎腿苔袋貸退逮隊黛鯛代台大第醍題鷹滝瀧卓啄宅托択拓沢濯琢託鐸濁諾茸凧蛸只叩但達辰奪脱巽竪辿棚谷狸鱈樽誰丹単嘆坦担探旦歎淡湛炭短端箪綻耽胆蛋誕鍛団壇弾断暖檀段男談値知地弛恥智池痴稚置致蜘遅馳築畜竹筑蓄逐秩窒茶嫡着中仲宙忠抽昼柱注虫衷註酎鋳駐樗瀦猪苧著貯丁兆凋喋寵帖帳庁弔張彫徴懲挑暢朝潮牒町眺聴脹腸蝶調諜超跳銚長頂鳥勅捗直朕沈珍賃鎮陳津墜椎槌追鎚痛通塚栂掴槻佃漬柘辻蔦綴鍔椿潰坪壷嬬紬爪吊釣鶴亭低停偵剃貞呈堤定帝底庭廷弟悌抵挺提梯汀碇禎程締艇訂諦蹄逓邸鄭釘鼎泥摘擢敵滴的笛適鏑溺哲徹撤轍迭鉄典填天展店添纏甜貼転顛点伝殿澱田電兎吐堵塗妬屠徒斗杜渡登菟賭途都鍍砥砺努度土奴怒倒党冬凍刀唐塔塘套宕島嶋悼投搭東桃梼棟盗淘湯涛灯燈当痘祷等答筒糖統到董蕩藤討謄豆踏逃透鐙陶頭騰闘働動同堂導憧撞洞瞳童胴萄道銅峠鴇匿得徳涜特督禿篤毒独読栃橡凸突椴届鳶苫寅酉瀞噸屯惇敦沌豚遁頓呑曇鈍奈那内乍凪薙謎灘捺鍋楢馴縄畷南楠軟難汝二尼弐迩匂賑肉虹廿日乳入如尿韮任妊忍認濡禰祢寧葱猫熱年念捻撚燃粘乃廼之埜嚢悩濃納能脳膿農覗蚤巴把播覇杷波派琶破婆罵芭馬俳廃拝排敗杯盃牌背肺輩配倍培媒梅楳煤狽買売賠陪這蝿秤矧萩伯剥博拍柏泊白箔粕舶薄迫曝漠爆縛莫駁麦函箱硲箸肇筈櫨幡肌畑畠八鉢溌発醗髪伐罰抜筏閥鳩噺塙蛤隼伴判半反叛帆搬斑板氾汎版犯班畔繁般藩販範釆煩頒飯挽晩番盤磐蕃蛮匪卑否妃庇彼悲扉批披斐比泌疲皮碑秘緋罷肥被誹費避非飛樋簸備尾微枇毘琵眉美鼻柊稗匹疋髭彦膝菱肘弼必畢筆逼桧姫媛紐百謬俵彪標氷漂瓢票表評豹廟描病秒苗錨鋲蒜蛭鰭品彬斌浜瀕貧賓頻敏瓶不付埠夫婦富冨布府怖扶敷斧普浮父符腐膚芙譜負賦赴阜附侮撫武舞葡蕪部封楓風葺蕗伏副復幅服福腹複覆淵弗払沸仏物鮒分吻噴墳憤扮焚奮粉糞紛雰文聞丙併兵塀幣平弊柄並蔽閉陛米頁僻壁癖碧別瞥蔑箆偏変片篇編辺返遍便勉娩弁鞭保舗鋪圃捕歩甫補輔穂募墓慕戊暮母簿菩倣俸包呆報奉宝峰峯崩庖抱捧放方朋法泡烹砲縫胞芳萌蓬蜂褒訪豊邦鋒飽鳳鵬乏亡傍剖坊妨帽忘忙房暴望某棒冒紡肪膨謀貌貿鉾防吠頬北僕卜墨撲朴牧睦穆釦勃没殆堀幌奔本翻凡盆摩磨魔麻埋妹昧枚毎哩槙幕膜枕鮪柾鱒桝亦俣又抹末沫迄侭繭麿万慢満漫蔓味未魅巳箕岬密蜜湊蓑稔脈妙粍民眠務夢無牟矛霧鵡椋婿娘冥名命明盟迷銘鳴姪牝滅免棉綿緬面麺摸模茂妄孟毛猛盲網耗蒙儲木黙目杢勿餅尤戻籾貰問悶紋門匁也冶夜爺耶野弥矢厄役約薬訳躍靖柳薮鑓愉愈油癒諭輸唯佑優勇友宥幽悠憂揖有柚湧涌猶猷由祐裕誘遊邑郵雄融夕予余与誉輿預傭幼妖容庸揚揺擁曜楊様洋溶熔用窯羊耀葉蓉要謡踊遥陽養慾抑欲沃浴翌翼淀羅螺裸来莱頼雷洛絡落酪乱卵嵐欄濫藍蘭覧利吏履李梨理璃痢裏裡里離陸律率立葎掠略劉流溜琉留硫粒隆竜龍侶慮旅虜了亮僚両凌寮料梁涼猟療瞭稜糧良諒遼量陵領力緑倫厘林淋燐琳臨輪隣鱗麟瑠塁涙累類令伶例冷励嶺怜玲礼苓鈴隷零霊麗齢暦歴列劣烈裂廉恋憐漣煉簾練聯蓮連錬呂魯櫓炉賂路露労婁廊弄朗楼榔浪漏牢狼篭老聾蝋郎六麓禄肋録論倭和話歪賄脇惑枠鷲亙亘鰐詫藁蕨椀湾碗腕�������������������������������������������弌丐丕个丱丶丼丿乂乖乘亂亅豫亊舒弍于亞亟亠亢亰亳亶从仍仄仆仂仗仞仭仟价伉佚估佛佝佗佇佶侈侏侘佻佩佰侑佯來侖儘俔俟俎俘俛俑俚俐俤俥倚倨倔倪倥倅伜俶倡倩倬俾俯們倆偃假會偕偐偈做偖偬偸傀傚傅傴傲僉僊傳僂僖僞僥僭僣僮價僵儉儁儂儖儕儔儚儡儺儷儼儻儿兀兒兌兔兢竸兩兪兮冀冂囘册冉冏冑冓冕冖冤冦冢冩冪冫决冱冲冰况冽凅凉凛几處凩凭凰凵凾刄刋刔刎刧刪刮刳刹剏剄剋剌剞剔剪剴剩剳剿剽劍劔劒剱劈劑辨辧劬劭劼劵勁勍勗勞勣勦飭勠勳勵勸勹匆匈甸匍匐匏匕匚匣匯匱匳匸區卆卅丗卉卍凖卞卩卮夘卻卷厂厖厠厦厥厮厰厶參簒雙叟曼燮叮叨叭叺吁吽呀听吭吼吮吶吩吝呎咏呵咎呟呱呷呰咒呻咀呶咄咐咆哇咢咸咥咬哄哈咨咫哂咤咾咼哘哥哦唏唔哽哮哭哺哢唹啀啣啌售啜啅啖啗唸唳啝喙喀咯喊喟啻啾喘喞單啼喃喩喇喨嗚嗅嗟嗄嗜嗤嗔嘔嗷嘖嗾嗽嘛嗹噎噐營嘴嘶嘲嘸噫噤嘯噬噪嚆嚀嚊嚠嚔嚏嚥嚮嚶嚴囂嚼囁囃囀囈囎囑囓囗囮囹圀囿圄圉圈國圍圓團圖嗇圜圦圷圸坎圻址坏坩埀垈坡坿垉垓垠垳垤垪垰埃埆埔埒埓堊埖埣堋堙堝塲堡塢塋塰毀塒堽塹墅墹墟墫墺壞墻墸墮壅壓壑壗壙壘壥壜壤壟壯壺壹壻壼壽夂夊夐夛梦夥夬夭夲夸夾竒奕奐奎奚奘奢奠奧奬奩奸妁妝佞侫妣妲姆姨姜妍姙姚娥娟娑娜娉娚婀婬婉娵娶婢婪媚媼媾嫋嫂媽嫣嫗嫦嫩嫖嫺嫻嬌嬋嬖嬲嫐嬪嬶嬾孃孅孀孑孕孚孛孥孩孰孳孵學斈孺宀它宦宸寃寇寉寔寐寤實寢寞寥寫寰寶寳尅將專對尓尠尢尨尸尹屁屆屎屓屐屏孱屬屮乢屶屹岌岑岔妛岫岻岶岼岷峅岾峇峙峩峽峺峭嶌峪崋崕崗嵜崟崛崑崔崢崚崙崘嵌嵒嵎嵋嵬嵳嵶嶇嶄嶂嶢嶝嶬嶮嶽嶐嶷嶼巉巍巓巒巖巛巫已巵帋帚帙帑帛帶帷幄幃幀幎幗幔幟幢幤幇幵并幺麼广庠廁廂廈廐廏廖廣廝廚廛廢廡廨廩廬廱廳廰廴廸廾弃弉彝彜弋弑弖弩弭弸彁彈彌彎弯彑彖彗彙彡彭彳彷徃徂彿徊很徑徇從徙徘徠徨徭徼忖忻忤忸忱忝悳忿怡恠怙怐怩怎怱怛怕怫怦怏怺恚恁恪恷恟恊恆恍恣恃恤恂恬恫恙悁悍惧悃悚悄悛悖悗悒悧悋惡悸惠惓悴忰悽惆悵惘慍愕愆惶惷愀惴惺愃愡惻惱愍愎慇愾愨愧慊愿愼愬愴愽慂慄慳慷慘慙慚慫慴慯慥慱慟慝慓慵憙憖憇憬憔憚憊憑憫憮懌懊應懷懈懃懆憺懋罹懍懦懣懶懺懴懿懽懼懾戀戈戉戍戌戔戛戞戡截戮戰戲戳扁扎扞扣扛扠扨扼抂抉找抒抓抖拔抃抔拗拑抻拏拿拆擔拈拜拌拊拂拇抛拉挌拮拱挧挂挈拯拵捐挾捍搜捏掖掎掀掫捶掣掏掉掟掵捫捩掾揩揀揆揣揉插揶揄搖搴搆搓搦搶攝搗搨搏摧摯摶摎攪撕撓撥撩撈撼據擒擅擇撻擘擂擱擧舉擠擡抬擣擯攬擶擴擲擺攀擽攘攜攅攤攣攫攴攵攷收攸畋效敖敕敍敘敞敝敲數斂斃變斛斟斫斷旃旆旁旄旌旒旛旙无旡旱杲昊昃旻杳昵昶昴昜晏晄晉晁晞晝晤晧晨晟晢晰暃暈暎暉暄暘暝曁暹曉暾暼曄暸曖曚曠昿曦曩曰曵曷朏朖朞朦朧霸朮朿朶杁朸朷杆杞杠杙杣杤枉杰枩杼杪枌枋枦枡枅枷柯枴柬枳柩枸柤柞柝柢柮枹柎柆柧檜栞框栩桀桍栲桎梳栫桙档桷桿梟梏梭梔條梛梃檮梹桴梵梠梺椏梍桾椁棊椈棘椢椦棡椌棍棔棧棕椶椒椄棗棣椥棹棠棯椨椪椚椣椡棆楹楷楜楸楫楔楾楮椹楴椽楙椰楡楞楝榁楪榲榮槐榿槁槓榾槎寨槊槝榻槃榧樮榑榠榜榕榴槞槨樂樛槿權槹槲槧樅榱樞槭樔槫樊樒櫁樣樓橄樌橲樶橸橇橢橙橦橈樸樢檐檍檠檄檢檣檗蘗檻櫃櫂檸檳檬櫞櫑櫟檪櫚櫪櫻欅蘖櫺欒欖鬱欟欸欷盜欹飮歇歃歉歐歙歔歛歟歡歸歹歿殀殄殃殍殘殕殞殤殪殫殯殲殱殳殷殼毆毋毓毟毬毫毳毯麾氈氓气氛氤氣汞汕汢汪沂沍沚沁沛汾汨汳沒沐泄泱泓沽泗泅泝沮沱沾沺泛泯泙泪洟衍洶洫洽洸洙洵洳洒洌浣涓浤浚浹浙涎涕濤涅淹渕渊涵淇淦涸淆淬淞淌淨淒淅淺淙淤淕淪淮渭湮渮渙湲湟渾渣湫渫湶湍渟湃渺湎渤滿渝游溂溪溘滉溷滓溽溯滄溲滔滕溏溥滂溟潁漑灌滬滸滾漿滲漱滯漲滌漾漓滷澆潺潸澁澀潯潛濳潭澂潼潘澎澑濂潦澳澣澡澤澹濆澪濟濕濬濔濘濱濮濛瀉瀋濺瀑瀁瀏濾瀛瀚潴瀝瀘瀟瀰瀾瀲灑灣炙炒炯烱炬炸炳炮烟烋烝烙焉烽焜焙煥煕熈煦煢煌煖煬熏燻熄熕熨熬燗熹熾燒燉燔燎燠燬燧燵燼燹燿爍爐爛爨爭爬爰爲爻爼爿牀牆牋牘牴牾犂犁犇犒犖犢犧犹犲狃狆狄狎狒狢狠狡狹狷倏猗猊猜猖猝猴猯猩猥猾獎獏默獗獪獨獰獸獵獻獺珈玳珎玻珀珥珮珞璢琅瑯琥珸琲琺瑕琿瑟瑙瑁瑜瑩瑰瑣瑪瑶瑾璋璞璧瓊瓏瓔珱瓠瓣瓧瓩瓮瓲瓰瓱瓸瓷甄甃甅甌甎甍甕甓甞甦甬甼畄畍畊畉畛畆畚畩畤畧畫畭畸當疆疇畴疊疉疂疔疚疝疥疣痂疳痃疵疽疸疼疱痍痊痒痙痣痞痾痿痼瘁痰痺痲痳瘋瘍瘉瘟瘧瘠瘡瘢瘤瘴瘰瘻癇癈癆癜癘癡癢癨癩癪癧癬癰癲癶癸發皀皃皈皋皎皖皓皙皚皰皴皸皹皺盂盍盖盒盞盡盥盧盪蘯盻眈眇眄眩眤眞眥眦眛眷眸睇睚睨睫睛睥睿睾睹瞎瞋瞑瞠瞞瞰瞶瞹瞿瞼瞽瞻矇矍矗矚矜矣矮矼砌砒礦砠礪硅碎硴碆硼碚碌碣碵碪碯磑磆磋磔碾碼磅磊磬磧磚磽磴礇礒礑礙礬礫祀祠祗祟祚祕祓祺祿禊禝禧齋禪禮禳禹禺秉秕秧秬秡秣稈稍稘稙稠稟禀稱稻稾稷穃穗穉穡穢穩龝穰穹穽窈窗窕窘窖窩竈窰窶竅竄窿邃竇竊竍竏竕竓站竚竝竡竢竦竭竰笂笏笊笆笳笘笙笞笵笨笶筐筺笄筍笋筌筅筵筥筴筧筰筱筬筮箝箘箟箍箜箚箋箒箏筝箙篋篁篌篏箴篆篝篩簑簔篦篥籠簀簇簓篳篷簗簍篶簣簧簪簟簷簫簽籌籃籔籏籀籐籘籟籤籖籥籬籵粃粐粤粭粢粫粡粨粳粲粱粮粹粽糀糅糂糘糒糜糢鬻糯糲糴糶糺紆紂紜紕紊絅絋紮紲紿紵絆絳絖絎絲絨絮絏絣經綉絛綏絽綛綺綮綣綵緇綽綫總綢綯緜綸綟綰緘緝緤緞緻緲緡縅縊縣縡縒縱縟縉縋縢繆繦縻縵縹繃縷縲縺繧繝繖繞繙繚繹繪繩繼繻纃緕繽辮繿纈纉續纒纐纓纔纖纎纛纜缸缺罅罌罍罎罐网罕罔罘罟罠罨罩罧罸羂羆羃羈羇羌羔羞羝羚羣羯羲羹羮羶羸譱翅翆翊翕翔翡翦翩翳翹飜耆耄耋耒耘耙耜耡耨耿耻聊聆聒聘聚聟聢聨聳聲聰聶聹聽聿肄肆肅肛肓肚肭冐肬胛胥胙胝胄胚胖脉胯胱脛脩脣脯腋隋腆脾腓腑胼腱腮腥腦腴膃膈膊膀膂膠膕膤膣腟膓膩膰膵膾膸膽臀臂膺臉臍臑臙臘臈臚臟臠臧臺臻臾舁舂舅與舊舍舐舖舩舫舸舳艀艙艘艝艚艟艤艢艨艪艫舮艱艷艸艾芍芒芫芟芻芬苡苣苟苒苴苳苺莓范苻苹苞茆苜茉苙茵茴茖茲茱荀茹荐荅茯茫茗茘莅莚莪莟莢莖茣莎莇莊荼莵荳荵莠莉莨菴萓菫菎菽萃菘萋菁菷萇菠菲萍萢萠莽萸蔆菻葭萪萼蕚蒄葷葫蒭葮蒂葩葆萬葯葹萵蓊葢蒹蒿蒟蓙蓍蒻蓚蓐蓁蓆蓖蒡蔡蓿蓴蔗蔘蔬蔟蔕蔔蓼蕀蕣蕘蕈蕁蘂蕋蕕薀薤薈薑薊薨蕭薔薛藪薇薜蕷蕾薐藉薺藏薹藐藕藝藥藜藹蘊蘓蘋藾藺蘆蘢蘚蘰蘿虍乕虔號虧虱蚓蚣蚩蚪蚋蚌蚶蚯蛄蛆蚰蛉蠣蚫蛔蛞蛩蛬蛟蛛蛯蜒蜆蜈蜀蜃蛻蜑蜉蜍蛹蜊蜴蜿蜷蜻蜥蜩蜚蝠蝟蝸蝌蝎蝴蝗蝨蝮蝙蝓蝣蝪蠅螢螟螂螯蟋螽蟀蟐雖螫蟄螳蟇蟆螻蟯蟲蟠蠏蠍蟾蟶蟷蠎蟒蠑蠖蠕蠢蠡蠱蠶蠹蠧蠻衄衂衒衙衞衢衫袁衾袞衵衽袵衲袂袗袒袮袙袢袍袤袰袿袱裃裄裔裘裙裝裹褂裼裴裨裲褄褌褊褓襃褞褥褪褫襁襄褻褶褸襌褝襠襞襦襤襭襪襯襴襷襾覃覈覊覓覘覡覩覦覬覯覲覺覽覿觀觚觜觝觧觴觸訃訖訐訌訛訝訥訶詁詛詒詆詈詼詭詬詢誅誂誄誨誡誑誥誦誚誣諄諍諂諚諫諳諧諤諱謔諠諢諷諞諛謌謇謚諡謖謐謗謠謳鞫謦謫謾謨譁譌譏譎證譖譛譚譫譟譬譯譴譽讀讌讎讒讓讖讙讚谺豁谿豈豌豎豐豕豢豬豸豺貂貉貅貊貍貎貔豼貘戝貭貪貽貲貳貮貶賈賁賤賣賚賽賺賻贄贅贊贇贏贍贐齎贓賍贔贖赧赭赱赳趁趙跂趾趺跏跚跖跌跛跋跪跫跟跣跼踈踉跿踝踞踐踟蹂踵踰踴蹊蹇蹉蹌蹐蹈蹙蹤蹠踪蹣蹕蹶蹲蹼躁躇躅躄躋躊躓躑躔躙躪躡躬躰軆躱躾軅軈軋軛軣軼軻軫軾輊輅輕輒輙輓輜輟輛輌輦輳輻輹轅轂輾轌轉轆轎轗轜轢轣轤辜辟辣辭辯辷迚迥迢迪迯邇迴逅迹迺逑逕逡逍逞逖逋逧逶逵逹迸遏遐遑遒逎遉逾遖遘遞遨遯遶隨遲邂遽邁邀邊邉邏邨邯邱邵郢郤扈郛鄂鄒鄙鄲鄰酊酖酘酣酥酩酳酲醋醉醂醢醫醯醪醵醴醺釀釁釉釋釐釖釟釡釛釼釵釶鈞釿鈔鈬鈕鈑鉞鉗鉅鉉鉤鉈銕鈿鉋鉐銜銖銓銛鉚鋏銹銷鋩錏鋺鍄錮錙錢錚錣錺錵錻鍜鍠鍼鍮鍖鎰鎬鎭鎔鎹鏖鏗鏨鏥鏘鏃鏝鏐鏈鏤鐚鐔鐓鐃鐇鐐鐶鐫鐵鐡鐺鑁鑒鑄鑛鑠鑢鑞鑪鈩鑰鑵鑷鑽鑚鑼鑾钁鑿閂閇閊閔閖閘閙閠閨閧閭閼閻閹閾闊濶闃闍闌闕闔闖關闡闥闢阡阨阮阯陂陌陏陋陷陜陞陝陟陦陲陬隍隘隕隗險隧隱隲隰隴隶隸隹雎雋雉雍襍雜霍雕雹霄霆霈霓霎霑霏霖霙霤霪霰霹霽霾靄靆靈靂靉靜靠靤靦靨勒靫靱靹鞅靼鞁靺鞆鞋鞏鞐鞜鞨鞦鞣鞳鞴韃韆韈韋韜韭齏韲竟韶韵頏頌頸頤頡頷頽顆顏顋顫顯顰顱顴顳颪颯颱颶飄飃飆飩飫餃餉餒餔餘餡餝餞餤餠餬餮餽餾饂饉饅饐饋饑饒饌饕馗馘馥馭馮馼駟駛駝駘駑駭駮駱駲駻駸騁騏騅駢騙騫騷驅驂驀驃騾驕驍驛驗驟驢驥驤驩驫驪骭骰骼髀髏髑髓體髞髟髢髣髦髯髫髮髴髱髷髻鬆鬘鬚鬟鬢鬣鬥鬧鬨鬩鬪鬮鬯鬲魄魃魏魍魎魑魘魴鮓鮃鮑鮖鮗鮟鮠鮨鮴鯀鯊鮹鯆鯏鯑鯒鯣鯢鯤鯔鯡鰺鯲鯱鯰鰕鰔鰉鰓鰌鰆鰈鰒鰊鰄鰮鰛鰥鰤鰡鰰鱇鰲鱆鰾鱚鱠鱧鱶鱸鳧鳬鳰鴉鴈鳫鴃鴆鴪鴦鶯鴣鴟鵄鴕鴒鵁鴿鴾鵆鵈鵝鵞鵤鵑鵐鵙鵲鶉鶇鶫鵯鵺鶚鶤鶩鶲鷄鷁鶻鶸鶺鷆鷏鷂鷙鷓鷸鷦鷭鷯鷽鸚鸛鸞鹵鹹鹽麁麈麋麌麒麕麑麝麥麩麸麪麭靡黌黎黏黐黔黜點黝黠黥黨黯黴黶黷黹黻黼黽鼇鼈皷鼕鼡鼬鼾齊齒齔齣齟齠齡齦齧齬齪齷齲齶龕龜龠堯槇遙瑤凜熙��������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������纊褜鍈銈蓜俉炻昱棈鋹曻彅丨仡仼伀伃伹佖侒侊侚侔俍偀倢俿倞偆偰偂傔僴僘兊兤冝冾凬刕劜劦勀勛匀匇匤卲厓厲叝﨎咜咊咩哿喆坙坥垬埈埇﨏塚增墲夋奓奛奝奣妤妺孖寀甯寘寬尞岦岺峵崧嵓﨑嵂嵭嶸嶹巐弡弴彧德忞恝悅悊惞惕愠惲愑愷愰憘戓抦揵摠撝擎敎昀昕昻昉昮昞昤晥晗晙晴晳暙暠暲暿曺朎朗杦枻桒柀栁桄棏﨓楨﨔榘槢樰橫橆橳橾櫢櫤毖氿汜沆汯泚洄涇浯涖涬淏淸淲淼渹湜渧渼溿澈澵濵瀅瀇瀨炅炫焏焄煜煆煇凞燁燾犱犾猤猪獷玽珉珖珣珒琇珵琦琪琩琮瑢璉璟甁畯皂皜皞皛皦益睆劯砡硎硤硺礰礼神祥禔福禛竑竧靖竫箞精絈絜綷綠緖繒罇羡羽茁荢荿菇菶葈蒴蕓蕙蕫﨟薰蘒﨡蠇裵訒訷詹誧誾諟諸諶譓譿賰賴贒赶﨣軏﨤逸遧郞都鄕鄧釚釗釞釭釮釤釥鈆鈐鈊鈺鉀鈼鉎鉙鉑鈹鉧銧鉷鉸鋧鋗鋙鋐﨧鋕鋠鋓錥錡鋻﨨錞鋿錝錂鍰鍗鎤鏆鏞鏸鐱鑅鑈閒隆﨩隝隯霳霻靃靍靏靑靕顗顥飯飼餧館馞驎髙髜魵魲鮏鮱鮻鰀鵰鵫鶴鸙黑��ⅰⅱⅲⅳⅴⅵⅶⅷⅸⅹ￢￤＇＂��������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������ⅰⅱⅲⅳⅴⅵⅶⅷⅸⅹⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ￢￤＇＂㈱№℡∵纊褜鍈銈蓜俉炻昱棈鋹曻彅丨仡仼伀伃伹佖侒侊侚侔俍偀倢俿倞偆偰偂傔僴僘兊兤冝冾凬刕劜劦勀勛匀匇匤卲厓厲叝﨎咜咊咩哿喆坙坥垬埈埇﨏塚增墲夋奓奛奝奣妤妺孖寀甯寘寬尞岦岺峵崧嵓﨑嵂嵭嶸嶹巐弡弴彧德忞恝悅悊惞惕愠惲愑愷愰憘戓抦揵摠撝擎敎昀昕昻昉昮昞昤晥晗晙晴晳暙暠暲暿曺朎朗杦枻桒柀栁桄棏﨓楨﨔榘槢樰橫橆橳橾櫢櫤毖氿汜沆汯泚洄涇浯涖涬淏淸淲淼渹湜渧渼溿澈澵濵瀅瀇瀨炅炫焏焄煜煆煇凞燁燾犱犾猤猪獷玽珉珖珣珒琇珵琦琪琩琮瑢璉璟甁畯皂皜皞皛皦益睆劯砡硎硤硺礰礼神祥禔福禛竑竧靖竫箞精絈絜綷綠緖繒罇羡羽茁荢荿菇菶葈蒴蕓蕙蕫﨟薰蘒﨡蠇裵訒訷詹誧誾諟諸諶譓譿賰賴贒赶﨣軏﨤逸遧郞都鄕鄧釚釗釞釭釮釤釥鈆鈐鈊鈺鉀鈼鉎鉙鉑鈹鉧銧鉷鉸鋧鋗鋙鋐﨧鋕鋠鋓錥錡鋻﨨錞鋿錝錂鍰鍗鎤鏆鏞鏸鐱鑅鑈閒隆﨩隝隯霳霻靃靍靏靑靕顗顥飯飼餧館馞驎髙髜魵魲鮏鮱鮻鰀鵰鵫鶴鸙黑��������������������������������������������������������������������������������������������������������������������������������������������������������������������������������";
 if(typeof globalThis!=='undefined'){globalThis.ALICE_LEADS=ALICE_LEADS;globalThis.ALICE_TRAILS=ALICE_TRAILS;globalThis.ALICE_DBL=ALICE_DBL;}
 
-</script>
-
-<script>
 // 爱丽丝语核心算法 —— 纯前端，精确复刻 Python cp932 行为
 // 依赖：ALICE_LEADS / ALICE_TRAILS / ALICE_DBL（由 alice_table.js 提供）
 (function (root) {
@@ -509,9 +162,6 @@ if(typeof globalThis!=='undefined'){globalThis.ALICE_LEADS=ALICE_LEADS;globalThi
   root.AliceCore = api;
 })(typeof globalThis !== "undefined" ? globalThis : this);
 
-</script>
-
-<script>
 // 爱丽丝语 · 无后端 API 层
 // 依赖：AliceCore（alice_core.js + 码表）—— 与 Python cp932 后端逐字节等价
 // 挂载：root.AliceTranslate
@@ -573,172 +223,67 @@ if(typeof globalThis!=='undefined'){globalThis.ALICE_LEADS=ALICE_LEADS;globalThi
   }
 })(typeof globalThis !== "undefined" ? globalThis : this);
 
-</script>
-
-<script>
-(function () {
+// 爱丽丝语 · 脚本标签（JSONP）端点自动运行逻辑
+// 仅当本文件以 <script src="...?text=…&callback=…"> 形式载入时生效；
+// 在任何页面里 **不带查询串** 引用时完全静默，只挂载 window.AliceTranslate。
+(function (root) {
   "use strict";
-  var $n = document.getElementById("normal");
-  var $a = document.getElementById("alice");
-  var $toast = document.getElementById("toast");
-  var $status = document.getElementById("status");
-  var $statusText = document.getElementById("statusText");
-  var $trace = document.getElementById("trace");
-  var timer = null;
 
-  function toast(msg) {
-    $toast.textContent = msg;
-    $toast.classList.add("show");
-    clearTimeout(timer);
-    timer = setTimeout(function () { $toast.classList.remove("show"); }, 1500);
-  }
-  function setStatus(html, warn) {
-    $statusText.innerHTML = html;
-    $status.classList.toggle("warn", !!warn);
-  }
-  function counts() {
-    document.getElementById("nCount").textContent = $n.value.length + " 字";
-    document.getElementById("aCount").textContent = $a.value.length + " 字";
-  }
-  function copyText(s, tip) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(s).then(function () { toast(tip); },
-        function () { toast("复制失败，请手动选择"); });
-    } else { toast("当前环境不支持自动复制"); }
-  }
+  // Service Worker / Worker 环境里没有 document，直接跳过
+  if (typeof document === "undefined" || typeof window === "undefined") return;
 
-  // 字节级追踪：展示 UTF-8 字节流被 cp932 逐段解读的过程
-  function trace(text) {
-    if (!text) { $trace.textContent = "在上方输入文字后，这里会显示 UTF-8 字节如何被 cp932 一步步解读。"; return; }
-    var bytes = new TextEncoder().encode(text.length > 200 ? text.slice(0, 200) : text);
-    var parts = [];
-    var k = 0, guard = 0;
-    while (k < bytes.length && guard++ < 400) {
-      var t2 = (k + 1 < bytes.length) ? AliceCore.cp932Decode(bytes.slice(k, k + 2)) : "\uFFFD";
-      var t1 = AliceCore.cp932Decode(bytes.slice(k, k + 1));
-      var consumed, ch;
-      if (t2.length === 1 && t2 !== "\uFFFD" && t1 !== t2) { ch = t2; consumed = 2; }
-      else { ch = t1; consumed = 1; }
-      var hex = [];
-      for (var j = 0; j < consumed; j++) hex.push(bytes[k + j].toString(16).toUpperCase().padStart(2, "0"));
-      parts.push('<span class="b">' + hex.join(" ") + '</span> <span class="l">→</span> <span class="c">' +
-        (ch === "\uFFFD" ? "�(无法映射)" : ch.replace(/[<>&]/g, function (m) {
-          return { "<": "&lt;", ">": "&gt;", "&": "&amp;" }[m];
-        })) + '</span>');
-      k += consumed;
-    }
-    if (text.length > 200) parts.push('<span class="b">……（仅追踪前 200 字）</span>');
-    $trace.innerHTML = parts.join("\n");
+  var me = document.currentScript;
+  if (!me) {
+    var all = document.getElementsByTagName("script");
+    me = all[all.length - 1];
+  }
+  if (!me || !me.src || me.src.indexOf("?") < 0) return;   // 无查询串 = 当作普通库使用
+
+  var q;
+  try { q = new URL(me.src, root.location.href).searchParams; } catch (e) { return; }
+
+  var pick = function (a, b, c) { return q.has(a) ? q.get(a) : (q.has(b) ? q.get(b) : q.get(c)); };
+  var hasText = q.has("text") || q.has("q") || q.has("t");
+  var cb = q.get("callback") || q.get("cb");
+  if (!hasText && !cb) return;
+
+  var text = hasText ? pick("text", "q", "t") : "";
+  var mode = q.get("mode") || q.get("dir") || "to";
+
+  var payload;
+  try {
+    payload = root.AliceTranslate.translate(text == null ? "" : text, mode);
+  } catch (e) {
+    payload = { ok: false, api: "alice-translator", version: root.AliceTranslate.version,
+                input: text, error: String((e && e.message) || e) };
   }
 
-  function runTo() {
-    var r = AliceCore.toAlice($n.value);
-    $a.value = r.result;
-    counts(); trace($n.value);
-    if (r.lost > 0) {
-      setStatus("已生成爱丽丝语。其中 <b>" + r.lost + "</b> 个字符无法在 Shift-JIS 中映射（已变成 �），" +
-        "这些位置信息不可逆 —— 译回时会有缺失，属正常的有损现象。", true);
-    } else {
-      setStatus("已生成爱丽丝语，<b>无字符丢失</b> —— 可以完美还原。");
-    }
+  // 可选：把结果直接写进页面元素（target=<元素 id>）
+  var targetId = q.get("target");
+  if (targetId) {
+    var el = document.getElementById(targetId);
+    if (el) { if ("value" in el) el.value = payload.result; else el.textContent = payload.result; }
   }
-  function runBack() {
-    var r = AliceCore.fromAlice($a.value);
-    $n.value = r.result;
-    counts();
-    if (r.lost > 0) {
-      setStatus("已还原为正常文字，但有 <b>" + r.lost + "</b> 个字符无法编码回 Shift-JIS（翻译阶段已丢失）。", true);
-    } else {
-      setStatus("已完美还原为正常文字。");
+
+  root.ALICE_API_LAST = payload;
+
+  // JSONP 回调：沿 a.b.c 路径解析真实函数，不使用 eval
+  if (cb) {
+    if (/^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)*$/.test(cb)) {
+      var parts = cb.split("."), holder = root, i = 0;
+      for (; i < parts.length - 1 && holder; i++) holder = holder[parts[i]];
+      var fn = holder ? holder[parts[parts.length - 1]] : null;
+      if (typeof fn === "function") {
+        try { fn(payload); }
+        catch (e) { if (root.console) root.console.error("[alice-api] 回调执行异常:", e); }
+      } else if (root.console) {
+        root.console.warn("[alice-api] 找不到回调函数：" + cb);
+      }
+    } else if (root.console) {
+      root.console.warn("[alice-api] callback 名称不合法：" + cb);
     }
   }
 
-  document.getElementById("toAlice").addEventListener("click", function () {
-    if (!$n.value.trim()) { toast("先输入点正常文字吧"); return; }
-    runTo();
-  });
-  document.getElementById("fromAlice").addEventListener("click", function () {
-    if (!$a.value.trim()) { toast("爱丽丝语是空的哦"); return; }
-    runBack();
-  });
-  document.getElementById("swap").addEventListener("click", function () {
-    var t = $n.value; $n.value = $a.value; $a.value = t; counts();
-    if ($n.value) trace($n.value);
-  });
-  document.getElementById("clearA").addEventListener("click", function () { $a.value = ""; counts(); });
-  document.getElementById("copyN").addEventListener("click", function () {
-    if (!$n.value) { toast("没有可复制的内容"); return; }
-    copyText($n.value, "已复制正常文字");
-  });
-  document.getElementById("copyA").addEventListener("click", function () {
-    if (!$a.value) { toast("没有可复制的内容"); return; }
-    copyText($a.value, "已复制爱丽丝语");
-  });
-  $n.addEventListener("input", counts);
-  $a.addEventListener("input", counts);
-
-  // 代码块复制按钮
-  Array.prototype.forEach.call(document.querySelectorAll(".cp"), function (btn) {
-    btn.addEventListener("click", function () {
-      var el = document.getElementById(btn.getAttribute("data-copy"));
-      if (el) copyText(el.textContent, "已复制代码");
-    });
-  });
-
-  // ④ 现场自测 fetch("/alice/api")
-  var $apiOut = document.getElementById("apiOut");
-  document.getElementById("tryApi").addEventListener("click", function () {
-    var txt = ($n.value || "你好").slice(0, 300);
-    var url = "api?text=" + encodeURIComponent(txt) + "&mode=to";
-    $apiOut.textContent = "请求中…\nGET " + url;
-    fetch(url, { cache: "no-store" }).then(function (res) {
-      return res.text().then(function (body) {
-        return { code: res.status, ct: res.headers.get("content-type"), body: body };
-      });
-    }).then(function (res) {
-      $apiOut.textContent = "GET " + url + "\nHTTP " + res.code + "   " + (res.ct || "(无 content-type)") +
-        "\n\n" + res.body;
-      toast(res.code === 200 ? "API 调用成功" : "返回 " + res.code);
-    }).catch(function (e) {
-      $apiOut.textContent = "GET " + url + "\n请求失败：" + e.message +
-        "\n\n提示：/alice/api 由 Service Worker 在浏览器内提供，" +
-        "需要 HTTPS 且本页被访问过一次、脚本已激活。";
-      toast("请求失败");
-    });
-  });
-
-  // Service Worker 注册（提供 /alice/api）
-  var $apiBadge = document.getElementById("apiBadge");
-  function badge(html) { if ($apiBadge) $apiBadge.innerHTML = html; }
-  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
-    navigator.serviceWorker.register("sw.js").then(function () {
-      return navigator.serviceWorker.ready;
-    }).then(function () {
-      badge("<b>API 已就绪</b> · /alice/api");
-    }).catch(function () {
-      badge("<b>API</b> · 模块 / JSONP 可用");
-    });
-  } else {
-    badge("<b>API</b> · 模块 / JSONP 可用");
-  }
-
-  // 深链：?text= / ?q= / ?t= ，mode=to|from
-  var qs = location.search;
-  var mText = qs.match(/[?&](?:text|q|t)=([^&]*)/);
-  var mMode = qs.match(/[?&](?:mode|dir)=([^&]*)/);
-  if (mText) {
-    var raw = mText[1];
-    try { raw = decodeURIComponent(raw.replace(/\+/g, " ")); } catch (e) {}
-    var mode = mMode ? decodeURIComponent(mMode[1]).toLowerCase() : "to";
-    if (mode === "from" || mode === "decode" || mode === "back") {
-      $a.value = raw; runBack();
-    } else {
-      $n.value = raw; runTo();
-    }
-  } else {
-    counts();
-  }
-})();
-</script>
-</body>
-</html>
+  // 另发一个事件，方便无回调场景（在同一个页面里监听）
+  try { root.dispatchEvent(new root.CustomEvent("alice-api", { detail: payload })); } catch (e) {}
+})(typeof globalThis !== "undefined" ? globalThis : this);

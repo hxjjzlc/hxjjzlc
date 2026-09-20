@@ -13,4 +13,310 @@
 </blockquote>
 ]]></content>
   </entry>
+  <entry>
+    <title>爱丽丝语翻译器：无后端实现与 API 调用指南</title>
+    <url>/2026/09/21/alice-translator-guide/</url>
+    <content><![CDATA[<blockquote>
+<p>在线地址：**<a href="https://hxjj.dpdns.org/alice/">https://hxjj.dpdns.org/alice/</a>**<br>用于对照的老后端：<code>http://localhost:5196</code>（仅本机）</p>
+</blockquote>
+<p>把一段正常文字按 <code>UTF-8</code> 编码成字节流，再强行用 <code>Shift-JIS</code>（<code>cp932</code>）去解码 —— 得到的那串伪日语乱码，就是「爱丽丝语」。反方向再来一次，就能还原。</p>
+<p>原先这套东西跑在一个 Python 后端上。现在它变成了一张<strong>纯静态网页</strong>：零服务器、零依赖、零网络请求，双击 HTML 就能用；而且它<strong>依然可以被程序调用</strong>，有四种调用方式，下面会全部写清楚。</p>
+<span id="more"></span>
+
+<h2 id="一、先看效果"><a href="#一、先看效果" class="headerlink" title="一、先看效果"></a>一、先看效果</h2><table>
+<thead>
+<tr>
+<th>正常文字</th>
+<th>爱丽丝语</th>
+<th>能否完美还原</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>世界</code></td>
+<td><code>荳也阜</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>爱丽丝语</code></td>
+<td><code>辷ｱ荳ｽ荳晁ｯｭ</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>爱丽丝语翻译器</code></td>
+<td><code>辷ｱ荳ｽ荳晁ｯｭ鄙ｻ隸大勣</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>こんにちは世界</code></td>
+<td><code>縺薙ｓ縺ｫ縺｡縺ｯ荳也阜</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>Hello, World!</code></td>
+<td><code>Hello, World!</code>（英文原样不动）</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>中文测试</code></td>
+<td><code>荳ｭ譁�豬玖ｯ�</code></td>
+<td>❌ 丢了 2 个字符</td>
+</tr>
+</tbody></table>
+<h2 id="二、网页怎么用"><a href="#二、网页怎么用" class="headerlink" title="二、网页怎么用"></a>二、网页怎么用</h2><p>打开 <a href="https://hxjj.dpdns.org/alice/">https://hxjj.dpdns.org/alice/</a>，左边是正常文字，右边是爱丽丝语：</p>
+<ul>
+<li><strong>翻译成爱丽丝语 →</strong> 把左边的内容编码成乱码；</li>
+<li><strong>← 译回正常</strong> 把右边的乱码还原回正常文字；</li>
+<li>中间的 <strong>⇄</strong> 直接交换两侧内容；</li>
+<li>每侧都有「复制」按钮，右侧还有「清空」。</li>
+</ul>
+<p>页面上那行状态提示会告诉你<strong>这次转换有没有丢失字符</strong>，丢了多少。往下展开「原理详解与字节级追踪」，还能看到 <code>UTF-8</code> 的每一个字节是怎么被 <code>cp932</code> 一步步读掉的 —— 教学意义大于实用意义，但很直观。</p>
+<p><strong>深链</strong>可以直接把结果做成一条链接：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://hxjj.dpdns.org/alice/?text=世界&amp;mode=to</span><br><span class="line">https://hxjj.dpdns.org/alice/?t=%E4%B8%96%E7%95%8C&amp;mode=from</span><br></pre></td></tr></table></figure>
+
+<p>参数支持 <code>text</code> &#x2F; <code>q</code> &#x2F; <code>t</code> 三种写法，<code>mode=to</code>（默认）或 <code>mode=from</code>。打开就会自动翻译并填进输入框。</p>
+<h2 id="三、原理：同一串字节，两套码表"><a href="#三、原理：同一串字节，两套码表" class="headerlink" title="三、原理：同一串字节，两套码表"></a>三、原理：同一串字节，两套码表</h2><table>
+<thead>
+<tr>
+<th>方向</th>
+<th>第一步</th>
+<th>第二步</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>正常 → 爱丽丝语</td>
+<td>UTF-8 编码</td>
+<td>cp932 解码</td>
+<td><code>世界</code> → <code>荳也阜</code></td>
+</tr>
+<tr>
+<td>爱丽丝语 → 正常</td>
+<td>cp932 编码</td>
+<td>UTF-8 解码</td>
+<td><code>荳也阜</code> → <code>世界</code></td>
+</tr>
+</tbody></table>
+<p>以 <code>世界</code> 为例：它的 UTF-8 字节是 <code>E4 B8 96 E7 95 8C</code>，共 6 个字节。而 <code>cp932</code> 是双字节编码，于是这 6 个字节被两两成对地读成三个字符：<code>E4B8</code>→<code>荳</code>、<code>96E7</code>→<code>也</code>、<code>958C</code>→<code>阜</code>。就这样变成了三字日语乱码。</p>
+<h3 id="为什么会有损"><a href="#为什么会有损" class="headerlink" title="为什么会有损"></a>为什么会有损</h3><p>并不是所有字节组合都能在 <code>cp932</code> 里找到对应字符。找不到的字节会被替换成 <code>U+FFFD</code>（就是那个 <code>�</code>），<strong>这部分信息在还原时永久丢失</strong>，找不回来。</p>
+<p>中文比较容易被切到这种边界上，日文和英文则基本能完美往返 —— 因为日文的 UTF-8 字节序列恰好大多能落在 <code>cp932</code> 的合法双字节范围内。</p>
+<h3 id="为什么可以不要后端"><a href="#为什么可以不要后端" class="headerlink" title="为什么可以不要后端"></a>为什么可以不要后端</h3><p>这里有个坑：<strong>浏览器自带的 <code>shift_jis</code> 解码器，和 Python 的 <code>cp932</code> 并不是同一个东西</strong>。至少有两处不一样：</p>
+<table>
+<thead>
+<tr>
+<th>差异点</th>
+<th>Python <code>cp932</code></th>
+<th>浏览器 <code>shift_jis</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单字节 <code>A0</code> &#x2F; <code>FD</code> &#x2F; <code>FE</code> &#x2F; <code>FF</code></td>
+<td>映射到私有区 <code>U+F8F0</code>~&#96;F8F3&#96;</td>
+<td>判为非法 → <code>�</code></td>
+</tr>
+<tr>
+<td>前导字节 + 未定义尾随字节（如 <code>87 E6</code>）</td>
+<td><strong>只消耗前导 1 个字节</strong>，继续往下读</td>
+<td><strong>吃掉 2 个字节</strong>，一起报废</td>
+</tr>
+</tbody></table>
+<p>用一个词就能测出来：<code>你好</code>。它的 UTF-8 字节里含一个 <code>A0</code>，Python 会把 <code>A0</code> 单独解成 <code>U+F8F0</code>（一个不可见的私有区字符，夹在 <code>菴</code> 和 <code>螂ｽ</code> 之间），浏览器原生解码器却会输出 <code>�</code> —— <strong>同一串字节，两种结果</strong>。用日文或英文测试是发现不了的，只有中文会踩到。</p>
+<p>所以这张页面<strong>内嵌了一份由 Python 生成、逐项校验过的 <code>cp932</code> 码表</strong>（60 个前导字节 × 188 个尾随字节 &#x3D; 11280 项），并在浏览器里按 Python 的规则手写了解码器。反向编码不额外存表，直接由正向表反查构建（<code>cp932</code> 有 6 处非对称映射，这几条单独补上）。</p>
+<p>结果就是：<strong>这张静态页面与你本机的 Python 后端逐字节等价</strong>，两边可以互相接续翻译。详见第五节。</p>
+<h2 id="四、无后端也能有-API"><a href="#四、无后端也能有-API" class="headerlink" title="四、无后端也能有 API"></a>四、无后端也能有 API</h2><p>静态站点没有任何进程来返回 HTTP 响应，所以「命令行 <code>curl</code> 直接调」这种事是做不到的。但<strong>在浏览器里被程序调用</strong>完全没问题 —— 因为算法本来就全在浏览器里。下面四种方式按「谁在调用」挑一种就行。</p>
+<h3 id="①-同源页面调用：当-JS-模块用"><a href="#①-同源页面调用：当-JS-模块用" class="headerlink" title="① 同源页面调用：当 JS 模块用"></a>① 同源页面调用：当 JS 模块用</h3><p>在自己的页面里引一下库，就有一个全局对象 <code>AliceTranslate</code>：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;/alice/alice-core.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  <span class="title class_">AliceTranslate</span>.<span class="title function_">to</span>(<span class="string">&quot;爱丽丝语&quot;</span>);        <span class="comment">// → &quot;辷ｱ荳ｽ荳晁ｯｭ&quot;（只要字符串）</span></span></span><br><span class="line"><span class="language-javascript">  <span class="title class_">AliceTranslate</span>.<span class="title function_">from</span>(<span class="string">&quot;辷ｱ荳ｽ荳晁ｯｭ&quot;</span>);  <span class="comment">// → &quot;爱丽丝语&quot;（反向还原）</span></span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  <span class="comment">// 需要丢失字符数等完整信息时：</span></span></span><br><span class="line"><span class="language-javascript">  <span class="keyword">const</span> r = <span class="title class_">AliceTranslate</span>.<span class="title function_">toAlice</span>(<span class="string">&quot;世界&quot;</span>);</span></span><br><span class="line"><span class="language-javascript">  <span class="comment">// r = &#123; ok:true, api:&quot;alice-translator&quot;, version:&quot;1.1.0&quot;,</span></span></span><br><span class="line"><span class="language-javascript">  <span class="comment">//       mode:&quot;to&quot;, input:&quot;世界&quot;, result:&quot;荳也阜&quot;, lost:0, lossless:true &#125;</span></span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可用的方法：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>返回</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>AliceTranslate.to(text)</code></td>
+<td>爱丽丝语字符串</td>
+</tr>
+<tr>
+<td><code>AliceTranslate.from(text)</code></td>
+<td>正常文字字符串</td>
+</tr>
+<tr>
+<td><code>AliceTranslate.toAlice(text)</code></td>
+<td>完整结果对象</td>
+</tr>
+<tr>
+<td><code>AliceTranslate.fromAlice(text)</code></td>
+<td>完整结果对象</td>
+</tr>
+<tr>
+<td><code>AliceTranslate.translate(text, mode)</code></td>
+<td>完整结果对象，<code>mode</code> 取 <code>to</code> &#x2F; <code>from</code></td>
+</tr>
+<tr>
+<td><code>AliceTranslate.version</code></td>
+<td>版本号</td>
+</tr>
+</tbody></table>
+<p><code>mode</code> 除了 <code>to</code> &#x2F; <code>from</code>，还接受 <code>decode</code>、<code>back</code>、<code>reverse</code> 这几个别名；传了不认识的值会按 <code>to</code> 处理。</p>
+<h3 id="②-跨站调用：脚本标签-JSONP-端点"><a href="#②-跨站调用：脚本标签-JSONP-端点" class="headerlink" title="② 跨站调用：脚本标签 &#x2F; JSONP 端点"></a>② 跨站调用：脚本标签 &#x2F; JSONP 端点</h3><p><code>alice-core.js</code> 同时也是一个端点。只要在 URL 上带参数，它加载时就会顺手算完并回调 —— 浏览器对 <code>&lt;script src&gt;</code> 不做同源限制，所以<strong>任何站点都能用</strong>，不需要对方配 CORS：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  <span class="keyword">function</span> <span class="title function_">onAlice</span>(<span class="params">d</span>) &#123; <span class="variable language_">console</span>.<span class="title function_">log</span>(d.<span class="property">result</span>); &#125;   <span class="comment">// 回调名随便取</span></span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://hxjj.dpdns.org/alice/alice-core.js?text=%E4%BD%A0%E5%A5%BD&amp;callback=onAlice&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>支持的参数：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>text</code> &#x2F; <code>q</code> &#x2F; <code>t</code></td>
+<td>要翻译的文字（建议 <code>encodeURIComponent</code>）</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td><code>to</code>（默认）&#x2F; <code>from</code></td>
+</tr>
+<tr>
+<td><code>callback</code> &#x2F; <code>cb</code></td>
+<td>回调函数名，支持 <code>a.b.c</code> 这种路径写法</td>
+</tr>
+<tr>
+<td><code>target</code></td>
+<td>把结果直接写进页面里某个元素的 <code>value</code> 或 <code>textContent</code>（传元素 id）</td>
+</tr>
+</tbody></table>
+<p>几点说明：</p>
+<ul>
+<li>回调是通过<strong>沿路径解析真实函数</strong>来调用的，没有用 <code>eval</code>；回调名还会先做合法性校验（<code>alert(1)</code> 这类会被拒绝）；</li>
+<li>如果不想用回调，也可以在页面里监听事件：<code>window.addEventListener(&quot;alice-api&quot;, e =&gt; console.log(e.detail))</code>；结果同时也会放在 <code>window.ALICE_API_LAST</code>；</li>
+<li><strong>不带任何查询参数时，这个文件就是普通库</strong>，不产生任何副作用，不会发请求、不会写全局变量以外的东西。</li>
+</ul>
+<h3 id="③-同源-fetch-JSON：真正的-HTTP-接口"><a href="#③-同源-fetch-JSON：真正的-HTTP-接口" class="headerlink" title="③ 同源 fetch &#x2F; JSON：真正的 HTTP 接口"></a>③ 同源 fetch &#x2F; JSON：真正的 HTTP 接口</h3><p>这一条最像「正常的 API」。页面会注册一个 Service Worker，它只接管一个路径：<code>/alice/api</code>，并在<strong>浏览器内部</strong>直接返回 JSON：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> r = <span class="keyword">await</span> <span class="title function_">fetch</span>(<span class="string">&quot;/alice/api?text=&quot;</span> + <span class="built_in">encodeURIComponent</span>(<span class="string">&quot;世界&quot;</span>)).<span class="title function_">then</span>(<span class="function"><span class="params">f</span> =&gt;</span> f.<span class="title function_">json</span>());</span><br><span class="line">r.<span class="property">result</span>;   <span class="comment">// &quot;荳也阜&quot;</span></span><br><span class="line">r.<span class="property">lost</span>;     <span class="comment">// 0</span></span><br></pre></td></tr></table></figure>
+
+<p>长文本用 <code>POST</code>，避免 URL 长度限制：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> r2 = <span class="keyword">await</span> <span class="title function_">fetch</span>(<span class="string">&quot;/alice/api&quot;</span>, &#123;</span><br><span class="line">  <span class="attr">method</span>: <span class="string">&quot;POST&quot;</span>,</span><br><span class="line">  <span class="attr">headers</span>: &#123; <span class="string">&quot;Content-Type&quot;</span>: <span class="string">&quot;application/json&quot;</span> &#125;,</span><br><span class="line">  <span class="attr">body</span>: <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(&#123; <span class="attr">text</span>: <span class="string">&quot;很长很长的一段文字……&quot;</span>, <span class="attr">mode</span>: <span class="string">&quot;to&quot;</span> &#125;)</span><br><span class="line">&#125;).<span class="title function_">then</span>(<span class="function"><span class="params">f</span> =&gt;</span> f.<span class="title function_">json</span>());</span><br></pre></td></tr></table></figure>
+
+<p>不带 <code>text</code> 直接 <code>GET /alice/api</code>，会返回一份接口自描述（版本、端点列表、示例）。另外 <code>&amp;pretty=0</code> 可以关掉 JSON 缩进。</p>
+<p>页面上还放了一个<strong>现场自测按钮</strong>（「无后端 API」区块里的 ⑤），点一下就会真的发一个 <code>fetch(&quot;/alice/api?text=…&quot;)</code> 并把返回的 JSON 原样贴出来 —— 怀疑它在不在工作时，点它最快。</p>
+<h3 id="④-页面深链：把结果做成一串网址"><a href="#④-页面深链：把结果做成一串网址" class="headerlink" title="④ 页面深链：把结果做成一串网址"></a>④ 页面深链：把结果做成一串网址</h3><p>就是第二节里那种 <code>?text=…&amp;mode=…</code>。适合分享，也适合塞进 <code>&lt;iframe&gt;</code>。</p>
+<h3 id="接口返回格式"><a href="#接口返回格式" class="headerlink" title="接口返回格式"></a>接口返回格式</h3><p>四种方式返回的数据结构是统一的：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;ok&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;api&quot;</span><span class="punctuation">:</span> <span class="string">&quot;alice-translator&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1.1.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;mode&quot;</span><span class="punctuation">:</span> <span class="string">&quot;to&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;input&quot;</span><span class="punctuation">:</span> <span class="string">&quot;世界&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;result&quot;</span><span class="punctuation">:</span> <span class="string">&quot;荳也阜&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;lost&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;lossless&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>mode</code>：<code>to</code> &#x3D; 正常 → 爱丽丝语，<code>from</code> &#x3D; 爱丽丝语 → 正常；</li>
+<li><code>lost</code>：无法映射、永久丢失的字符数；</li>
+<li><code>lossless</code>：就是 <code>lost === 0</code>。</li>
+</ul>
+<p>失败时返回 <code>&#123;&quot;ok&quot;: false, &quot;error&quot;: &quot;…&quot;&#125;</code>，HTTP 状态码会给 400（请求格式不对）或 405（方法不支持）。</p>
+<h3 id="能力边界"><a href="#能力边界" class="headerlink" title="能力边界"></a>能力边界</h3><table>
+<thead>
+<tr>
+<th>能力</th>
+<th>本页（无后端）</th>
+<th>Python 后端</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>浏览器里调用</td>
+<td>✅ 模块 &#x2F; JSONP &#x2F; fetch</td>
+<td>✅ 需处理跨域</td>
+</tr>
+<tr>
+<td>跨站调用</td>
+<td>✅ 脚本标签（JSONP）</td>
+<td>⚠️ 要自己开 CORS</td>
+</tr>
+<tr>
+<td>命令行 <code>curl</code></td>
+<td>❌ 没有服务器进程可访问</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>非浏览器客户端、机器人</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>要装的东西</td>
+<td>无，一张静态页</td>
+<td>Python + 常驻进程</td>
+</tr>
+</tbody></table>
+<p>一句话：<strong>网页内能做的调用，无后端全都能做；网页外（<code>curl</code>、机器人、别的语言的程序）的调用，才必须要有后端。</strong> 因为静态站点没有任何东西能在 HTTP 层返回自定义响应头与 <code>text/plain</code> —— 本页的 <code>/alice/api</code> 是 Service Worker 在<strong>浏览器内部</strong>拦下来的，所以它只对装过这段脚本的浏览器有效，而且<strong>同一个源</strong>才行。</p>
+<h2 id="五、和-Python-后端的关系"><a href="#五、和-Python-后端的关系" class="headerlink" title="五、和 Python 后端的关系"></a>五、和 Python 后端的关系</h2><p>新旧两版是<strong>逐字节等价</strong>的：同一段文字，无论走静态页还是走 <code>localhost:5196</code>，结果完全一样，可以一边翻译、另一边还原。</p>
+<p>为了确认这一点，我把内置实现和真实后端（直接 <code>import server.py</code>，不走网络）做了三轮对照，全部零差异：</p>
+<table>
+<thead>
+<tr>
+<th>对照项</th>
+<th>规模</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>翻译结果（<code>to_alice</code> &#x2F; <code>from_alice</code> &#x2F; <code>lost</code>）</td>
+<td>3086 组用例</td>
+<td>0 处不一致</td>
+</tr>
+<tr>
+<td>UTF-8 编码（含孤立代理项）</td>
+<td>3086 组</td>
+<td>0 处不一致</td>
+</tr>
+<tr>
+<td>反向编码表全量</td>
+<td>9408 条</td>
+<td>0 处不一致</td>
+</tr>
+</tbody></table>
+<p>用例里包含 <code>U+0000</code>~&#96;U+00FF&#96; 全覆盖、半角片假名、全角区、全部 2048 个代理项单点、随机字节流、增补平面字符（emoji）以及最长 3000 字的长文本。</p>
+<p>对照过程中抓到两个隐藏问题，都已修掉：</p>
+<ol>
+<li><strong>反向还原时按 UTF-16 码元遍历</strong>，导致 emoji 这类增补平面字符被拆成两个代理项、多算一次丢失。Python 的 <code>for ch in text</code> 是按码位遍历的，改成按码位遍历后一致。</li>
+<li><strong>孤立代理项</strong>：Python 用的是 <code>errors=&quot;surrogatepass&quot;</code>，会把孤立代理项按它自己的码位编成 3 个字节；而浏览器原生 <code>TextEncoder</code> 会把它替换成 <code>U+FFFD</code>。这个差异只在不正常构造的字符串上出现，但既然要「逐字节等价」，就补了一个等价实现（正常文本仍走原生快速路径，没有性能代价）。</li>
+</ol>
+<h2 id="六、注意事项"><a href="#六、注意事项" class="headerlink" title="六、注意事项"></a>六、注意事项</h2><ul>
+<li><strong>有损是特性不是 bug</strong>。翻译阶段丢掉的字符永远回不来，这是 <code>cp932</code> 装不下所有 UTF-8 字节序列的必然结果。</li>
+<li>深链受 URL 长度限制，很长的文本请用 <code>POST /alice/api</code> 或直接粘贴。</li>
+<li><code>/alice/api</code> 需要 <strong>HTTPS</strong>（或 <code>localhost</code>），且<strong>本页被访问过一次</strong>之后 Service Worker 才会激活。在 <code>file://</code> 下打开时，① ② 两种方式照常可用，③ 不可用。</li>
+<li>Service Worker 只接管 <code>/alice/api</code> 这一个路径，其它请求一律放行，对站点其它页面没有影响。想卸载：开发者工具 → Application → Service Workers → Unregister。</li>
+<li>所有计算都在你自己的浏览器里完成，文字不会被发送到任何地方 —— 这一页根本没有任何后端可以发送。</li>
+</ul>
+<h2 id="七、想自己重建"><a href="#七、想自己重建" class="headerlink" title="七、想自己重建"></a>七、想自己重建</h2><p>页面的三个产物是这样来的：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>index.html</code></td>
+<td>界面 + 内嵌码表 + 算法 + API 层，自包含，可离线</td>
+</tr>
+<tr>
+<td><code>alice-core.js</code></td>
+<td>可复用库，同时兼作 JSONP 端点</td>
+</tr>
+<tr>
+<td><code>sw.js</code></td>
+<td>Service Worker，提供 <code>/alice/api</code></td>
+</tr>
+</tbody></table>
+<p>构建与验证脚本都在 <code>E:\workspace\skill\workbuddy\alice-translator-api\scripts\</code>：<code>gen_code_table.py</code> 从 Python 的 <code>cp932</code> 编解码器导出码表；<code>build_frontend_page.py</code> 一键生成三个产物；<code>gen_testcases.py</code> + <code>verify_against_backend.js</code> 做上面那三轮对照。改完算法跑一遍构建脚本，产物会自动同步到站点源目录，然后正常部署即可。</p>
+<hr>
+<p><em>爱丽丝语的有趣之处恰恰在于它的不完美：能完美往返的句子像暗号，丢过字的地方则永远回不到原来的样子。</em></p>
+]]></content>
+      <tags>
+        <tag>编码</tag>
+        <tag>乱码</tag>
+        <tag>纯前端</tag>
+        <tag>API</tag>
+        <tag>爱丽丝语</tag>
+      </tags>
+  </entry>
 </search>
