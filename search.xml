@@ -16,19 +16,28 @@
   <entry>
     <title>爱丽丝语翻译器：把正常文字变成爱丽丝语</title>
     <url>/2026/09/21/alice-translator-guide/</url>
-    <content><![CDATA[<blockquote>
-<p>在线地址：**<a href="https://hxjj.dpdns.org/alice/">https://hxjj.dpdns.org/alice/</a>**</p>
-</blockquote>
-<p>站里有个小工具，叫<strong>爱丽丝语翻译器</strong>。它能把一段正常文字变成一串读不懂的伪日语乱码，也能把这串乱码还原回去。打开就能用，不用注册、不用安装，所有计算都在你自己的浏览器里完成。</p>
-<p>「爱丽丝语」这个名字和点子的来源是同人 RPG《<strong>BLACKSOULS</strong>》——寿司勇者トロ 2017 年的作品，把小红帽、爱丽丝这些熟悉的童话改写成了崩坏的黑童话，玩家在一名叫「爱丽丝」的少女引导下走进那个世界。这里的「爱丽丝语」借的就是这个意象：一段文字被带进梦里，回来时已经不完全是原来的样子了。</p>
+    <content><![CDATA[<p>玩过《<strong>BLACKSOULS</strong>》的话，应该都记得那个叫「爱丽丝」的少女——她领着你走进那个崩坏的黑童话世界，小红帽、爱丽丝都成了别的样子。</p>
+<p>这个<strong>爱丽丝语翻译器</strong>想复刻的就是那种感觉：把一段正常文字扔进去，它会被带进另一个编码的世界，回来时变成一串读不懂的伪日语乱码；也能把这串乱码再捞回来。</p>
+<p>打开就能玩，不用注册、不用安装：**<a href="https://hxjj.dpdns.org/alice/">https://hxjj.dpdns.org/alice/</a>**</p>
 <span id="more"></span>
 
-<h2 id="一、先看效果"><a href="#一、先看效果" class="headerlink" title="一、先看效果"></a>一、先看效果</h2><table>
+<h2 id="一、怎么玩"><a href="#一、怎么玩" class="headerlink" title="一、怎么玩"></a>一、怎么玩</h2><p>左边填正常文字，右边出爱丽丝语。</p>
+<ul>
+<li><strong>翻译成爱丽丝语 →</strong>：把左边的内容变成乱码；</li>
+<li><strong>← 译回正常</strong>：把右边的乱码还原回正常文字；</li>
+<li>中间的 <strong>⇄</strong> 交换两侧，每一侧都能「复制」。</li>
+</ul>
+<p>页面上会顺手告诉你<strong>这一次有没有丢字、丢了多少</strong>。</p>
+<p>想让别人直接看到结果，把结果做成网址发过去就行：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://hxjj.dpdns.org/alice/?text=世界&amp;mode=to</span><br></pre></td></tr></table></figure>
+
+<p><code>mode=to</code> 是正常 → 爱丽丝语（默认），<code>mode=from</code> 是反过来。对方打开就自动翻译好了。</p>
+<h3 id="先看几个例子"><a href="#先看几个例子" class="headerlink" title="先看几个例子"></a>先看几个例子</h3><table>
 <thead>
 <tr>
 <th>正常文字</th>
 <th>爱丽丝语</th>
-<th>能否完美还原</th>
+<th>能还原吗</th>
 </tr>
 </thead>
 <tbody><tr>
@@ -39,11 +48,6 @@
 <tr>
 <td><code>爱丽丝语</code></td>
 <td><code>辷ｱ荳ｽ荳晁ｯｭ</code></td>
-<td>✅</td>
-</tr>
-<tr>
-<td><code>爱丽丝语翻译器</code></td>
-<td><code>辷ｱ荳ｽ荳晁ｯｭ鄙ｻ隸大勣</code></td>
 <td>✅</td>
 </tr>
 <tr>
@@ -59,25 +63,16 @@
 <tr>
 <td><code>中文测试</code></td>
 <td><code>荳ｭ譁�豬玖ｯ�</code></td>
-<td>❌ 丢了 2 个字符</td>
+<td>❌ 丢了 2 个字</td>
 </tr>
 </tbody></table>
-<p>从这张表能看出两件事：<strong>日文和英文基本能完美往返</strong>（正好成了不错的暗号），而<strong>中文容易丢字</strong>——丢掉的字符再也找不回来。</p>
-<h2 id="二、怎么用"><a href="#二、怎么用" class="headerlink" title="二、怎么用"></a>二、怎么用</h2><p>打开 <a href="https://hxjj.dpdns.org/alice/">https://hxjj.dpdns.org/alice/</a>，左边是正常文字，右边是爱丽丝语：</p>
-<ul>
-<li><strong>翻译成爱丽丝语 →</strong>：把左边的内容变成乱码；</li>
-<li><strong>← 译回正常</strong>：把右边的乱码还原回正常文字；</li>
-<li>中间的 <strong>⇄</strong> 交换两侧内容；</li>
-<li>每侧都能「复制」，右侧还能「清空」。</li>
-</ul>
-<p>转换后，页面上那行提示会告诉你<strong>这一次有没有丢字、丢了多少</strong>。另外，展开下方的「🔬 原理详解与字节级追踪」，能看到每个字节是怎么一步步被读掉的——教学意义大于实用意义，但很直观。</p>
-<p>想让别人直接看到结果，也可以把结果做成一串网址：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://hxjj.dpdns.org/alice/?text=世界&amp;mode=to</span><br><span class="line">https://hxjj.dpdns.org/alice/?t=%E4%B8%96%E7%95%8C&amp;mode=from</span><br></pre></td></tr></table></figure>
-
-<p><code>mode=to</code> 是正常 → 爱丽丝语（默认），<code>mode=from</code> 是反过来。打开就会自动翻译并填好。</p>
-<h2 id="三、原理其实只有一句话"><a href="#三、原理其实只有一句话" class="headerlink" title="三、原理其实只有一句话"></a>三、原理其实只有一句话</h2><p><strong>把文字按 UTF-8 编码成字节流，再强行用 Shift-JIS 去读。</strong></p>
-<p>UTF-8 和 Shift-JIS 是两种不同的编码，各自有一套「字节 → 字符」的对照表。同一串字节拿错表去读，读出来的自然是另一个世界的字。</p>
-<p>以 <code>世界</code> 为例：</p>
+<p>能看出两件事：<strong>日文和英文基本能完美往返</strong>——所以拿来当暗号意外地好用；<strong>中文容易丢字</strong>，丢了就再也找不回来。</p>
+<h2 id="二、灵感：从《BLACKSOULS》来的"><a href="#二、灵感：从《BLACKSOULS》来的" class="headerlink" title="二、灵感：从《BLACKSOULS》来的"></a>二、灵感：从《BLACKSOULS》来的</h2><p>《BLACKSOULS》是寿司勇者トロ 2017 年的同人 RPG，把小红帽、爱丽丝这些熟悉的童话改写成了崩坏的黑童话。玩家在一名叫「爱丽丝」的少女引导下走进那个世界，而那个世界里的东西，总带着一点「熟悉、但又不太对」的错位感。</p>
+<p>这个工具借的就是这份错位：<strong>一段文字被带进梦里，回来时已经不完全是原来的样子了。</strong></p>
+<p>所以「爱丽丝语」不是一种真的语言，它更像是「文字走过一趟梦境的痕迹」。</p>
+<h2 id="三、原理就一句话：UTF-8-的字，拿-Shift-JIS-的表去读"><a href="#三、原理就一句话：UTF-8-的字，拿-Shift-JIS-的表去读" class="headerlink" title="三、原理就一句话：UTF-8 的字，拿 Shift-JIS 的表去读"></a>三、原理就一句话：UTF-8 的字，拿 Shift-JIS 的表去读</h2><p><strong>把文字按 UTF-8 编码成字节流，再强行用 Shift-JIS（cp932）去读。</strong></p>
+<p>两种编码各有自己一套「字节 → 字符」对照表。同一串字节拿错了表去读，读出来的自然是另一个世界的字。</p>
+<p><code>世界</code> 就是这么变成 <code>荳也阜</code> 的：</p>
 <table>
 <thead>
 <tr>
@@ -98,22 +93,62 @@
 <td><code>荳也阜</code></td>
 </tr>
 </tbody></table>
-<p>反方向就是把这两步倒过来：把 <code>荳也阜</code> 按 Shift-JIS 编码回 <code>E4 B8 96 E7 95 8C</code>，再按 UTF-8 解码，就得到 <code>世界</code>。</p>
-<h3 id="为什么会「丢字」"><a href="#为什么会「丢字」" class="headerlink" title="为什么会「丢字」"></a>为什么会「丢字」</h3><p>Shift-JIS 的字符表，比 UTF-8 能生成的字节组合要小。有些字节组合在它那儿根本没有对应的字，这些位置只能填一个占位符 <code>�</code>（就是常说的「乱码方块」），<strong>原文本来是什么，从此无从得知</strong>，还原时补不回来。</p>
-<p>中文之所以容易踩到，是因为中文的 UTF-8 字节分布经常落在 Shift-JIS 的空白处；而日文、英文的字节序列大多恰好落在它的合法范围内，所以能原样往返。</p>
-<h2 id="四、几点说明"><a href="#四、几点说明" class="headerlink" title="四、几点说明"></a>四、几点说明</h2><ul>
-<li><strong>丢字是特性，不是故障</strong>。它来自两张编码表本身不重合，不是程序写错了。</li>
-<li><strong>你的文字不会被上传</strong>。整件事都在你自己的浏览器里算完，这个页面背后没有服务器在收数据。</li>
-<li>分享用的链接有长度上限，很长的文本建议直接复制粘贴。</li>
-<li>想离线用也可以：把网页存一份到本地，双击打开照样能翻译。</li>
+<p>反方向把这两步倒过来就行：<code>荳也阜</code> 按 Shift-JIS 编码回 <code>E4 B8 96 E7 95 8C</code>，再按 UTF-8 解码，就变回 <code>世界</code>。</p>
+<p><strong>为什么会丢字</strong>：Shift-JIS 的字符表，比 UTF-8 能生成的字节组合要小。有些组合在它那儿根本没有对应的字，只能填一个占位符 <code>�</code>。原文本来是什么，从此无从得知，还原时补不回来。中文之所以容易踩到，是因为中文的 UTF-8 字节经常落在 Shift-JIS 的空白处。</p>
+<p><strong>丢字是特性，不是故障。</strong></p>
+<h2 id="四、能拿来做什么"><a href="#四、能拿来做什么" class="headerlink" title="四、能拿来做什么"></a>四、能拿来做什么</h2><ul>
+<li><strong>群里发暗号</strong>：日文、英文能完美往返，拿它当简易加密挺合适；</li>
+<li><strong>同人创作素材</strong>：给自制的黑童话、爱丽丝主题作品当「异世界文字」；</li>
+<li><strong>讲清楚编码是怎么回事</strong>：同一串字节，换张表就是另一个世界，比看文档直观得多；</li>
+<li><strong>小玩具</strong>：把签名、ID 这类短句转一遍贴出去。</li>
 </ul>
-<h2 id="五、关于这个页面"><a href="#五、关于这个页面" class="headerlink" title="五、关于这个页面"></a>五、关于这个页面</h2><p><a href="/alice/">这个翻译器</a>和它的转换核心，是<strong>由 DeepSeek 协助创作</strong>的 —— 前端交互、cp932 码表的校正，乃至这篇说明文章本身，都有它参与；算法和码表则逐项校验过，行为和 Python 的 <code>cp932</code> 保持一致。</p>
-<p>顺手在里面留了个彩蛋。下面这行是爱丽丝语，<strong>零丢字</strong>：</p>
+<h2 id="五、给程序调用：API"><a href="#五、给程序调用：API" class="headerlink" title="五、给程序调用：API"></a>五、给程序调用：API</h2><p>除了在网页上点，它也有接口可用，两种。</p>
+<h3 id="①-网页内调用（现在就能用）"><a href="#①-网页内调用（现在就能用）" class="headerlink" title="① 网页内调用（现在就能用）"></a>① 网页内调用（现在就能用）</h3><p>页面访问过之后会注册一个 Service Worker，把 <code>/alice/api</code> 变成真正的 JSON 接口：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> r = <span class="keyword">await</span> <span class="title function_">fetch</span>(<span class="string">&#x27;/alice/api?text=&#x27;</span> + <span class="built_in">encodeURIComponent</span>(<span class="string">&#x27;世界&#x27;</span>) + <span class="string">&#x27;&amp;mode=to&#x27;</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>((<span class="keyword">await</span> r.<span class="title function_">json</span>()).<span class="property">result</span>);   <span class="comment">// 荳也阜</span></span><br></pre></td></tr></table></figure>
+
+<p>只在这个页面（同源）内有效，好处是完全不需要服务器。</p>
+<h3 id="②-Worker-接口（给脚本、服务端用）"><a href="#②-Worker-接口（给脚本、服务端用）" class="headerlink" title="② Worker 接口（给脚本、服务端用）"></a>② Worker 接口（给脚本、服务端用）</h3><p>想用 <code>curl</code>、Python 或者别的程序直接调，用这个：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -s <span class="string">&quot;https://alice.hxjj.dpdns.org/api?text=%E4%B8%96%E7%95%8C&amp;mode=to&quot;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;ok&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;mode&quot;</span><span class="punctuation">:</span> <span class="string">&quot;to&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;input&quot;</span><span class="punctuation">:</span> <span class="string">&quot;世界&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;result&quot;</span><span class="punctuation">:</span> <span class="string">&quot;荳也阜&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;lost&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;lossless&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>接口一览：</p>
+<table>
+<thead>
+<tr>
+<th>请求</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET /api?text=&lt;文字&gt;&amp;mode=to</code></td>
+<td>正常文字 → 爱丽丝语</td>
+</tr>
+<tr>
+<td><code>GET /api?text=&lt;文字&gt;&amp;mode=from</code></td>
+<td>爱丽丝语 → 正常文字</td>
+</tr>
+<tr>
+<td><code>GET /api</code></td>
+<td>不带参数时返回接口说明</td>
+</tr>
+<tr>
+<td><code>POST /api</code> + <code>&#123;&quot;text&quot;:&quot;…&quot;,&quot;mode&quot;:&quot;to&quot;&#125;</code></td>
+<td>长文本用这个，避开网址长度限制</td>
+</tr>
+</tbody></table>
+<p>加 <code>&amp;raw=1</code> 就只返回结果字符串，脚本取用最省事：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -s <span class="string">&quot;https://alice.hxjj.dpdns.org/api?text=%E4%B8%96%E7%95%8C&amp;mode=to&amp;raw=1&quot;</span></span><br><span class="line"><span class="comment"># 荳也阜</span></span><br></pre></td></tr></table></figure>
+
+<p>Python 也一样：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib.parse, urllib.request, json</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">alice</span>(<span class="params">text, mode=<span class="string">&quot;to&quot;</span></span>):</span><br><span class="line">    q = urllib.parse.urlencode(&#123;<span class="string">&quot;text&quot;</span>: text, <span class="string">&quot;mode&quot;</span>: mode&#125;)</span><br><span class="line">    <span class="keyword">with</span> urllib.request.urlopen(<span class="string">f&quot;https://alice.hxjj.dpdns.org/api?<span class="subst">&#123;q&#125;</span>&quot;</span>, timeout=<span class="number">10</span>) <span class="keyword">as</span> r:</span><br><span class="line">        <span class="keyword">return</span> json.load(r)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(alice(<span class="string">&quot;世界&quot;</span>)[<span class="string">&quot;result&quot;</span>])          <span class="comment"># 荳也阜</span></span><br><span class="line"><span class="built_in">print</span>(alice(<span class="string">&quot;荳也阜&quot;</span>, <span class="string">&quot;from&quot;</span>)[<span class="string">&quot;result&quot;</span>])  <span class="comment"># 世界</span></span><br></pre></td></tr></table></figure>
+
+<p>跨域也没问题：响应带 <code>Access-Control-Allow-Origin: *</code>，网页里可以直接调。</p>
+<p>返回里的 <code>lost</code> 是<strong>无法映射、永久丢失</strong>的字符数，<code>lossless</code> 就是 <code>lost == 0</code>。</p>
+<h2 id="六、关于这个页面"><a href="#六、关于这个页面" class="headerlink" title="六、关于这个页面"></a>六、关于这个页面</h2><p><a href="/alice/">这个翻译器</a>和它的转换核心，是<strong>由 DeepSeek 协助创作</strong>的——前端交互、cp932 码表的校正，乃至这篇文章本身，都有它参与。算法和码表逐项校验过，行为和 Python 的 <code>cp932</code> 保持一致。</p>
+<p>页面底部还留了一行同样是爱丽丝语的话：</p>
 <p><code>DeepSeek 繧｢繝ｪ繧ｹ 陬ｽ</code></p>
-<p>把它粘进翻译器右侧的输入框，按「← 译回正常」，会还原成：</p>
-<p><code>DeepSeek アリス 製</code></p>
-<p>也可以直接点<a href="/alice/?t=DeepSeek%20%E7%B9%A7%EF%BD%A2%E7%B9%9D%EF%BD%AA%E7%B9%A7%EF%BD%B9%20%E9%99%AC%EF%BD%BD&mode=from">这个链接</a>，打开就自动译好了。</p>
-<p>挑这句当彩蛋，正是因为它能<strong>完美往返</strong>。同样的署名换成中文是做不到的 —— 中文的 UTF-8 字节太容易落在 cp932 的空白处，译一次就要永远缺几个字。</p>
+<p>粘进右侧输入框按「← 译回正常」，就知道它原本写的是什么了。</p>
 <hr>
 <p><em>爱丽丝语的有趣之处恰恰在于它的不完美：能完美往返的句子像暗号，丢过字的地方则永远回不到原来的样子。</em></p>
 ]]></content>
@@ -121,6 +156,7 @@
         <tag>乱码</tag>
         <tag>爱丽丝语</tag>
         <tag>小工具</tag>
+        <tag>BLACKSOULS</tag>
       </tags>
   </entry>
 </search>
