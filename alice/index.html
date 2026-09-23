@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>爱丽丝语翻译器 · 纯前端版</title>
-<meta name="description" content="零后端、零依赖的爱丽丝语翻译器：把正常文字按 UTF-8 编码后用 Shift-JIS(cp932) 强行解码，得到伪日语乱码，可逆还原。自带无后端调用 API。">
+<title>爱丽丝语翻译器 · 把正常文字变成爱丽丝语</title>
+<meta name="description" content="把正常文字变成爱丽丝语的在线小工具：先把文字按 UTF-8 编成字节，再强行用日文的 Shift-JIS 去读，就得到一串看着像日语、读起来却不成句的乱码；反过来也能译回原文。全程在浏览器里完成，文字不会上传，结果还能做成一条链接分享。灵感来源于同人 RPG《BLACKSOULS》。">
 <style>
   :root{
     --bg:#0f1220; --bg2:#141930; --panel:#1a1f35; --panel2:#222845;
@@ -118,18 +118,6 @@
   table.cmp th{background:rgba(255,255,255,.035);color:var(--text);font-weight:600}
   table.cmp td code{background:none;padding:0}
   footer{margin-top:30px;font-size:12px;color:var(--muted);text-align:center;line-height:1.9}
-  .sig{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border);line-height:1.85}
-  .sig-by{font-size:12.5px;color:var(--text);opacity:.9}
-  .sig-by b{color:var(--accent2);font-weight:600}
-  .sig-egg{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:9px}
-  .sig-egg code{
-    font-family:Consolas,"Cascadia Mono",monospace;font-size:12px;color:var(--accent2);
-    background:rgba(255,255,255,.055);padding:3px 9px;border-radius:6px;word-break:break-all;
-  }
-  .sig-dec{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--border);color:var(--accent2)}
-  .sig-dec:hover{border-color:var(--accent);text-decoration:none}
-  .sig-tip{font-size:11px;opacity:.7;margin-top:8px}
-  .sig-tip b{color:var(--accent2);font-weight:600}
   a{color:var(--accent2);text-decoration:none}
   a:hover{text-decoration:underline}
   .toast{
@@ -164,23 +152,49 @@
     .mid .hint{display:none}
     textarea{min-height:170px}
   }
+
+  /* ---- 署名 ---- */
+  .sig{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border);line-height:1.85}
+  .sig-by{font-size:12.5px;color:var(--text);opacity:.9}
+  .sig-by b{color:var(--accent2);font-weight:600}
+  .sig-egg{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:9px}
+  .sig-egg code{
+    font-family:Consolas,"Cascadia Mono",monospace;font-size:12px;color:var(--accent2);
+    background:rgba(255,255,255,.055);padding:3px 9px;border-radius:6px;word-break:break-all;
+  }
+  .sig-dec{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--border);color:var(--accent2)}
+  .sig-dec:hover{border-color:var(--accent);text-decoration:none}
+  .sig-tip{font-size:11px;opacity:.7;margin-top:8px}
+  .sig-tip b{color:var(--accent2);font-weight:600}
+
+  /* ---- 分享条 / 例子表 ---- */
+  .sharebar{
+    margin-top:12px;border:1px solid var(--border);background:var(--panel);
+    border-radius:12px;padding:11px 14px;font-size:12.5px;color:var(--muted);
+    display:flex;gap:12px;align-items:center;justify-content:space-between;line-height:1.65;
+  }
+  table.cmp.eg tr.egrow{cursor:pointer;transition:background .12s}
+  table.cmp.eg tr.egrow:hover{background:rgba(124,108,240,.13)}
+  table.cmp.eg td code{color:var(--accent2);background:none;padding:0}
+  .egdsc{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.8}
+  @media (max-width:820px){
+    .sharebar{flex-direction:column;align-items:flex-start;gap:9px}
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <header>
-    <h1>✦ 爱丽丝语翻译器 ✦</h1>
+    <h1>爱丽丝语翻译器</h1>
     <div class="sub">
-      把正常文字按 <code>UTF-8</code> 编码成字节流，再强行用 <code>Shift-JIS</code> 解码 ——<br>
-      得到的那串「伪日语乱码」，就是爱丽丝语。反方向即可还原。<br>
+      把正常文字变成爱丽丝语 —— 一串看着像日语、读起来却不成句的乱码。反过来也能译回原文。<br>
       <span class="oria">灵感来源于寿司勇者トロ的同人 RPG《BLACKSOULS -黑童话与五魔姬-》。</span>
     </div>
     <div class="badges">
-      <span class="badge"><b>纯前端</b> · 零后端</span>
-      <span class="badge"><b>零依赖</b> · 无网络请求</span>
-      <span class="badge"><b>码表精确</b> · 逐字节校验</span>
-      <span class="badge" id="apiBadge"><b>API</b> · 检测中…</span>
+      <span class="badge"><b>打开就能用</b> · 不用安装</span>
+      <span class="badge"><b>文字不外传</b> · 全程在浏览器里完成</span>
+      <span class="badge"><b>可分享</b> · 结果能做成一条链接</span>
     </div>
   </header>
 
@@ -197,7 +211,6 @@
     <div class="mid">
       <button class="btn swap" id="swap" title="交换两侧内容">⇄</button>
       <button class="btn" id="fromAlice">← 译回正常</button>
-      <div class="hint">双字节<br>强行解码<br>魔法</div>
     </div>
 
     <div class="card">
@@ -210,150 +223,114 @@
     </div>
   </div>
 
-  <div class="status" id="status"><span class="dot"></span><span id="statusText">输入文字后点击翻译。整个过程在你的浏览器里完成，不会发送任何数据。</span></div>
+  <div class="status" id="status"><span class="dot"></span><span id="statusText">在左边输入文字，点「翻译成爱丽丝语」。整个过程都在你的浏览器里完成，文字不会发送到任何地方。</span></div>
+
+  <div class="sharebar">
+    <span>想把结果发给别人？生成一条链接，对方打开就自动翻译好了。</span>
+    <button class="mini" id="shareBtn">🔗 复制分享链接</button>
+  </div>
+
+  <details open>
+    <summary>🫖 试几个例子</summary>
+    <div class="details-body">
+      <table class="cmp eg">
+        <tr><th>正常文字</th><th>爱丽丝语</th><th>译回来</th></tr>
+        <tr class="egrow" data-text="世界"><td>世界</td><td><code>荳也阜</code></td><td>✅ 完好</td></tr>
+        <tr class="egrow" data-text="爱丽丝语"><td>爱丽丝语</td><td><code>辷ｱ荳ｽ荳晁ｯｭ</code></td><td>✅ 完好</td></tr>
+        <tr class="egrow" data-text="こんにちは世界"><td>こんにちは世界</td><td><code>縺薙ｓ縺ｫ縺｡縺ｯ荳也阜</code></td><td>✅ 完好</td></tr>
+        <tr class="egrow" data-text="Hello, World!"><td>Hello, World!</td><td><code>Hello, World!</code></td><td>✅ 完好</td></tr>
+        <tr class="egrow" data-text="中文测试"><td>中文测试</td><td><code>荳ｭ譁�豬玖ｯ�</code></td><td>❌ 丢了 2 个字</td></tr>
+      </table>
+      <div class="egdsc">点任意一行，会直接填进输入框。日文、英文能原样往返，中文最容易丢字 —— 原因就在下面。</div>
+    </div>
+  </details>
 
   <details>
-    <summary>🔬 原理详解与字节级追踪</summary>
+    <summary>📖 它是怎么做到的</summary>
     <div class="details-body">
-      <h3>它是怎么工作的？</h3>
-      同一串字节，用两套不同的码表去读，就会读出完全不同的字符。爱丽丝语正是利用了这一点：
+      <h3>一句话</h3>
+      先把文字按 <code>UTF-8</code> 编成一串字节，再强行用日文的 <code>Shift-JIS</code> 去读。同一串字节，换一张表来读，就成了「爱丽丝语」。
       <table class="cmp">
-        <tr><th>方向</th><th>第一步</th><th>第二步</th><th>结果</th></tr>
-        <tr><td>正常 → 爱丽丝语</td><td>UTF-8 编码</td><td>cp932 解码</td><td><code>你好</code> → <code>菴螂ｽ</code></td></tr>
-        <tr><td>爱丽丝语 → 正常</td><td>cp932 编码</td><td>UTF-8 解码</td><td><code>菴螂ｽ</code> → <code>你好</code></td></tr>
+        <tr><th>正常文字</th><th>UTF-8 字节</th><th>当成 Shift-JIS 读</th></tr>
+        <tr><td><code>世界</code></td><td>E4 B8 96 E7 95 8C</td><td><code>荳也阜</code></td></tr>
+        <tr><td><code>こんにちは</code></td><td>E3 81 93 E3 82 93 E3 81 AB E3 81 A1 E3 81 AF</td><td><code>縺薙ｓ縺ｫ縺｡縺ｯ</code></td></tr>
       </table>
 
-      <h3>为什么会有损？</h3>
-      并非所有 UTF-8 字节序列都能在 cp932 里找到对应字符。找不到的字节会变成
-      <code>U+FFFD</code>（�），这部分信息在还原时<b>永久丢失</b>。中文因字节分布原因较易触发，
-      日文与英文则可完美往返。
+      <h3>为什么会丢字</h3>
+      Shift-JIS 的字表，比 UTF-8 能凑出来的字节组合要小。有些组合在它那里根本没有对应的字，只能填一个占位符
+      <code>�</code>。原文是什么，从那一刻起就无从得知，译回来也补不上 —— 所以爱丽丝语是<b>有损</b>的。
+      英文、日文基本碰不到这种情况，中文最容易踩到。
 
-      <h3>为什么本页不需要后端？</h3>
-      浏览器原生只有 <code>utf-8</code> 编解码器，而 <code>shift_jis</code> 解码器
-      的错误处理与算法所依据的 <code>cp932</code> 并不一致（非法字节组合的消耗规则、
-      <code>0xA0/0xFD-0xFF</code> 的私有区映射都不同）。所以本页<b>内嵌了一份逐项校验过的 cp932 码表</b>
-      （60 个前导字节 × 188 个尾随字节 = 11280 项），在浏览器里按同样的规则手写解码器 —— 结果是：
-      本页与该算法最初的 Python 实现<b>逐字节等价</b>（1138 组用例 + 9408 条编码表条目 + 3097 组 UTF-8 编码，零差异）。
-
-      <h3>两处「浏览器 ≠ Python」的具体差异</h3>
-      这两条是本页必须自带码表的原因，用 <code>你好</code> 一测就露馅：
-      <table class="cmp">
-        <tr><th>差异</th><th>Python <code>cp932</code></th><th>浏览器 <code>shift_jis</code></th></tr>
-        <tr>
-          <td>单字节 <code>A0 / FD / FE / FF</code></td>
-          <td>映射到私有区 <code>U+F8F0</code>~<code>F8F3</code></td>
-          <td>判为非法 → <code>�</code></td>
-        </tr>
-        <tr>
-          <td>前导字节后跟未定义尾随字节（如 <code>87 E6</code>）</td>
-          <td><b>只消耗前导 1 字节</b>，再继续解析</td>
-          <td><b>吃掉 2 字节</b>，两字节一起报废</td>
-        </tr>
-      </table>
-      <p style="margin-top:9px">
-        于是 <code>你好</code> 的 UTF-8 字节里那个 <code>A0</code>，Python 会把它单独解成
-        <code>U+F8F0</code>（一个不可见的私有区字符，夹在 <code>菴</code> 与 <code>螂ｽ</code> 之间），
-        浏览器原生解码器却输出 <code>�</code> —— 同一串字节，两种结果。中文因为字节分布容易踩到这类边角，
-        日文与英文则基本碰不到。
-      </p>
-
-      <h3>字节级追踪</h3>
-      <div class="trace" id="trace">在上方输入文字后，这里会显示 UTF-8 字节如何被 cp932 一步步解读。</div>
+      <h3>想看得更细</h3>
+      在上面输入文字后，这里会逐段显示这串字节被读成了什么：
+      <div class="trace" id="trace">等待输入……</div>
     </div>
   </details>
 
   <details id="apiBox">
-    <summary>🔌 无后端 API —— 在别的页面 / 项目里调用它</summary>
+    <summary>🔌 接口：让别的程序也能用</summary>
     <div class="details-body">
-      这个页面没有服务器，但<b>依然可以被程序调用</b>。共有四种方式，按「谁在调用」挑一种即可。
-      全部计算都发生在调用者的浏览器里，请求不会携带你的文字去任何第三方。
+      除了在网页上点，它也可以被程序调用，两种方式。
 
-      <div class="codehead"><h3>① 同源页面调用（最推荐）：直接当 JS 模块用</h3>
+      <div class="codehead"><h3>① 网页里调用（不需要服务器）</h3>
         <button class="mini cp" data-copy="c1">复制</button></div>
-      <pre class="codeblk" id="c1">&lt;script src="<b>/alice/alice-core.js</b>"&gt;&lt;/script&gt;
-&lt;script&gt;
-  AliceTranslate.<b>to</b>("爱丽丝语");        <em>// → "辷ｱ荳ｽ荳晁ｯｭ"（只要字符串）</em>
-  AliceTranslate.<b>from</b>("辷ｱ荳ｽ荳晁ｯｭ");  <em>// → "爱丽丝语"（反向还原）</em>
+      <pre class="codeblk" id="c1"><em>// 本页自带一个小接口，访问过本页之后，同源 fetch 就能拿到 JSON</em>
+const r = await fetch("/alice/api?text=" + encodeURIComponent("世界") + "&amp;mode=to").then(f =&gt; f.json());
+r.result;   <em>// "荳也阜"</em></pre>
 
-  <em>// 需要丢失字符数等完整信息时：</em>
-  const r = AliceTranslate.<b>toAlice</b>("你好");
-  <em>// r = { ok:true, api:"alice-translator", version:"1.1.0",
-  //       mode:"to", input:"你好", result:"菴螂ｽ", lost:0, lossless:true }</em>
-&lt;/script&gt;</pre>
-
-      <div class="codehead"><h3>② 跨站调用：脚本标签 / JSONP 端点（不需要 CORS）</h3>
+      <div class="codehead"><h3>② 命令行 / 其它语言</h3>
         <button class="mini cp" data-copy="c2">复制</button></div>
-      <pre class="codeblk" id="c2">&lt;script&gt;
-  function onAlice(d) { console.log(d.result); }   <em>// 回调名任意</em>
-&lt;/script&gt;
-&lt;script src="https://hxjj.dpdns.org/alice/alice-core.js<b>?text=%E4%BD%A0%E5%A5%BD&amp;callback=onAlice</b>"&gt;&lt;/script&gt;
+      <pre class="codeblk" id="c2">curl -s "https://alice.hxjj.dpdns.org/api?text=%E4%B8%96%E7%95%8C&amp;mode=to&amp;raw=1"
+<em># 荳也阜</em></pre>
 
-<em>// 支持参数：text / q / t  = 要翻译的文字
-//           mode       = to（默认）| from
-//           callback   = 回调函数名，支持 a.b.c 形式
-//           target     = 直接把结果写进某个元素（id）的 value / textContent
-// 不带任何查询串时，这个文件就是普通库，不产生任何副作用。</em></pre>
-
-      <div class="codehead"><h3>③ 同源 fetch / JSON：真正的 HTTP 接口</h3>
+      <div class="codehead"><h3>③ Python</h3>
         <button class="mini cp" data-copy="c3">复制</button></div>
-      <pre class="codeblk" id="c3"><em>// 由 Service Worker 在浏览器内提供，路径 /alice/api</em>
-const r = await fetch("/alice/api?text=" + encodeURIComponent("世界")).then(f =&gt; f.json());
-r.result;   <em>// "荳也阜"</em>
-r.lost;     <em>// 0</em>
+      <pre class="codeblk" id="c3">import urllib.parse, urllib.request, json
 
-<em>// 长文本用 POST，避免 URL 长度限制</em>
-const r2 = await fetch("/alice/api", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ text: "很长很长的一段文字……", mode: "to" })
-}).then(f =&gt; f.json());
+def alice(text, mode="to"):
+    q = urllib.parse.urlencode({"text": text, "mode": mode})
+    with urllib.request.urlopen("https://alice.hxjj.dpdns.org/api?" + q, timeout=10) as r:
+        return json.load(r)
 
-<em>// 不带 text 直接 GET /alice/api 会返回接口自描述（含版本与用法）</em></pre>
+print(alice("世界")["result"])            <em># 荳也阜</em>
+print(alice("荳也阜", "from")["result"])   <em># 世界</em></pre>
 
-      <div class="codehead"><h3>④ 页面深链：把翻译结果做成一串网址</h3>
+      <div class="codehead"><h3>④ 长文本用 POST</h3>
         <button class="mini cp" data-copy="c4">复制</button></div>
-      <pre class="codeblk" id="c4">https://hxjj.dpdns.org/alice/<b>?text=你好&amp;mode=to</b>
-https://hxjj.dpdns.org/alice/<b>?t=%E4%BD%A0%E5%A5%BD&amp;mode=from</b>
+      <pre class="codeblk" id="c4">curl -s -X POST "https://alice.hxjj.dpdns.org/api" \
+     -H "Content-Type: application/json" \
+     -d '{"text":"很长很长的一段文字……","mode":"to"}'</pre>
 
-<em>// 打开即自动翻译并填入输入框，可直接分享 / 放进 iframe</em></pre>
-
-      <div class="codehead"><h3>⑤ 现场自测：真的发一次请求</h3>
-        <button class="mini" id="tryApi">▶ 用当前输入试一次</button></div>
-      <pre class="codeblk" id="apiOut">点右边的按钮，会真的发一个 fetch("/alice/api?text=…") 并显示返回的 JSON。</pre>
-
-      <h3>能力边界（和真后端比）</h3>
+      <h3>参数与返回</h3>
       <table class="cmp">
-        <tr><th>能力</th><th>本页（无后端）</th><th>自建服务端</th></tr>
-        <tr><td>浏览器里调用</td><td>✓ 模块 / JSONP / fetch</td><td>✓ 需处理跨域</td></tr>
-        <tr><td>跨站调用</td><td>✓ 脚本标签（JSONP）</td><td>△ 要自己开 CORS</td></tr>
-        <tr><td>命令行 <code>curl</code></td><td>✗ 无服务器进程可访问</td><td>✓</td></tr>
-        <tr><td>非浏览器客户端 / 机器人</td><td>✗</td><td>✓</td></tr>
-        <tr><td>要装的东西</td><td>无（一张静态页）</td><td>Python + 常驻进程</td></tr>
+        <tr><th>请求</th><th>作用</th></tr>
+        <tr><td><code>GET /api?text=…&amp;mode=to</code></td><td>正常文字 → 爱丽丝语</td></tr>
+        <tr><td><code>GET /api?text=…&amp;mode=from</code></td><td>爱丽丝语 → 正常文字</td></tr>
+        <tr><td><code>GET /api</code></td><td>不带参数时，返回接口说明</td></tr>
+        <tr><td><code>POST /api</code> ＋ <code>{"text":"…","mode":"to"}</code></td><td>长文本走这个，避开网址长度限制</td></tr>
+        <tr><td>加 <code>&amp;raw=1</code></td><td>只返回结果字符串，脚本取用最省事</td></tr>
       </table>
-      <p style="margin-top:9px">
-        一句话：<b>网页内能做的调用，无后端全都能做；网页外（curl、机器人、其它语言的程序）的调用，才必须要有后端。</b>
-        因为静态站点没有任何进程能在 HTTP 层返回 <code>text/plain</code> 或自定义响应头 ——
-        本页的 <code>/alice/api</code> 是靠 Service Worker 在<b>浏览器内部</b>拦下来的，
-        所以它只对装过这段脚本的浏览器有效。
-      </p>
-
-      <h3>接口返回格式</h3>
       <pre class="codeblk">{
   "ok": true,
-  "api": "alice-translator",
-  "version": "1.1.0",
   "mode": "to",            <em>// to = 正常→爱丽丝语，from = 爱丽丝语→正常</em>
   "input": "世界",
   "result": "荳也阜",
-  "lost": 0,               <em>// 无法映射、永久丢失的字符数</em>
+  "lost": 0,               <em>// 永久丢失的字符数</em>
   "lossless": true         <em>// lost === 0</em>
 }</pre>
+      <p style="margin-top:9px">
+        接口在 <code>alice.hxjj.dpdns.org</code>，响应带 <code>Access-Control-Allow-Origin: *</code>，网页里直接调也不会有跨域问题。
+      </p>
+
+      <div class="codehead"><h3>试一次</h3>
+        <button class="mini" id="tryApi">▶ 用当前输入试一次</button></div>
+      <pre class="codeblk" id="apiOut">点右边的按钮，会真的发一次请求，并把返回的 JSON 贴在这里。</pre>
     </div>
   </details>
 
   <footer>
-    纯前端 · 数据不出浏览器 · 有损翻译的不可逆性正是爱丽丝语的神秘之处<br>
-    <span style="opacity:.65">灵感来源：寿司勇者トロ《BLACKSOULS -黑童话与五魔姬-》 · 本站自制小工具</span>
+    文字不出浏览器 · 本站自制小工具<br>
+    <span style="opacity:.65">灵感来源：寿司勇者トロ《BLACKSOULS -黑童话与五魔姬-》</span>
 
     <div class="sig">
       <div class="sig-by">本页面与翻译核心由 <b>DeepSeek</b> 协助创作</div>
@@ -363,7 +340,7 @@ https://hxjj.dpdns.org/alice/<b>?t=%E4%BD%A0%E5%A5%BD&amp;mode=from</b>
         <a class="sig-dec" href="?t=DeepSeek%20%E7%B9%A7%EF%BD%A2%E7%B9%9D%EF%BD%AA%E7%B9%A7%EF%BD%B9%20%E9%99%AC%EF%BD%BD&amp;mode=from">译回正常</a>
       </div>
       <div class="sig-tip">
-        上面这行本身也是爱丽丝语 —— 试着点「译回正常」，或把它粘进右侧输入框看看会变成什么
+        上面这行本身也是爱丽丝语 —— 点「译回正常」，或者粘进右边输入框，看看它原本写着什么
       </div>
     </div>
   </footer>
@@ -633,7 +610,7 @@ if(typeof globalThis!=='undefined'){globalThis.ALICE_LEADS=ALICE_LEADS;globalThi
 
   // 字节级追踪：展示 UTF-8 字节流被 cp932 逐段解读的过程
   function trace(text) {
-    if (!text) { $trace.textContent = "在上方输入文字后，这里会显示 UTF-8 字节如何被 cp932 一步步解读。"; return; }
+    if (!text) { $trace.textContent = "等待输入……"; return; }
     var bytes = new TextEncoder().encode(text.length > 200 ? text.slice(0, 200) : text);
     var parts = [];
     var k = 0, guard = 0;
@@ -660,10 +637,10 @@ if(typeof globalThis!=='undefined'){globalThis.ALICE_LEADS=ALICE_LEADS;globalThi
     $a.value = r.result;
     counts(); trace($n.value);
     if (r.lost > 0) {
-      setStatus("已生成爱丽丝语。其中 <b>" + r.lost + "</b> 个字符无法在 Shift-JIS 中映射（已变成 �），" +
-        "这些位置信息不可逆 —— 译回时会有缺失，属正常的有损现象。", true);
+      setStatus("已生成爱丽丝语。有 <b>" + r.lost + "</b> 个字在 Shift-JIS 里没有对应的字，被写成了 � —— " +
+        "这部分译不回来，属正常现象。", true);
     } else {
-      setStatus("已生成爱丽丝语，<b>无字符丢失</b> —— 可以完美还原。");
+      setStatus("已生成爱丽丝语，一个字都没丢，可以完整译回。");
     }
   }
   function runBack() {
@@ -671,9 +648,9 @@ if(typeof globalThis!=='undefined'){globalThis.ALICE_LEADS=ALICE_LEADS;globalThi
     $n.value = r.result;
     counts();
     if (r.lost > 0) {
-      setStatus("已还原为正常文字，但有 <b>" + r.lost + "</b> 个字符无法编码回 Shift-JIS（翻译阶段已丢失）。", true);
+      setStatus("已还原为正常文字，但有 <b>" + r.lost + "</b> 个字在翻译那一步就丢了，补不回来。", true);
     } else {
-      setStatus("已完美还原为正常文字。");
+      setStatus("已完整还原为正常文字。");
     }
   }
 
@@ -709,11 +686,26 @@ if(typeof globalThis!=='undefined'){globalThis.ALICE_LEADS=ALICE_LEADS;globalThi
     });
   });
 
-  // ④ 现场自测 fetch("/alice/api")
+  // 分享链接：把当前输入做成一条深链
+  document.getElementById("shareBtn").addEventListener("click", function () {
+    var base = location.href.split("?")[0].split("#")[0];
+    var link = base + "?text=" + encodeURIComponent($n.value || "世界") + "&mode=to";
+    copyText(link, "分享链接已复制");
+  });
+
+  // 例子表：点一行，直接填进输入框并翻译
+  Array.prototype.forEach.call(document.querySelectorAll(".egrow"), function (row) {
+    row.addEventListener("click", function () {
+      $n.value = row.getAttribute("data-text") || "";
+      counts(); runTo();
+    });
+  });
+
+  // 试一次：真发一个请求给公开接口
   var $apiOut = document.getElementById("apiOut");
   document.getElementById("tryApi").addEventListener("click", function () {
-    var txt = ($n.value || "你好").slice(0, 300);
-    var url = "api?text=" + encodeURIComponent(txt) + "&mode=to";
+    var txt = ($n.value || "世界").slice(0, 300);
+    var url = "https://alice.hxjj.dpdns.org/api?text=" + encodeURIComponent(txt) + "&mode=to";
     $apiOut.textContent = "请求中…\nGET " + url;
     fetch(url, { cache: "no-store" }).then(function (res) {
       return res.text().then(function (body) {
@@ -722,28 +714,17 @@ if(typeof globalThis!=='undefined'){globalThis.ALICE_LEADS=ALICE_LEADS;globalThi
     }).then(function (res) {
       $apiOut.textContent = "GET " + url + "\nHTTP " + res.code + "   " + (res.ct || "(无 content-type)") +
         "\n\n" + res.body;
-      toast(res.code === 200 ? "API 调用成功" : "返回 " + res.code);
+      toast(res.code === 200 ? "调用成功" : "返回 " + res.code);
     }).catch(function (e) {
       $apiOut.textContent = "GET " + url + "\n请求失败：" + e.message +
-        "\n\n提示：/alice/api 由 Service Worker 在浏览器内提供，" +
-        "需要 HTTPS 且本页被访问过一次、脚本已激活。";
+        "\n\n（可能是网络不通，或者接口临时不可用。）";
       toast("请求失败");
     });
   });
 
-  // Service Worker 注册（提供 /alice/api）
-  var $apiBadge = document.getElementById("apiBadge");
-  function badge(html) { if ($apiBadge) $apiBadge.innerHTML = html; }
+  // Service Worker 注册：为 ①「网页里调用 /alice/api」提供本地接口
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
-    navigator.serviceWorker.register("sw.js").then(function () {
-      return navigator.serviceWorker.ready;
-    }).then(function () {
-      badge("<b>API 已就绪</b> · /alice/api");
-    }).catch(function () {
-      badge("<b>API</b> · 模块 / JSONP 可用");
-    });
-  } else {
-    badge("<b>API</b> · 模块 / JSONP 可用");
+    navigator.serviceWorker.register("sw.js").catch(function () { /* 不可用时静默忽略 */ });
   }
 
   // 深链：?text= / ?q= / ?t= ，mode=to|from
