@@ -112,4 +112,350 @@
         <tag>BLACKSOULS</tag>
       </tags>
   </entry>
+  <entry>
+    <title>四天之内三连爆：eMudhra 中间证书私钥可被推算，以及同期爆发的 PHP、nginx、Node.js 漏洞</title>
+    <url>/2026/10/22/emudhra-php-nginx-nodejs/</url>
+    <content><![CDATA[<p>2026 年 10 月 17 日到 21 日，安全圈在四天里被塞了三件事：</p>
+<ol>
+<li>印度 CA <strong>eMudhra</strong> 的 8 张中间证书，私钥根本不用”偷”——从公开证书里就能<strong>算出来</strong>；</li>
+<li><strong>PHP</strong> 爆出两个 CVSS 4.0 满分 9.2 的未认证 RCE（<code>php2shell</code>），已在野利用；</li>
+<li><strong>nginx</strong> 和 <strong>Node.js</strong> 紧接着发安全版本，各带一堆内存破坏 &#x2F; TLS 校验绕过。</li>
+</ol>
+<p>我做了个纯前端检测页，直接在浏览器里测”你这台设备现在还信不信那批问题证书”：</p>
+<p><strong><a href="https://hxjj.dpdns.org/emudhra-cert-check/">https://hxjj.dpdns.org/emudhra-cert-check/</a></strong></p>
+<p>打开点一下就行，不上传任何数据。下面把三件事拆开讲。</p>
+<span id="more"></span>
+
+<h2 id="一、那个检测页到底在测什么"><a href="#一、那个检测页到底在测什么" class="headerlink" title="一、那个检测页到底在测什么"></a>一、那个检测页到底在测什么</h2><h3 id="判定原理只有一条：图片能不能加载"><a href="#判定原理只有一条：图片能不能加载" class="headerlink" title="判定原理只有一条：图片能不能加载"></a>判定原理只有一条：图片能不能加载</h3><p>页面里没有任何 <code>fetch</code> &#x2F; <code>XMLHttpRequest</code> &#x2F; WebCrypto，只用了 <code>new Image()</code>：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> img = <span class="keyword">new</span> <span class="title class_">Image</span>();</span><br><span class="line">img.<span class="property">onload</span>  = <span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="title function_">finish</span>(<span class="string">&#x27;trusted&#x27;</span>); &#125;;   <span class="comment">// 图片加载成功 = 证书链被接受</span></span><br><span class="line">img.<span class="property">onerror</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="title function_">finish</span>(<span class="string">&#x27;notLoaded&#x27;</span>); &#125;; <span class="comment">// 加载失败 = 拒绝/不可达/404</span></span><br><span class="line">ep.<span class="property">timer</span> = <span class="built_in">setTimeout</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="title function_">finish</span>(<span class="string">&#x27;timeout&#x27;</span>); &#125;, <span class="number">6000</span>);</span><br><span class="line"></span><br><span class="line">img.<span class="property">src</span> = <span class="string">&#x27;https://&#x27;</span> + ep.<span class="property">host</span> + <span class="string">&#x27;/test.png?_=&#x27;</span> + <span class="title class_">Date</span>.<span class="title function_">now</span>() + <span class="string">&#x27;_&#x27;</span> + (ep.<span class="property">i</span> + <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>为什么用 <code>&lt;img&gt;</code> 而不是 <code>fetch</code>：跨域 <code>fetch</code> 会被 CORS 挡在”拿到响应”之前，而且拿不到”TLS 握手是否成功”这个信息；<code>&lt;img&gt;</code> 只要 TLS 握手过了 + 资源是图片，就触发 <code>onload</code>，是纯前端唯一能探到”证书被不被接受”的手段。</p>
+<p>关键点在于<strong>反直觉的配色</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>结果</th>
+<th>含义</th>
+<th>颜色</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>加载<strong>成功</strong></td>
+<td>当前客户端<strong>接受</strong>了问题证书链 → 有风险</td>
+<td>红</td>
+</tr>
+<tr>
+<td>加载<strong>失败</strong></td>
+<td>已拒绝，或网络不可达 &#x2F; 404</td>
+<td>绿</td>
+</tr>
+<tr>
+<td><strong>超时</strong></td>
+<td>结果未知，既不算信任也不能算安全</td>
+<td>黄</td>
+</tr>
+</tbody></table>
+<p>所以”图片加载成功”反而是坏消息。我第一版做的时候下意识把成功涂绿，看了两秒才意识到全反了。</p>
+<h3 id="8-台端点-同一批证书的-8-种链构造"><a href="#8-台端点-同一批证书的-8-种链构造" class="headerlink" title="8 台端点 &#x3D; 同一批证书的 8 种链构造"></a>8 台端点 &#x3D; 同一批证书的 8 种链构造</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dv-g3b-emudhra.we-have-a-problem.com</span><br><span class="line">dv-g3b-aaa-emudhra.we-have-a-problem.com</span><br><span class="line">dv-g3b-rsa-emudhra.we-have-a-problem.com</span><br><span class="line">dv-g3b-ec-emudhra.we-have-a-problem.com</span><br><span class="line">dv-g3b-aaa-rsa-emudhra.we-have-a-problem.com</span><br><span class="line">dv-g3b-aaa-ec-emudhra.we-have-a-problem.com</span><br><span class="line">dv-g3b-rsa-ec-emudhra.we-have-a-problem.com</span><br><span class="line">dv-g3b-aaa-rsa-ec-emudhra.we-have-a-problem.com</span><br></pre></td></tr></table></figure>
+
+<p>它们全是 <code>dv-g3b</code> 这一族，后缀区分的是<strong>链怎么搭</strong>：是否经 <code>AAA Certificate Services</code> 交叉签名（<code>-aaa</code>），服务端证书 &#x2F; 中间证书走 RSA 还是 EC（<code>-rsa</code> &#x2F; <code>-ec</code>），以及组合。</p>
+<p>为什么要拆这么细：<strong>同一个信任库对这批证书的封锁可能是有缺口的</strong>。比如某个客户端只删掉了 <code>emSign ECC Root CA - G3</code> 而留着 <code>AAA Certificate Services</code>，那”直连 emSign”那条链会被拒，但”经 AAA 交叉签名”那条链照样能建起来——结果就是<strong>同一批被吊销的中间证书，一半被拦、一半被放行</strong>。所以只测一台主机得出的”安全”结论并不可靠。</p>
+<blockquote>
+<p>官方站点给的是 12 台（<code>dv/ov/ev</code> × <code>g3b/g3c</code> × 直连&#x2F;AAA）。我这个页面用的是 <code>dv-g3b</code> 的 8 种变体切片，测的是同一批证书，切片角度不同。</p>
+</blockquote>
+<h3 id="这个页面测不到什么"><a href="#这个页面测不到什么" class="headerlink" title="这个页面测不到什么"></a>这个页面测不到什么</h3><p>诚实说明，别把它当安全认证：</p>
+<ul>
+<li><strong>测不到证书链本身</strong>。纯前端读不到链、读不到系统证书库，只能得到”加载成功 &#x2F; 失败”这一个布尔值。</li>
+<li><strong>“失败”≠ 安全</strong>。可能证书被拒，也可能 DNS 挂了、返回 404。页面把这事写在说明里了。</li>
+<li><strong>只代表当前浏览器 &#x2F; WebView</strong>。鸿蒙原生应用走 <code>@ohos.net.http</code>，用的是系统证书库，和浏览器不是一条路。</li>
+<li><strong>不看 UA、不看系统版本</strong>，结论完全由 8 个端点的实测结果汇总得出——环境信息只是打印出来给人看的，不参与判定。</li>
+</ul>
+<p>顺带一个实现细节：每个端点<strong>独立 <code>Image</code>、独立 6 秒超时、独立 <code>done</code> 标记</strong>。<code>finish()</code> 第一行就是 <code>if (ep.done) return;</code>，否则 <code>onload</code> 和 <code>setTimeout</code> 抢跑会让同一个端点被计两次，汇总数字就废了。</p>
+<h2 id="二、eMudhra：私钥不是被偷的，是被”写错”的"><a href="#二、eMudhra：私钥不是被偷的，是被”写错”的" class="headerlink" title="二、eMudhra：私钥不是被偷的，是被”写错”的"></a>二、eMudhra：私钥不是被偷的，是被”写错”的</h2><p>这是整件事最离谱的地方：<strong>没有入侵，没有窃取，是 CA 自己把私钥生成坏了</strong>。</p>
+<p>P-384 的私钥本应是一个 384 位随机数（大约 10¹¹⁵ 种可能）。eMudhra 在 2025 年 4 月 30 日的一次密钥生成仪式上，把 8 张中间 CA 的私钥生成成了<strong>极小的整数</strong>。研究者和 Mozilla 独立还原出来的值是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">4, 56, 66, 115, 155, 156, 230, 237</span><br></pre></td></tr></table></figure>
+
+<p>全部小于 256。也就是说，任何人拿公开证书 + 几百次椭圆曲线点加，就能反推出私钥——<strong>毫秒级</strong>。这不是”密码学被攻破”，这是”保险箱密码刻在箱门上”。</p>
+<h3 id="报告与封锁时间线"><a href="#报告与封锁时间线" class="headerlink" title="报告与封锁时间线"></a>报告与封锁时间线</h3><table>
+<thead>
+<tr>
+<th>时间（UTC）</th>
+<th>事件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2025-04-30</td>
+<td>密钥生成仪式，产出 8 张有缺陷的中间证书（6 张 TLS、2 张代码签名）</td>
+</tr>
+<tr>
+<td>2025-05</td>
+<td>Sectigo 把同一批中间证书在 <code>AAA Certificate Services</code> 下<strong>交叉签名</strong></td>
+</tr>
+<tr>
+<td>2026-10-17</td>
+<td>化名 Wayne 的研究者用 8 把私钥分别对 “We have a problem here - Wayne” 签名，提交给四大根程序</td>
+</tr>
+<tr>
+<td>2026-10-17 19:45</td>
+<td>Chrome 通过 CRLSet 按<strong>公钥哈希</strong>封锁（交叉签名的那份也被覆盖）</td>
+</tr>
+<tr>
+<td>2026-10-17 22:59</td>
+<td>Mozilla 通过 OneCRL 下发到标准配置的 Firefox，全程不到 3 小时</td>
+</tr>
+<tr>
+<td>2026-10-18</td>
+<td>eMudhra 以 <code>caCompromise</code> 为原因吊销全部 8 张</td>
+</tr>
+<tr>
+<td>2026-10-19</td>
+<td>Apple 封锁；Android 经 Google Play Services 下发</td>
+</tr>
+<tr>
+<td>2026-10-20</td>
+<td>微软封锁；披露站上线；Mozilla 发 Firefox 158.0.1 &#x2F; ESR 115.43.1 &#x2F; 153.5.1，NSS 3.131.1 移除 G3 根</td>
+</tr>
+<tr>
+<td>2026-10-21</td>
+<td>CERT-In 发布公告 CIAD-2026-0050；编号 <code>CVE-2026-111943</code></td>
+</tr>
+<tr>
+<td>2026-10-27（预计）</td>
+<td>Chrome Root Store 正式移除 <code>emSign ECC Root CA - G3</code></td>
+</tr>
+</tbody></table>
+<h3 id="唯一的幸运：CT-救了浏览器"><a href="#唯一的幸运：CT-救了浏览器" class="headerlink" title="唯一的幸运：CT 救了浏览器"></a>唯一的幸运：CT 救了浏览器</h3><p>这 8 张中间证书<strong>从来没进过证书透明度（CT）日志</strong>。Firefox &#x2F; Chrome &#x2F; Edge &#x2F; Safari 都强制 CT，所以<strong>它们根本不可能被这种手法攻击</strong>——攻击者没法偷偷签发一张能过 CT 校验的证书。代价是反过来的：正因为没进 CT，也就没有”事后追查签发记录”的线索。至于<strong>不强制 CT 的客户端</strong>（命令行工具、服务端库、嵌入式设备），报告的原话是：<strong>没人知道有没有被利用过</strong>。</p>
+<h3 id="真正的坑在浏览器之外"><a href="#真正的坑在浏览器之外" class="headerlink" title="真正的坑在浏览器之外"></a>真正的坑在浏览器之外</h3><p>浏览器靠 OneCRL &#x2F; CRLite &#x2F; CRLSets 这些<strong>带外通道</strong>下发封锁，用户什么都不用做。但很多软件<strong>自带证书包、且从不查吊销</strong>，CA 的吊销对它们等于不存在——只有升级软件才能解除信任。</p>
+<p>这就是为什么”浏览器早就没事了”和”你服务器可能还有事”能同时成立。最典型的是 <strong>Java</strong>：默认读 <code>$JAVA_HOME/lib/security/cacerts</code>，<code>com.sun.net.ssl.checkRevocation</code> 默认 <code>false</code>，还不强制 CT。实测 Liberica JDK 21.0.10 对 12 台测试主机<strong>全部握手成功</strong>。临时缓解是把根从 keystore 里删掉：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">keytool -list -cacerts -storepass changeit | grep -i emsign</span><br><span class="line">keytool -delete -<span class="built_in">alias</span> emsigneccrootca-g3 -keystore <span class="string">&quot;<span class="variable">$JAVA_HOME</span>/lib/security/cacerts&quot;</span> -storepass changeit</span><br></pre></td></tr></table></figure>
+
+<p><strong>macOS 也有个坑</strong>：系统层面确实拦了，但 <code>/usr/bin/curl</code> 是对着 <code>/etc/ssl/cert.pem</code> 校验证书的、<strong>完全不查吊销</strong>，而这个文件没跟着更新。于是 Safari 拒绝、终端里的 curl 照收。</p>
+<h3 id="我本机的实测：同一台机器，两种结论"><a href="#我本机的实测：同一台机器，两种结论" class="headerlink" title="我本机的实测：同一台机器，两种结论"></a>我本机的实测：同一台机器，两种结论</h3><p>拿三台主机分别喂给 Windows 的 curl 和本机的两个 Node：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -sS https://dv-g3b-emudhra.we-have-a-problem.com/test.png</span><br><span class="line"><span class="comment"># curl: (35) schannel: next InitializeSecurityContext failed: CRYPT_E_REVOKED</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// tlscheck.js</span></span><br><span class="line"><span class="keyword">const</span> https = <span class="built_in">require</span>(<span class="string">&#x27;https&#x27;</span>);</span><br><span class="line">https.<span class="title function_">get</span>(<span class="string">&#x27;https://&#x27;</span> + process.<span class="property">argv</span>[<span class="number">2</span>] + <span class="string">&#x27;/test.png&#x27;</span>, <span class="function"><span class="params">r</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;TRUSTED&#x27;</span>, r.<span class="property">statusCode</span>))</span><br><span class="line">     .<span class="title function_">on</span>(<span class="string">&#x27;error&#x27;</span>, <span class="function"><span class="params">e</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;REJECTED&#x27;</span>, e.<span class="property">code</span>));</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">=== node 22.22.2 ===</span><br><span class="line">TRUSTED  200  dv-g3b-emudhra.we-have-a-problem.com</span><br><span class="line">TRUSTED  200  dv-g3b-aaa-emudhra.we-have-a-problem.com</span><br><span class="line">TRUSTED  200  ov-g3b-emudhra.we-have-a-problem.com</span><br><span class="line">=== node 24.14.0 ===</span><br><span class="line">TRUSTED  200  dv-g3b-aaa-emudhra.we-have-a-problem.com</span><br><span class="line">TRUSTED  200  ov-g3b-emudhra.we-have-a-problem.com</span><br><span class="line">TRUSTED  200  dv-g3b-emudhra.we-have-a-problem.com</span><br></pre></td></tr></table></figure>
+
+<p>结论很清楚：<strong>curl 拒绝了（<code>CRYPT_E_REVOKED</code>，走 Windows 证书库 + 吊销检查），两个 Node 全都接受了（走自己编译进去的根证书列表，不查吊销）</strong>。而 22.22.2 和 24.14.0 分别是 22.x &#x2F; 24.x 分支的旧版本，修复版本是 22.23.4 和 24.22.1——也就是说这台机器上的 Node 到现在还中招。</p>
+<h3 id="需要更新的东西（节选）"><a href="#需要更新的东西（节选）" class="headerlink" title="需要更新的东西（节选）"></a>需要更新的东西（节选）</h3><table>
+<thead>
+<tr>
+<th>生态</th>
+<th>修复版本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Debian &#x2F; Ubuntu <code>ca-certificates</code></td>
+<td>20250419+deb13u1 &#x2F; 20260816ubuntu0.24.04.1 等</td>
+</tr>
+<tr>
+<td>Alpine <code>ca-certificates</code></td>
+<td>20261020-r0</td>
+</tr>
+<tr>
+<td>Arch <code>ca-certificates-mozilla</code></td>
+<td>3.131.1-1</td>
+</tr>
+<tr>
+<td><strong>NSS</strong></td>
+<td>3.131.1</td>
+</tr>
+<tr>
+<td>curl CA bundle</td>
+<td>2026-10-20</td>
+</tr>
+<tr>
+<td><strong>Go</strong></td>
+<td>1.27.3 &#x2F; 1.26.10</td>
+</tr>
+<tr>
+<td><strong>Node.js</strong></td>
+<td>22.23.4 &#x2F; 24.22.1 &#x2F; 26.12.1</td>
+</tr>
+<tr>
+<td>Python <code>certifi</code></td>
+<td>2026.10.19</td>
+</tr>
+<tr>
+<td>pip &#x2F; uv</td>
+<td>26.2.2 &#x2F; 0.13.4</td>
+</tr>
+<tr>
+<td>Rust <code>rustls-webpki</code></td>
+<td>0.103.16</td>
+</tr>
+<tr>
+<td>Rust <code>webpki-roots</code> &#x2F; <code>webpki-root-certs</code></td>
+<td>1.0.10</td>
+</tr>
+<tr>
+<td>Electron</td>
+<td>44.9.1 &#x2F; 43.8.1 &#x2F; 42.11.16</td>
+</tr>
+<tr>
+<td><strong>Java &#x2F; Bun</strong></td>
+<td>仍未发布</td>
+</tr>
+</tbody></table>
+<p>被撤信的两个根：**<code>emSign ECC Root CA - G3</code>** 和 **<code>AAA Certificate Services</code>**（Comodo 那份，SHA-1 签名，本来就该退役了）。手工处置的思路无非是把它俩从信任库里摘掉——但这是运维操作，普通用户升级浏览器和系统就完事。</p>
+<h2 id="三、PHP：php2shell，两个-9-2"><a href="#三、PHP：php2shell，两个-9-2" class="headerlink" title="三、PHP：php2shell，两个 9.2"></a>三、PHP：<code>php2shell</code>，两个 9.2</h2><p>10 月 21 日，PHP 发了紧急安全版本，修两个<strong>未认证远程代码执行</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>CVE</th>
+<th>机制</th>
+<th>严重性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>CVE-2026-109618</code></td>
+<td>OOM 处理在内部请求数据只初始化了一半时打断 PHP，请求清理阶段把非法数据当成合法的用</td>
+<td>CVSS 4.0 <strong>9.2</strong></td>
+</tr>
+<tr>
+<td><code>CVE-2026-109619</code></td>
+<td>请求私有状态在其底层内存释放后仍然存活，同一 worker 处理的<strong>下一个请求</strong>在正常初始化重置它之前就用了这份残留</td>
+<td>CVSS 4.0 <strong>9.2</strong></td>
+</tr>
+</tbody></table>
+<p>修复版本：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">PHP 8.5.12 / 8.4.27 / 8.3.36 / 8.2.35</span><br></pre></td></tr></table></figure>
+
+<p>几件事值得单独记一下：</p>
+<ul>
+<li><strong>影响面是”所有对外提供 HTTP 的 PHP”<strong>：PHP-FPM、Apache + mod_php、php-cgi、FrankenPHP、LiteSpeed 全线。官方认为 <strong>mod_php 风险最高</strong>——已有利用能证明单个未认证请求在任何应用代码执行</strong>之前</strong>就打进去。</li>
+<li><strong>已经在野利用了</strong>。Wiz 的评价是这两个洞”存在了几十年”，只是利用链复杂到接近人类研究者的极限；<strong>前沿 AI 模型把这道门槛降下来了</strong>，于是几十年老洞变成了可用 exploit。</li>
+<li><strong>没有完整缓解措施</strong>，升级是唯一解。PHP 8.1 及更早已停止支持，但安全团队仍给 7.4 &#x2F; 8.0 &#x2F; 8.1 出了最小源码 backport。靠 <code>rpms.remirepo.net</code> 的要注意：当天那个仓库不会有更新，得换发行版包或自己编。</li>
+<li>Cloudflare 已经给已知利用路径上了 WAF 规则，<strong>免费套餐也有</strong>——但这只是兜底，不是修好。</li>
+</ul>
+<p>实在没法马上升级，只能按攻击路径分别降暴露：</p>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="comment">; CVE-2026-109618：干掉可控的内存上限触发</span></span><br><span class="line"><span class="attr">memory_limit</span> = -<span class="number">1</span>          <span class="comment">; 用 php_admin_value 写，别让应用能覆盖</span></span><br><span class="line"><span class="attr">post_max_size</span> = <span class="number">32</span>M        <span class="comment">; 不传文件就 8M</span></span><br><span class="line">upload_max_filesize &lt; post_max_size</span><br><span class="line"></span><br><span class="line"><span class="comment">; CVE-2026-109619：堵住 session 上传进度那条路</span></span><br><span class="line"><span class="attr">session.upload_progress.enabled</span> = <span class="number">0</span></span><br><span class="line"><span class="comment">; PHP 8.5 上再加</span></span><br><span class="line"><span class="attr">fatal_error_backtraces</span> = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>改完<strong>必须重启所有 worker</strong>，而且得写在 <code>php.ini</code> &#x2F; FPM pool &#x2F; 服务器配置里——<code>ini_set()</code> 和 <code>.user.ini</code> 太晚了，那时候请求已经开始解析了。用 <code>error_reporting</code> 或 <code>@</code> 把诊断信息藏起来<strong>没用</strong>。</p>
+<p>英国 NCSC 的说法很直接：修不了的机器，考虑先下线。</p>
+<h2 id="四、nginx：三个-9-2，全是内存破坏"><a href="#四、nginx：三个-9-2，全是内存破坏" class="headerlink" title="四、nginx：三个 9.2，全是内存破坏"></a>四、nginx：三个 9.2，全是内存破坏</h2><p>F5 在 10 月 14 日一次性发了 5 个公告，其中 3 个内存破坏在 CVSS 4.0 下都是 <strong>9.2</strong>（CVSS 3.1 是 8.1），nginx 项目自己标 medium——评分口径差得挺远。</p>
+<table>
+<thead>
+<tr>
+<th>CVE</th>
+<th>类型</th>
+<th>触发条件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>CVE-2026-97205</code></td>
+<td>use-after-free（<code>ngx_http_core_module</code>）</td>
+<td>开了异步文件 I&#x2F;O（AIO）+ 处理含 <code>include virtual</code> 的 SSI 页面</td>
+</tr>
+<tr>
+<td><code>CVE-2026-93479</code></td>
+<td>堆溢出</td>
+<td><code>map</code> 用了正则匹配，而 <code>root</code> 或 access log 格式<strong>先引用了 map 的正则捕获变量、后引用 map 输出变量</strong>；或字符串表达式里用了不可缓存变量</td>
+</tr>
+<tr>
+<td><code>CVE-2026-15176</code></td>
+<td>堆溢出（<code>ngx_http_core_module</code>）</td>
+<td><code>location</code> 里 <code>alias</code> + <code>rewrite</code> + 引用 <code>$request_filename</code>；或 log_format 里用了 <code>$request_filename</code></td>
+</tr>
+<tr>
+<td><code>CVE-2026-97629</code></td>
+<td>TLS 会话伪造（8.3）</td>
+<td>共享 SSL session cache 但没显式配 session-ticket key → 可能绕过客户端证书校验</td>
+</tr>
+<tr>
+<td><code>CVE-2026-95101</code></td>
+<td>HTTP&#x2F;3 请求体注入（6.9）</td>
+<td>开了 HTTP&#x2F;3 + <code>proxy_request_buffering</code>，可往转发给后端的请求里塞数据</td>
+</tr>
+</tbody></table>
+<p>三个内存破坏的共性：<strong>未认证远程</strong>一个构造请求就能打，但都要求<strong>特定配置</strong>；代码执行需要 <strong>ASLR 被关闭或被绕过</strong>，所以 F5 的措辞是”可能执行代码”而不是”必然 getshell”。</p>
+<p>修复：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nginx 开源版  1.30.6（stable）/ 1.31.7（mainline）</span><br><span class="line">NGINX Plus    37.0.7.1（LTS）/ 37.2.0.1（CR）</span><br><span class="line">配套：Instance Manager 2.24.0、Gateway Fabric 2.8.0、Ingress Controller 5.7.0、F5 WAF for NGINX 5.14.2/5.16.0</span><br></pre></td></tr></table></figure>
+
+<p>改不了的临时招：<code>CVE-2026-97205</code> 关掉 AIO <strong>或</strong> SSI（二选一，关 AIO 会影响大文件&#x2F;流媒体的吞吐）；<code>CVE-2026-93479</code> 把无名正则捕获换成<strong>命名捕获</strong>，并且只在匹配块内部用；<code>CVE-2026-15176</code> 避开 <code>location</code> 里的 <code>alias</code> 和 <code>$request_filename</code>。</p>
+<p>改配置前先 <code>nginx -T</code> 把实际生效的配置 dump 出来对一遍——你以为是默认的，往往早就被某个人改过了。</p>
+<h2 id="五、Node-js：10-个洞，最狠的是-Brotli"><a href="#五、Node-js：10-个洞，最狠的是-Brotli" class="headerlink" title="五、Node.js：10 个洞，最狠的是 Brotli"></a>五、Node.js：10 个洞，最狠的是 Brotli</h2><p>同样是 10 月 21 日，Node.js 发了 22.23.4 &#x2F; 24.22.1 &#x2F; 26.12.1，10 个漏洞（4 high &#x2F; 3 medium &#x2F; 3 low）：</p>
+<table>
+<thead>
+<tr>
+<th>CVE</th>
+<th>级别</th>
+<th>问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>CVE-2026-111497</code></td>
+<td>high</td>
+<td><strong>Brotli 解码器越界写 → 可 RCE</strong>。处理不可信 Brotli 压缩数据的服务重点看</td>
+</tr>
+<tr>
+<td><code>CVE-2026-105482</code></td>
+<td>high</td>
+<td><code>dns.resolve</code> 遇到含 NUL 字符的域名会截断</td>
+</tr>
+<tr>
+<td><code>CVE-2026-105483</code></td>
+<td>high</td>
+<td>用<strong>全角数字</strong>写 IP 时绕过 TLS 证书主机名校验（26.x &#x2F; 24.x）</td>
+</tr>
+<tr>
+<td><code>CVE-2026-106069</code></td>
+<td>high</td>
+<td>主机名”松散解析”成 IP 时绕过 TLS 主机名校验（全分支）</td>
+</tr>
+<tr>
+<td><code>CVE-2026-105481</code></td>
+<td>medium</td>
+<td>keep-alive socket 会处理<strong>在请求发出之前就已写好</strong>的响应</td>
+</tr>
+<tr>
+<td><code>CVE-2026-106072</code></td>
+<td>medium</td>
+<td>非规范 IPv4 主机名校验不当，DNS SAN 能冒充 IP 端点</td>
+</tr>
+<tr>
+<td><code>CVE-2026-106074</code></td>
+<td>medium</td>
+<td><code>randomUUID()</code> &#x2F; <code>randomInt()</code> 的熵缓存被写进启动快照和 SEA → <strong>每个进程重复同一批值</strong></td>
+</tr>
+<tr>
+<td><code>CVE-2026-106070/106071/106073</code></td>
+<td>low</td>
+<td>ZIP 头校验失败后返回攻击者可控前缀；Permission Model 通配符越权、<code>fs.realpathSync</code> 绕过</td>
+</tr>
+</tbody></table>
+<p>这次发布<strong>同时更新了内置 CA 证书包</strong>（就是上面 eMudhra 那件事的收尾），另外还带了 <code>c-ares</code>、<code>OpenSSL</code>（24.x &#x2F; 22.x）、<code>SQLite</code>（22.x）、<code>Undici</code> 的依赖更新。</p>
+<p>两个提醒：</p>
+<ul>
+<li><strong>打包成单可执行文件（SEA）或用启动快照的，升级完要重新构建</strong>——<code>CVE-2026-106074</code> 那个熵缓存就藏在快照里。</li>
+<li><strong>EOL 分支同样受影响，但不会有补丁</strong>。生产环境锁在旧版本上的，这次必须动。</li>
+</ul>
+<h2 id="六、三件事为什么会挤在一起"><a href="#六、三件事为什么会挤在一起" class="headerlink" title="六、三件事为什么会挤在一起"></a>六、三件事为什么会挤在一起</h2><p>表面上”四天三爆”，其实是<strong>三条互不相干的战线</strong>刚好撞在同一周，但它们的共同点很值得记：</p>
+<ol>
+<li><strong>信任根是最脆的一层</strong>。eMudhra 这件事不需要任何 0day，只需要一个错误的密钥生成仪式——一次人为失误污染了整个 PKI 的信任基础。浏览器 3 小时就封住了，而服务器、容器、嵌入式设备可能要几个月。</li>
+<li><strong>“补丁”和”生效”是两件事</strong>。同一个二进制，浏览器里拒了、命令行里收；同一个主机，curl 拒了、Node 收。判断有没有中招只能实测，不能看版本号猜。</li>
+<li><strong>运行时层正在被集中打</strong>。PHP 那两个洞存在了几十年，是 AI 把利用链的门槛压下来之后才被真正打通的；nginx 和 Node.js 全是内存安全问题。”升级运行时”这件事的优先级，这一年明显该往上提。</li>
+</ol>
+<h2 id="七、自查清单"><a href="#七、自查清单" class="headerlink" title="七、自查清单"></a>七、自查清单</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1) 客户端还信不信那批问题证书（要的是&quot;报错&quot;）</span></span><br><span class="line">curl -sS https://dv-g3b-emudhra.we-have-a-problem.com/ -o /dev/null -w <span class="string">&#x27;%&#123;http_code&#125;\n&#x27;</span></span><br><span class="line"><span class="comment"># 或者直接用浏览器打开检测页</span></span><br><span class="line"><span class="comment">#    https://hxjj.dpdns.org/emudhra-cert-check/</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2) 各运行时版本</span></span><br><span class="line">php -v ; nginx -v ; node -v ; go version ; java -version</span><br><span class="line">python -c <span class="string">&quot;import certifi; print(certifi.__version__)&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3) nginx 实际配置里有没有踩雷</span></span><br><span class="line">nginx -T | grep -nE <span class="string">&#x27;aio |ssi |alias|\$request_filename|map |proxy_request_buffering&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>要对比的目标版本：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">PHP     8.5.12 / 8.4.27 / 8.3.36 / 8.2.35</span><br><span class="line">nginx   1.30.6 / 1.31.7（Plus 37.0.7.1 / 37.2.0.1）</span><br><span class="line">Node    22.23.4 / 24.22.1 / 26.12.1</span><br><span class="line">Go      1.27.3 / 1.26.10</span><br><span class="line">NSS     3.131.1</span><br><span class="line">certifi 2026.10.19</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li>事件披露站（含 12 台测试主机、修复版本表、各平台处置命令）：<a href="https://emudhra.we-have-a-problem.com/">https://emudhra.we-have-a-problem.com/</a></li>
+<li>Mozilla &#x2F; Chrome 根程序公告、CERT-In CIAD-2026-0050</li>
+<li>PHP 安全公告 + <code>CVE-2026-109618</code> &#x2F; <code>CVE-2026-109619</code>（GHSA-w8hw-w9fx-j79w &#x2F; GHSA-6wmf-4rv5-p3rp）</li>
+<li>F5 公告：<code>CVE-2026-97205</code>、<code>CVE-2026-93479</code>、<code>CVE-2026-15176</code>、<code>CVE-2026-97629</code>、<code>CVE-2026-95101</code></li>
+<li>Node.js 2026 年 10 月 21 日安全发布：<a href="https://nodejs.org/en/blog/vulnerability/october-2026-security-releases">https://nodejs.org/en/blog/vulnerability/october-2026-security-releases</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>安全</tag>
+        <tag>证书</tag>
+        <tag>PHP</tag>
+        <tag>nginx</tag>
+        <tag>Node.js</tag>
+      </tags>
+  </entry>
 </search>
