@@ -1,0 +1,421 @@
+/* =========================================================
+   fx.css —— 「冰箱里的月亮」专用夸张特效层
+   仅在含 #fx-root 的页面生效（body.fx-glam）
+   ========================================================= */
+
+body.fx-glam {
+  background: #04060f !important;
+  overflow-x: hidden;
+}
+
+/* ---------- 场景层 ---------- */
+#fx-stage {
+  position: fixed;
+  inset: -4%;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: filter 1.2s ease;
+  will-change: transform, filter;
+  animation: fx-drift 46s ease-in-out infinite alternate, fx-hueSlow 28s linear infinite;
+  pointer-events: none;
+}
+@keyframes fx-drift {
+  0%   { transform: scale(1.04) translate3d(0, 0, 0); }
+  50%  { transform: scale(1.10) translate3d(-1.6%, -1.1%, 0); }
+  100% { transform: scale(1.06) translate3d(1.4%, 0.9%, 0); }
+}
+@keyframes fx-hueSlow {
+  0%   { filter: brightness(1.18) saturate(1.42) hue-rotate(0deg); }
+  50%  { filter: brightness(1.32) saturate(1.62) hue-rotate(16deg); }
+  100% { filter: brightness(1.18) saturate(1.42) hue-rotate(0deg); }
+}
+
+/* 粒子画布 + emoji 层 */
+#fx-canvas, #fx-emoji {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+#fx-emoji { overflow: hidden; }
+.fx-float-emoji {
+  position: absolute;
+  font-size: 22px;
+  opacity: 0;
+  filter: drop-shadow(0 0 10px rgba(140, 220, 255, 0.55));
+  animation: fx-emojiUp linear forwards;
+}
+@keyframes fx-emojiUp {
+  0%   { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.7); }
+  12%  { opacity: 0.9; }
+  80%  { opacity: 0.75; }
+  100% { opacity: 0; transform: translateY(-72vh) rotate(320deg) scale(1.15); }
+}
+
+/* 光标星屑 */
+.fx-spark {
+  position: fixed;
+  z-index: 4;
+  pointer-events: none;
+  font-size: 12px;
+  animation: fx-sparkFade 900ms ease-out forwards;
+}
+@keyframes fx-sparkFade {
+  0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx, 0px), var(--dy, -22px)) scale(0.2); }
+}
+
+/* 压暗层：亮场景也要压住，保证文字对比度 */
+#fx-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 26%, rgba(6, 12, 28, 0.18), rgba(3, 5, 14, 0.74) 72%),
+    linear-gradient(180deg, rgba(3, 6, 16, 0.62), rgba(3, 6, 16, 0.30) 42%, rgba(3, 6, 16, 0.80));
+}
+
+/* ---------- 顶部跑马灯 ---------- */
+#fx-ribbon {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 9998;
+  height: 30px;
+  overflow: hidden;
+  background: linear-gradient(90deg, #ff2d78, #ff8a00, #ffe600, #35e07d, #16d4ff, #7a5cff, #ff2d78);
+  background-size: 400% 100%;
+  animation: fx-ribbonBg 9s linear infinite;
+  box-shadow: 0 2px 18px rgba(255, 60, 160, 0.55);
+  font-size: 12px;
+  line-height: 30px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #12000a;
+  white-space: nowrap;
+  pointer-events: none;
+}
+@keyframes fx-ribbonBg {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 400% 50%; }
+}
+#fx-ribbon span {
+  display: inline-block;
+  padding-left: 100%;
+  animation: fx-marquee 26s linear infinite;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+@keyframes fx-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* ---------- 把主题外壳抬到压暗层之上 ---------- */
+body.fx-glam #page-header,
+body.fx-glam #content-inner,
+body.fx-glam #footer,
+body.fx-glam #rightside,
+body.fx-glam #aside-content,
+body.fx-glam #pagination {
+  position: relative;
+  z-index: 2;
+}
+body.fx-glam { padding-bottom: 36px; }
+
+/* ---------- 主题外壳透明化 ---------- */
+body.fx-glam #page-header {
+  background-image: none !important;
+  background-color: transparent !important;
+  min-height: 190px;
+  padding-top: 40px;
+}
+body.fx-glam #page-header .post-bg,
+body.fx-glam #page-header #post-info,
+body.fx-glam #page-header #site-info {
+  background: transparent !important;
+}
+body.fx-glam #body-wrap,
+body.fx-glam .layout,
+body.fx-glam #content-inner,
+body.fx-glam #footer,
+body.fx-glam #footer-wrap,
+body.fx-glam #rightside,
+body.fx-glam #post,
+body.fx-glam .post,
+body.fx-glam .recent-post-item {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body.fx-glam #footer::before,
+body.fx-glam #footer-wrap::before { display: none !important; }
+
+/* 文章卡片：玻璃拟态 */
+body.fx-glam #article-container {
+  position: relative;
+  z-index: 2;
+  padding: 34px 34px 26px !important;
+  border-radius: 22px;
+  background: rgba(6, 10, 24, 0.76) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+  backdrop-filter: blur(14px) saturate(1.25);
+  box-shadow:
+    0 0 0 1px rgba(120, 220, 255, 0.22),
+    0 0 42px rgba(70, 180, 255, 0.14),
+    inset 0 0 90px rgba(30, 110, 190, 0.10);
+  animation: fx-cardIn 900ms ease-out both;
+}
+@keyframes fx-cardIn {
+  0%   { opacity: 0; transform: translateY(22px) scale(0.985); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* ---------- 正文排版与配色 ---------- */
+body.fx-glam #article-container,
+body.fx-glam #article-container p,
+body.fx-glam #article-container li,
+body.fx-glam #article-container td,
+body.fx-glam #article-container th,
+body.fx-glam #article-container summary {
+  color: #e6f2ff !important;
+  font-size: 1.02rem;
+  line-height: 1.95;
+  letter-spacing: 0.3px;
+}
+body.fx-glam #article-container strong {
+  color: #fff6b0 !important;
+  text-shadow: 0 0 14px rgba(255, 240, 140, 0.5);
+}
+
+/* 标题：整块色相循环（保证和逐字动画共存），字由 JS 拆分后各自取彩虹切片 */
+body.fx-glam #article-container h1,
+body.fx-glam #article-container h2,
+body.fx-glam #article-container h3 {
+  color: #dff2ff !important;
+  border: none !important;
+  position: relative;
+  animation: fx-cycle 9s linear infinite;
+  filter: drop-shadow(0 0 16px rgba(120, 210, 255, 0.42));
+}
+@keyframes fx-cycle {
+  0%   { filter: hue-rotate(0deg) drop-shadow(0 0 16px rgba(120, 210, 255, 0.42)); }
+  100% { filter: hue-rotate(360deg) drop-shadow(0 0 16px rgba(120, 210, 255, 0.42)); }
+}
+body.fx-glam #article-container h2 {
+  margin-top: 1.9em;
+  padding-left: 0.75em;
+  line-height: 1.55;
+}
+body.fx-glam #article-container h2::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 12%;
+  width: 5px; height: 76%;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #4dd0ff, #ff6bd6, #ffe93d);
+  box-shadow: 0 0 16px rgba(120, 210, 255, 0.9);
+}
+body.fx-glam #article-container h3 {
+  background-image: linear-gradient(90deg, #ff5f6d, #ffc371, #ffe93d, #57f2a5, #4dd0ff, #a78bfa, #ff6bd6, #ff5f6d);
+  background-size: 320% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fx-flow 7s linear infinite;
+}
+
+/* 逐字：每个字自己带一段彩虹切片，避免父层 background-clip 被 transform 打断 */
+.fx-ch {
+  display: inline-block;
+  background-image: linear-gradient(90deg,
+    #ff4d6d, #ff9f43, #ffe93d, #57f2a5, #4dd0ff, #a78bfa, #ff6bd6, #ff4d6d);
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: fx-bob 3.2s ease-in-out infinite;
+  will-change: transform;
+}
+.fx-ch.fx-emo {
+  background: none;
+  -webkit-text-fill-color: initial;
+  color: initial;
+}
+@keyframes fx-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-6px) rotate(-3deg); }
+}
+@keyframes fx-flow {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 320% 50%; }
+}
+
+/* 引用块：霓虹呼吸 */
+body.fx-glam #article-container blockquote {
+  background: linear-gradient(135deg, rgba(50, 20, 90, 0.55), rgba(6, 40, 70, 0.55)) !important;
+  border-left: 3px solid #8a6bff !important;
+  border-radius: 12px;
+  padding: 16px 18px !important;
+  color: #dfe9ff !important;
+  animation: fx-breathe 5.5s ease-in-out infinite;
+}
+@keyframes fx-breathe {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(150, 120, 255, 0.35), 0 0 22px rgba(140, 100, 255, 0.22); }
+  50%      { box-shadow: 0 0 0 1px rgba(120, 210, 255, 0.55), 0 0 38px rgba(90, 190, 255, 0.40); }
+}
+
+/* 链接：彩虹下划线 + 悬停炸开 */
+body.fx-glam #article-container a:not(.fx-plain) {
+  color: #7fe7ff !important;
+  font-weight: 600;
+  text-decoration: none !important;
+  background-image: linear-gradient(90deg, #7fe7ff, #b78bff, #ff8fd0, #7fe7ff);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 2px;
+  transition: background-size 0.25s ease, color 0.2s ease, text-shadow 0.25s ease;
+}
+body.fx-glam #article-container a:not(.fx-plain):hover {
+  color: #fff !important;
+  text-shadow: 0 0 14px rgba(140, 230, 255, 0.95), 0 0 26px rgba(190, 120, 255, 0.7);
+  background-size: 100% 100%;
+}
+
+/* 列表项小跳 */
+body.fx-glam #article-container li { transition: transform 0.2s ease, color 0.2s ease; }
+body.fx-glam #article-container li:hover { transform: translateX(6px); color: #fff !important; }
+
+/* 表格：彩虹表头 + 斑马 */
+body.fx-glam #article-container table {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(120, 210, 255, 0.25);
+}
+body.fx-glam #article-container thead th {
+  background: linear-gradient(90deg, #1d2b64, #3a1c71, #0f4c75) !important;
+  background-size: 200% 100%;
+  animation: fx-flow 8s linear infinite;
+  color: #eaf6ff !important;
+}
+body.fx-glam #article-container tbody tr:nth-child(even) { background: rgba(90, 160, 220, 0.10); }
+
+/* 代码块：霓虹边框 */
+body.fx-glam #article-container figure.highlight,
+body.fx-glam #article-container pre {
+  border-radius: 12px !important;
+  box-shadow: 0 0 0 1px rgba(120, 210, 255, 0.30), 0 0 30px rgba(60, 160, 240, 0.18) !important;
+  animation: fx-breathe 6.5s ease-in-out infinite;
+}
+
+/* details 折叠：呼吸提示 */
+body.fx-glam #article-container details {
+  border-radius: 12px;
+  padding: 10px 16px;
+  background: rgba(90, 60, 160, 0.22);
+  box-shadow: 0 0 0 1px rgba(180, 140, 255, 0.35);
+  animation: fx-breathe 7s ease-in-out infinite;
+}
+body.fx-glam #article-container summary { cursor: pointer; font-weight: 700; }
+
+/* 水平线：彩虹 */
+body.fx-glam #article-container hr {
+  border: none !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, #ff5f6d, #ffe93d, #57f2a5, #4dd0ff, #a78bfa, transparent) !important;
+  background-size: 200% 100%;
+  animation: fx-flow 6s linear infinite;
+  opacity: 0.85;
+}
+
+/* 侧栏 / 小部件：统一深色玻璃，别让亮场景把整页洗白 */
+body.fx-glam #aside-content .card-widget,
+body.fx-glam .card-widget,
+body.fx-glam .post-copyright,
+body.fx-glam .post-tags,
+body.fx-glam #pagination,
+body.fx-glam .relatedPosts > .relatedPosts-list > div {
+  background: rgba(8, 12, 26, 0.56) !important;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 0 1px rgba(120, 210, 255, 0.16), 0 0 26px rgba(60, 160, 240, 0.10) !important;
+  border-radius: 14px;
+}
+body.fx-glam #aside-content .card-widget,
+body.fx-glam #aside-content .card-widget a,
+body.fx-glam #aside-content .card-widget span,
+body.fx-glam #aside-content .card-widget li,
+body.fx-glam #aside-content .card-widget time,
+body.fx-glam .post-copyright,
+body.fx-glam .post-copyright a,
+body.fx-glam #pagination {
+  color: #d7e8ff !important;
+}
+body.fx-glam #aside-content .card-widget * { border-color: rgba(120, 210, 255, 0.14) !important; }
+
+/* 文章头部标题也来一层彩虹 */
+body.fx-glam #post-info .post-title,
+body.fx-glam #page-header #post-info .post-title {
+  background-image: linear-gradient(90deg, #ffe93d, #ff8fd0, #4dd0ff, #57f2a5, #ffe93d);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fx-flow 6s linear infinite;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.92)) drop-shadow(0 0 26px rgba(120, 210, 255, 0.5));
+}
+
+/* ⬇️ 页面右下角的月亮徽章 */
+#fx-moon {
+  position: fixed;
+  right: 22px;
+  bottom: 48px;
+  z-index: 9997;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  background: radial-gradient(circle at 35% 32%, #fffbe0, #ffe58a 60%, #d9a93f);
+  box-shadow: 0 0 26px rgba(255, 230, 150, 0.75), 0 0 60px rgba(255, 200, 90, 0.35);
+  animation: fx-moonSpin 12s linear infinite, fx-moonPulse 4s ease-in-out infinite;
+  cursor: help;
+  pointer-events: auto;
+}
+@keyframes fx-moonSpin { to { transform: rotate(360deg); } }
+@keyframes fx-moonPulse {
+  0%, 100% { box-shadow: 0 0 22px rgba(255, 230, 150, 0.7), 0 0 52px rgba(255, 200, 90, 0.3); }
+  50%      { box-shadow: 0 0 40px rgba(255, 240, 190, 0.95), 0 0 90px rgba(255, 210, 120, 0.55); }
+}
+#fx-moon b { animation: fx-moonSpin 12s linear infinite reverse; }
+
+/* 模式标识 */
+#fx-tag {
+  position: fixed;
+  left: 18px;
+  bottom: 46px;
+  z-index: 9997;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  color: #cfeaff;
+  background: rgba(8, 14, 30, 0.6);
+  box-shadow: 0 0 0 1px rgba(120, 210, 255, 0.35), 0 0 20px rgba(60, 160, 240, 0.25);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #fx-stage, .fx-ch, #fx-moon, body.fx-glam #article-container h2::before { animation: none !important; }
+}
+@media (max-width: 768px) {
+  body.fx-glam #article-container { padding: 20px 16px !important; border-radius: 14px; }
+  #fx-ribbon { height: 24px; font-size: 10px; line-height: 24px; }
+  #fx-moon { width: 52px; height: 52px; font-size: 22px; }
+}
