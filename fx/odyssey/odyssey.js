@@ -285,7 +285,12 @@
     var top = TOP[name] || 0;
     var order = flipped ? BACKWARD : FORWARD;
     var i = order.indexOf(name), next = order[i + 1];
-    var bot = (next && TOP[next] != null) ? TOP[next] : docH();
+    /* 最后一幕没有"下一幕"，终点必须用自己这一节的高度。
+       早先这里取了 docH()（整篇高度，含尾部留白），
+       于是镜面那一幕的进度永远爬不到 1 —— 血平面升到 37% 就不动了，
+       lockBottom 一次都不会被调用，整段"反转"根本无从触发。 */
+    var h = el.offsetHeight || Math.max(1, docH() - top);
+    var bot = (next && TOP[next] != null) ? TOP[next] : top + h;
     var span = Math.max(1, bot - top - vh() * 0.5);
     return clamp((curScroll() - top) / span, 0, 1);
   }
@@ -295,18 +300,20 @@
   function updateMirror() {
     var p = actProgress('mirror');
     var sea;
-    if (p < 0.10) {
-      sea = 1;
-    } else if (p < 0.44) {
-      sea = 1 - ease((p - 0.10) / 0.34) * 0.97;
-    } else if (p < 0.74) {
-      sea = 0.03;
+    if (p < 0.08) {
+      sea = 1;                                          /* 切进来：血海是满的 */
+    } else if (p < 0.42) {
+      sea = 1 - ease((p - 0.08) / 0.34) * 0.97;         /* 退下去，露出墨底 */
+    } else if (p < 0.70) {
+      sea = 0.03;                                       /* 这一段只剩倒影文字撑着 */
     } else {
-      sea = 0.03 + ease((p - 0.74) / 0.26) * 0.97;
+      sea = 0.03 + ease(clamp((p - 0.70) / 0.22, 0, 1)) * 0.97;  /* 涨回来，铺满 */
     }
-    S.sea = sea;
+    S.sea = clamp(sea, 0, 1);
     S.ink = 0.55;
-    if (p > 0.97) lockBottom();
+    /* 涨满就锁屏。p 现在能真正到 1（终点按本节自身高度算），
+       所以这里一定会在"血平面填满屏幕"的那一刻触发，不再依赖"滚到整页最底"。 */
+    if (p >= 0.9) lockBottom();
   }
 
   /* ------------------------------------------------------- 9. 反面的四幕 */
@@ -341,6 +348,7 @@
       tailOpen = true;
       tail.classList.add('open');
       D.body.classList.add('od-tail-open');
+      measure();                       /* 评论/版权插进来后文档变长，重新量一次 */
     }
   }
 
@@ -360,13 +368,35 @@
         '</div>' +
         '<div class="od-end-hint">轻触，翻面</div>';
       D.body.appendChild(endEl);
+      /* 三种输入都要能翻面，之前只挂了 click：
+         · 直接点在那行小字上
+         · pointerup / touchend —— 移动端在 touchend 之后有时不再派发 click
+         · 锁屏期间页面任何位置的点击（下面 document 上的捕获监听） */
       endEl.addEventListener('click', flip);
+      endEl.addEventListener('pointerup', function (e) {
+        if (e && e.cancelable) e.preventDefault();
+        flip();
+      });
+      endEl.addEventListener('touchend', function (e) {
+        if (e && e.cancelable) e.preventDefault();
+        flip();
+      }, { passive: false });
+      D.addEventListener('click', onLockedClick, true);
     }
     setTimeout(function () { if (endEl) endEl.classList.add('on'); }, 520);
   }
 
   /* ------------------------------------------------------------ 11. 翻面 */
   var turn = null;
+
+  /* 锁屏之后，整页任何一次点击都算"翻面"——那行小字只是提示，不是唯一的按钮。
+     早期版本只在 .od-end 上挂监听，一旦主题插了层遮罩盖住它，点下去就毫无反应。 */
+  function onLockedClick() {
+    if (!locked || flipped) return;
+    if (endEl && !endEl.classList.contains('on')) return;  /* 小字还没浮出来 */
+    flip();
+  }
+
   function moveTail() {
     if (!tail) return;
     ['#post-comment', '.post-copyright', '.tag_share', '.post-share'].forEach(function (sel) {
@@ -379,6 +409,7 @@
   function flip() {
     if (flipped) return;
     flipped = true;
+    measure();                                  /* 用正面布局再校一次，免得翻转后偏移错位 */
     if (endEl) endEl.classList.remove('on');
     S.sea = 1;
     if (!turn) {
@@ -386,15 +417,17 @@
       turn.className = 'od-turn';
       D.body.appendChild(turn);
     }
+    /* 先把反面挂成"可测量但不可见"的状态。
+       之前是把 display 留到 620ms 才开，等于在旋转开始前一刻才排版，
+       低端机上很容易量到一半的高度，翻过去就是一堆错位的文字。 */
+    inv.style.display = 'block';
+    void inv.offsetHeight;
     HTML.classList.add('od-turning');
     void turn.offsetWidth;
     turn.classList.add('run');
 
     setTimeout(function () {
       HTML.classList.add('od-flipped');
-      inv.style.display = 'block';
-      void inv.offsetHeight;
-      requestAnimationFrame(function () { inv.classList.add('on'); });
       moveTail();
       measure();
       inv.scrollTop = 0;
@@ -402,6 +435,12 @@
       HTML.classList.remove('od-locked');
       if (endEl) endEl.style.display = 'none';
       curAct = 'rev1';
+      /* 双 rAF：保证以 rotate(0)/opacity 0 真的绘过一帧，transition 才会跑 */
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { inv.classList.add('on'); });
+      });
+      /* 兜底：标签页在后台时 rAF 不跑，1.3s 后无论如何也要转过去 */
+      setTimeout(function () { inv.classList.add('on'); }, 1300);
     }, 620);
 
     setTimeout(function () {
@@ -475,6 +514,14 @@
 
   W.ODDEBUG = {
     s: S, secs: secs, inv: inv, flip: flip, lock: lockBottom,
-    measure: measure, cur: function () { return { act: curAct, flipped: flipped, locked: locked }; }
+    measure: measure, cur: function () { return { act: curAct, flipped: flipped, locked: locked }; },
+    dbg: function () {
+      return {
+        act: curAct, busy: busy, locked: locked, flipped: flipped,
+        tlT: tl ? tl.t : null, tlEnd: tl ? tl.end : null,
+        y: curScroll(), vh: vh(), docH: docH(), top: TOP,
+        p: actProgress(curAct || 'abyss')
+      };
+    }
   };
 })();
