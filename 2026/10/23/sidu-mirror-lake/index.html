@@ -1,0 +1,370 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>四渡 · 镜湖 | 酒精小站</title><meta name="author" content="酒精小站"><meta name="copyright" content="酒精小站"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一个人带着一张折得很小的地图，走过花海、墨、血，和一面不肯合上的镜子。这不是一个故事，这是一份关于如何把自己走丢的旅行笔记。滚动页面即可切换四幕，右下角有一枚按钮。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="四渡 · 镜湖">
+<meta property="og:url" content="http://hxjj.dpdns.org/2026/10/23/sidu-mirror-lake/index.html">
+<meta property="og:site_name" content="酒精小站">
+<meta property="og:description" content="一个人带着一张折得很小的地图，走过花海、墨、血，和一面不肯合上的镜子。这不是一个故事，这是一份关于如何把自己走丢的旅行笔记。滚动页面即可切换四幕，右下角有一枚按钮。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hxjj.dpdns.org/img/butterfly-flap.svg">
+<meta property="article:published_time" content="2026-10-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-22T16:00:00.000Z">
+<meta property="article:author" content="酒精小站">
+<meta property="article:tag" content="意识流">
+<meta property="article:tag" content="隐喻">
+<meta property="article:tag" content="玄幻">
+<meta property="article:tag" content="交互叙事">
+<meta property="article:tag" content="四幕">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hxjj.dpdns.org/img/butterfly-flap.svg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "四渡 · 镜湖",
+  "url": "http://hxjj.dpdns.org/2026/10/23/sidu-mirror-lake/",
+  "image": "http://hxjj.dpdns.org/img/butterfly-flap.svg",
+  "datePublished": "2026-10-22T16:00:00.000Z",
+  "dateModified": "2026-10-22T16:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "酒精小站",
+      "url": "http://hxjj.dpdns.org"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://hxjj.dpdns.org/2026/10/23/sidu-mirror-lake/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '四渡 · 镜湖',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/fx/site.css?v=2610b"><script src="/fx/theme-boot.js?v=2610b"></script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="酒精小站" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/butterfly-flap.svg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/alice/"><i class="fa-fw fas fa-language"></i><span> 爱丽丝语</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">酒精小站</span></a><a class="nav-page-title" href="/"><span class="site-name">四渡 · 镜湖</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/alice/"><i class="fa-fw fas fa-language"></i><span> 爱丽丝语</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">四渡 · 镜湖</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-22T16:00:00.000Z" title="发表于 2026-10-23 00:00:00">2026-10-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-22T16:00:00.000Z" title="更新于 2026-10-23 00:00:00">2026-10-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%9A%90%E5%96%BB%E5%B0%8F%E8%AF%B4/">隐喻小说</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span class="waline-pageview-count" data-path="/2026/10/23/sidu-mirror-lake/"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2026/10/23/sidu-mirror-lake/#post-comment"><span class="waline-comment-count" data-path="/2026/10/23/sidu-mirror-lake/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><article class="container post-content" id="article-container"><link rel="stylesheet" href="/fx/odyssey/odyssey.css?v=3">
+<script>document.documentElement.classList.add('od-mode');</script>
+<script src="/fx/odyssey/gl.js?v=3" defer></script>
+<script src="/fx/odyssey/odyssey.js?v=3" defer></script>
+
+<!--
+  幕的写法（Markdown 里唯一的"特定格式"）：
+      :::act abyss   幻紫彼岸：3D 花海、巨树、透明的湖、紫色太阳、俯视与旋转
+      :::act ink     影蚀：墨的流体、鼠标附着、久留变多、净水里很慢地洗掉
+      :::act blood   血雨：血滴砸落、血迹变淡但留褐印
+      :::act mirror  镜面：血海升降、镜中倒影写着另一段话
+      :::act rev1..4 镜子的另一边：四幕倒着再来一遍
+  换幕只需要在新的一行写 :::act 名字，正文照常写 Markdown，转场由引擎自己接。
+-->
+
+
+<div class="od-mark" data-act="abyss"></div>
+
+
+<h2 id="一-·-幻紫彼岸"><a href="#一-·-幻紫彼岸" class="headerlink" title="一 · 幻紫彼岸"></a>一 · 幻紫彼岸</h2><blockquote>
+<p>有人把一张地图折成很小的一块，塞进我手里，说：只走一条路，别回头。<br>我问，如果路只有一条，为什么还要地图。<br>他说，为了让你知道自己走的是哪一条。</p>
+</blockquote>
+<p>我醒来的时候，脚下是一条河。河没有名字，河的两岸开满了花。</p>
+<p>那花不是红的。红这种颜色太干净了，说不动这里的事。它是紫得发暗的红，像有人在整整一缸红里，滴了一滴夜，然后搅匀，然后忘了。</p>
+<p>你看着它们长出来。你不看的时候，它们也在长。你回过头去，它们已经谢了一半，花瓣垂着，像一句说到一半就被人按住嘴的话。<strong>它们长得很快，谢得也很快，快到你不确定自己到底看见了什么。</strong> 后来我才明白，这里的花不是给人看的，是给时间看的。</p>
+<p>岸上很挤。挤满了花，也挤满了人。人走路都低着头，看地，也看别人的脚后跟。不是因为谦逊。是因为天上有一颗太阳。</p>
+<p>那颗太阳是紫的。它不暖。它只是亮。你抬头看它，它就往你眼睛里放一根针——不重，细细的，一直扎到你能感觉到疼的那个深度，然后停住。于是所有人都不抬头。<strong>不抬头的人，不会被记住，也不会被追究。</strong> 这里的人把这叫做懂事。</p>
+<p>整片岸上只有一棵树。</p>
+<p>它高得不像树，像一句被反复说了很多遍、最后钉进天里的话。它的枝往四个方向长，长到一半就开始往下垂，像终于承认自己撑不住。所有人在它下面排队，等着被它落下来的影子选中。被选中的人会往前走一步，走进更深的影子里，然后再也没有走出来过。队伍一直很长。队伍一直都很有秩序。</p>
+<p>花海中间有一面湖。</p>
+<p>它是透明的。透明到你分不清那是水还是玻璃。你把手伸进去，水会绕开你的手，好像它不承认你。湖底有字，很大，看不清，得潜下去。可是这里没有人潜下去过——他们说不值得，说湖底什么都没有，说湖底的字是假的。</p>
+<p>我潜过一次。只潜到一半，就听见上面有人喊我的名字。喊得很急。我上来了。后来我想，那个人可能根本没有喊，是水自己在学人说话。</p>
+<p>偶尔会有一朵花是别的颜色。青的，或者金的。它开出来的那一下，你听见有人在很远的地方轻轻抽了口气——像看见了一件不该存在的东西。它通常活不过三个呼吸。<strong>但它确实开过。这三个呼吸是真的。</strong></p>
+<p>如果你站得足够高——高到所有人都是点，所有花都是墨，所有路都是线——你会发现这一整片岸是一个圆。圆得很规整。圆得很像有人量过。</p>
+<p>右下角那枚按钮，能把你举起来。</p>
+<p>举起来之后，你会看见那个圆。你继续往下走，世界就跟着你，一格一格地、顺时针地转，像有人在一个看不见的轴上替你数着。数得很稳。稳到你开始怀疑：<strong>到底是我在走，还是它在转。</strong></p>
+<p>我在岸上待了很久。久到我不记得自己是从哪条路来的。</p>
+<p>后来我发现湖在退。花在往水里倒。我以为是风。</p>
+<p>再后来我知道，是我自己在往下沉。</p>
+<div class="od-mark" data-act="ink"></div>
+
+
+<h2 id="二-·-影蚀"><a href="#二-·-影蚀" class="headerlink" title="二 · 影蚀"></a>二 · 影蚀</h2><p>水是暖的。</p>
+<p>这一点让我很不安。冷的水会让人清醒，暖的水只会让人留下。</p>
+<p>墨从脚踝开始。不是一下子。是像有人在你皮肤上写字——写完一笔，停一下，看看你的反应，再写第二笔。它很有耐心。它知道我跑不掉。</p>
+<p>它有深有浅。浅的地方，你能看见自己的筋；深的地方，你连骨头都不确定还在不在。它流动，但不流走。它只是在你身上换位置，像一个人翻来覆去地找一句能说服你的话。</p>
+<p>如果你把手指伸进去，它会记住你。</p>
+<p>一层黑顺着你的指尖往上爬。很慢。慢到你有时间跟自己商量。爬到你脖子上的时候，你还能呼吸；爬到你眼睛里的时候，你就看不见自己了。<strong>看不见自己，和没有自己，是两件不同的事。</strong> 但在这里待久了，你分不清。</p>
+<p>你可以洗它。水是干净的。</p>
+<p>但干净的水洗得很慢，慢到你会以为它在骗你。你搓掉一层，它就从更里面浮上来一层。你搓了整整一夜，天亮的时候发现自己只洗干净了一根手指。那根手指白得刺眼，像在提醒你：别的手指还在。</p>
+<p>你也可以不洗。你待得越久，墨就越多。它不高声，它只是攒。</p>
+<p>这里没有敌人。</p>
+<p>这是最坏的消息。<strong>没有敌人的地方，你连恨都找不到地方放。</strong></p>
+<p>墨不咬人。它只是让你慢慢同意它。它说：你看，大家都是这样的。它说：你已经比很多人干净了。它说：再待一会儿，就一会儿。它说的每一句都是真的，所以你没有理由反驳。</p>
+<p>我在这里遇见很多人。他们都很安静。他们的脸是模糊的，但不是因为我看不清，是因为他们已经不太需要脸了。他们互相点头，点得很轻，像怕把身上的墨晃下来。</p>
+<p>有一个人的手一直是湿的。我问他为什么不擦。他说，擦了还会再来。他说这句话的时候在笑。他笑起来的时候，墨从他嘴角往里渗了一点。</p>
+<p>回头的时候，岸已经没了。</p>
+<p>不是烧没的，是散的。花先变成灰，灰先往上走，走到一半就忘了自己要去哪，于是落回水里。树是最后散的。它散得很慢，像个不肯认输的人。它的影子在地上多留了两秒，比它自己活得还久一点。</p>
+<p>只有湖还在。</p>
+<p>湖什么也没说。它一直是透明的，所以它什么也没失去。</p>
+<p>我在墨里学会了一件事：不动，就不会更脏。</p>
+<p>可是不动，墨也会多。</p>
+<div class="od-mark" data-act="blood"></div>
+
+
+<h2 id="三-·-血雨"><a href="#三-·-血雨" class="headerlink" title="三 · 血雨"></a>三 · 血雨</h2><p>然后天裂了。</p>
+<p>不是雷。没有声音。只有一滴东西从很高很高的地方落下来，砸在我手背上，炸开。</p>
+<p>是热的。</p>
+<p>第二滴。第三滴。然后就不是滴了。</p>
+<p>它砸在地上，会留下一个印子。印子会淡——一天，两天，淡成褐色。但它不走。它就在那里，像一枚盖错了地方的邮戳。<strong>新的雨落下来，砸在旧印子上，旧印子不会更淡，它只是更旧。</strong></p>
+<p>我试过擦。用袖子，用湖水，用指甲。</p>
+<p>擦到指甲劈了，印子还在。它不是长在皮肤上，它是长在皮肤下面。你能做的只有等它变成褐色，然后习惯它。</p>
+<p>这里的每个人都有一身印子。</p>
+<p>我们互相看的时候，看的不是脸，是印子。印子多的人，说话声音更小。印子少的人，走路会快一点，快到像在躲什么。也有一些人的印子在背上，他们从来不背对着人。</p>
+<p>你在这里待得越久，印子就越深。</p>
+<p>你回头看一眼，那条路上全是褐色的斑点，像有人替你数过你受过的每一次。数得很仔细，一次都没有漏。</p>
+<p>从墨里出来的时候，我整个人是黑的。</p>
+<p>不是脏，是被浸透了。血落在我身上，先不显，得等墨褪一点，才看见红。那时候我不知道该高兴还是该害怕。血是热的。<strong>热的，说明我还在这里。</strong></p>
+<p>雨停过一次。就一次。</p>
+<p>停了大概七秒。在这七秒里，我听见很远的地方有人在笑。笑声很轻，像不敢被听见。</p>
+<p>然后雨又落下来了。这次更密。</p>
+<div class="od-mark" data-act="mirror"></div>
+
+
+<h2 id="四-·-镜面"><a href="#四-·-镜面" class="headerlink" title="四 · 镜面"></a>四 · 镜面</h2><p>路的尽头没有路。</p>
+<p>只有一面竖着的湖。它立在那里，一动不动，像一扇被水做成的门。</p>
+<p>血从我的脚下漫上来。漫过脚踝，漫过膝盖，漫过胸口。它不冷。它比我暖。它漫到我的下巴时停了，然后它变成了一面镜子。</p>
+<p class="od-mline" data-refl="你在镜子里看见的那个人，比你干净。他不知道你在看。">你看着它。它也看着你。它的脸是你的，但它的表情不是。</p>
+
+<p class="od-mline" data-refl="你伸手，它也伸手。你摸到的是冷的，它摸到的是你的。">你伸手。它也伸手。你的手指碰到水面，它的手指没有碰到你。</p>
+
+<p class="od-mline" data-refl="它说：回去吧。这里的路是往下长的。">你说话。它张嘴。你听不见它说什么，但你知道它在说：别过来。</p>
+
+<p class="od-mline" data-refl="你往前一步，血就往前一步。它比你更需要一个方向。">你往后退。血就退。退得很听话。</p>
+
+<p>血退干净以后，底下不是湖底，是黑。纯黑的，没有反光的黑。像有人把墨倒在了一张没有边的纸上。你站在黑里。黑不冷，黑也不热。黑只是不再需要你。</p>
+<p class="od-mline" data-refl="你抬头看。黑里有一行字，很大，你得退后一点才看得全。">你低头看。黑里有一行字，很小，你得蹲下去才看得见。</p>
+
+<p class="od-mline" data-refl="那行字写着别人的名字，没有日期。">那行字写着你的名字，还有一个日期。</p>
+
+<p class="od-mline" data-refl="日期是昨天，而且从来没有到过。">日期是明天。</p>
+
+<p>你继续往下走。黑没有底，但你走到了。你脚下出现了一条线。线很细，像一道没有愈合的口子。你站在线上。线那边是血，线这边是黑。你分不清哪边是镜子。</p>
+<div class="od-mark" data-act="rev1"></div>
+
+
+<h2 id="一-·-血海下降"><a href="#一-·-血海下降" class="headerlink" title="一 · 血海下降"></a>一 · 血海下降</h2><p>你从血里出来的时候，血没有跟着你。</p>
+<p>它停在原地，像一件脱下来的衣服。</p>
+<p>你回头看它，它还在那里，红得很认真。它没有怪你，也没有留你。它只是红着。</p>
+<p>你想：原来它一直在等我走。</p>
+<p>血退得很慢。慢到你有时间反悔。你没有反悔。</p>
+<p>天开始亮了。不是太阳出来了，是夜薄了一点。薄到你能看见远处有东西在等。</p>
+<div class="od-mark" data-act="rev2"></div>
+
+
+<h2 id="二-·-俯视"><a href="#二-·-俯视" class="headerlink" title="二 · 俯视"></a>二 · 俯视</h2><p>你被举起来了。很高。</p>
+<p>高到可以看见整片地方。高到所有花都变成点，所有人都变成点，所有路都变成一根线。</p>
+<p>从上面看，路是连着的。每一条都连着另一条。没有断的地方。</p>
+<p>你想：原来我从来没有走丢。我只是走得慢。</p>
+<p>世界在你脚下慢慢转。顺时针。像一个终于愿意配合你的钟。</p>
+<p>你数着它转。一圈，两圈。数到第三圈的时候，你发现自己在笑。你不知道自己在笑什么。你只知道，从上面看，一切都很小。小到可以原谅。</p>
+<div class="od-mark" data-act="rev3"></div>
+
+
+<h2 id="三-·-墨褪"><a href="#三-·-墨褪" class="headerlink" title="三 · 墨褪"></a>三 · 墨褪</h2><p>墨退了。</p>
+<p>不是洗掉的，是它自己走的。走得很安静，像一个人终于决定不再劝你。</p>
+<p>墨走的时候，把字留下了。</p>
+<p>你身上的字，一个一个露出来。有些是你的名字，有些不是。你摸着那些不是你的字，觉得很陌生。但你没有擦。你想，留着也好。它们也陪你走了这么远。</p>
+<p>湖底开始往上抬。很慢。像有人在下面把一整片地举起来，怕惊动你。</p>
+<p>水先退，地再露。地上是湿的，湿得发亮。发亮的地方能照出一点影子，影子比你先站起来。</p>
+<div class="od-mark" data-act="rev4"></div>
+
+
+<h2 id="四-·-彼岸"><a href="#四-·-彼岸" class="headerlink" title="四 · 彼岸"></a>四 · 彼岸</h2><p>花长出来了。</p>
+<p>先是一点绿，然后是一点红，然后是很大一片。它们长得很快，快到你来不及难过。</p>
+<p>那棵树也回来了。它比你记得的矮一点。它没有看你。</p>
+<p>天上有一颗太阳。紫的。它还是那样。</p>
+<p>只是这一次，你没有抬头。</p>
+<p>你站在花里。花没有让开，也没有围上来。它们只是开着，开得很认真，像在替你完成一件你没有力气完成的事。</p>
+<p>你知道这些花会再谢。</p>
+<p>你知道墨会再来。</p>
+<p>你知道镜子还在那里，立着，等着。</p>
+<p>但你站在这里，站了一会儿。</p>
+<p>风从湖上过来，很轻。轻得像什么都没有发生过。</p>
+<p>有人在很远的地方叫你的名字。</p>
+<p>你没有回答。</p>
+<p>你只是——</p>
+<p>又往前走了一步。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://hxjj.dpdns.org">酒精小站</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://hxjj.dpdns.org/2026/10/23/sidu-mirror-lake/">http://hxjj.dpdns.org/2026/10/23/sidu-mirror-lake/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://hxjj.dpdns.org" target="_blank">酒精小站</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%84%8F%E8%AF%86%E6%B5%81/">意识流</a><a class="post-meta__tags" href="/tags/%E9%9A%90%E5%96%BB/">隐喻</a><a class="post-meta__tags" href="/tags/%E7%8E%84%E5%B9%BB/">玄幻</a><a class="post-meta__tags" href="/tags/%E4%BA%A4%E4%BA%92%E5%8F%99%E4%BA%8B/">交互叙事</a><a class="post-meta__tags" href="/tags/%E5%9B%9B%E5%B9%95/">四幕</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-flap.svg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2027/02/06/%E6%96%B0%E5%B9%B4%E5%BF%AB%E4%B9%90/" title="新年快乐"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">新年快乐</div></div><div class="info-2"><div class="info-item-1">    </div></div></div></a><a class="pagination-related" href="/2026/10/22/fridge-moon/" title="冰箱里的月亮与十七个未接来电"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">冰箱里的月亮与十七个未接来电</div></div><div class="info-2"><div class="info-item-1">       『我并不是在写一份文档，我只是把脑子里那台老式收音机的杂音，一个字一个字地抄下来。』—— 某个凌晨三点、头发还没干透的人 🛁     🌀 一、关于开头的开头（而开头总是迟到）我本来想从一台冰箱写起。真的，就一台冰箱，白色的，门缝里夹着一张过期的优惠券。可是它半夜会嗡嗡地响，像有人在里面小声地背圆周率，背到小数点后第四十七位就忘了，于是重新开始。🎧 我趴在厨房的地砖上听过一次，地砖很凉，凉得像薛定谔的那只猫还没决定要不要活着——你打开门，牛奶还在；你不打开，牛奶既在又不在，而且它有点酸了。🥛 这里必须说清楚一件事，虽然我并不打算说清楚任何事：段落是给呼吸用的。所以你看到空行，不是因为我换了话题，而是因为我换了一口气。🌬️ 至于话题，它一直没变，它只是绕了一圈，从冰箱绕到月亮，再绕回来的时候，顺手把冰箱门带上了，里面就黑了。🌑 黑得很讲道理。 顺便一提，意识流这个词本身就很不意识流，它太整齐了，像有人把一团毛线团熨平了，还打了折痕。🧶  🧦 二、洗衣机、袜子与一门叫拓扑学的手艺洗衣机是另一个会唱歌的家电，但它唱得比较急，像赶末班车。🚌 我数过，一次标准...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/10/22/fridge-moon/" title="冰箱里的月亮与十七个未接来电"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-22</div><div class="info-item-2">冰箱里的月亮与十七个未接来电</div></div><div class="info-2"><div class="info-item-1">       『我并不是在写一份文档，我只是把脑子里那台老式收音机的杂音，一个字一个字地抄下来。』—— 某个凌晨三点、头发还没干透的人 🛁     🌀 一、关于开头的开头（而开头总是迟到）我本来想从一台冰箱写起。真的，就一台冰箱，白色的，门缝里夹着一张过期的优惠券。可是它半夜会嗡嗡地响，像有人在里面小声地背圆周率，背到小数点后第四十七位就忘了，于是重新开始。🎧 我趴在厨房的地砖上听过一次，地砖很凉，凉得像薛定谔的那只猫还没决定要不要活着——你打开门，牛奶还在；你不打开，牛奶既在又不在，而且它有点酸了。🥛 这里必须说清楚一件事，虽然我并不打算说清楚任何事：段落是给呼吸用的。所以你看到空行，不是因为我换了话题，而是因为我换了一口气。🌬️ 至于话题，它一直没变，它只是绕了一圈，从冰箱绕到月亮，再绕回来的时候，顺手把冰箱门带上了，里面就黑了。🌑 黑得很讲道理。 顺便一提，意识流这个词本身就很不意识流，它太整齐了，像有人把一团毛线团熨平了，还打了折痕。🧶  🧦 二、洗衣机、袜子与一门叫拓扑学的手艺洗衣机是另一个会唱歌的家电，但它唱得比较急，像赶末班车。🚌 我数过，一次标准...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-flap.svg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">酒精小站</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-%C2%B7-%E5%B9%BB%E7%B4%AB%E5%BD%BC%E5%B2%B8"><span class="toc-number">1.</span> <span class="toc-text">一 · 幻紫彼岸</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%C2%B7-%E5%BD%B1%E8%9A%80"><span class="toc-number">2.</span> <span class="toc-text">二 · 影蚀</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-%C2%B7-%E8%A1%80%E9%9B%A8"><span class="toc-number">3.</span> <span class="toc-text">三 · 血雨</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B-%C2%B7-%E9%95%9C%E9%9D%A2"><span class="toc-number">4.</span> <span class="toc-text">四 · 镜面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-%C2%B7-%E8%A1%80%E6%B5%B7%E4%B8%8B%E9%99%8D"><span class="toc-number">5.</span> <span class="toc-text">一 · 血海下降</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%C2%B7-%E4%BF%AF%E8%A7%86"><span class="toc-number">6.</span> <span class="toc-text">二 · 俯视</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-%C2%B7-%E5%A2%A8%E8%A4%AA"><span class="toc-number">7.</span> <span class="toc-text">三 · 墨褪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B-%C2%B7-%E5%BD%BC%E5%B2%B8"><span class="toc-number">8.</span> <span class="toc-text">四 · 彼岸</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2027/02/06/%E6%96%B0%E5%B9%B4%E5%BF%AB%E4%B9%90/" title="新年快乐">新年快乐</a><time datetime="2027-02-05T16:00:00.000Z" title="发表于 2027-02-06 00:00:00">2027-02-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/23/sidu-mirror-lake/" title="四渡 · 镜湖">四渡 · 镜湖</a><time datetime="2026-10-22T16:00:00.000Z" title="发表于 2026-10-23 00:00:00">2026-10-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/22/fridge-moon/" title="冰箱里的月亮与十七个未接来电">冰箱里的月亮与十七个未接来电</a><time datetime="2026-10-21T22:58:00.000Z" title="发表于 2026-10-22 06:58:00">2026-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/22/emudhra-php-nginx-nodejs/" title="四天之内三连爆：eMudhra 中间证书私钥可被推算，以及同期爆发的 PHP、nginx、Node.js 漏洞">四天之内三连爆：eMudhra 中间证书私钥可被推算，以及同期爆发的 PHP、nginx、Node.js 漏洞</a><time datetime="2026-10-21T20:23:36.000Z" title="发表于 2026-10-22 04:23:36">2026-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/29/hello-world/" title="本站介绍">本站介绍</a><time datetime="2025-12-28T17:46:38.000Z" title="发表于 2025-12-29 01:46:38">2025-12-29</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 酒精小站</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"lang":"zh-CN","emoji":["https://cdn.jsdelivr.net/npm/@waline/emojis@1/bilibili","https://unpkg.com/@waline/emojis@1.4.0/weibo","https://cdn.jsdelivr.net/npm/@waline/emojis@1/tieba"],"meta":["nick","mail","link"],"requiredMeta":["nick","mail"],"wordLimit":0,"imageUploader":true,"login":"enable","pageview":true}
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://jmcomic.qzz.io',
+      pageview: true,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client@3.8.0/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client@3.8.0/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script src="/fx/site.js?v=2610b"></script><!-- build 5pen --><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
