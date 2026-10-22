@@ -6,7 +6,7 @@
   <link href="http://hxjj.dpdns.org/atom.xml" rel="self"/>
   
   <link href="http://hxjj.dpdns.org/"/>
-  <updated>2026-10-21T22:58:00.000Z</updated>
+  <updated>2027-02-05T16:00:00.000Z</updated>
   <id>http://hxjj.dpdns.org/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>新年快乐</title>
+    <link href="http://hxjj.dpdns.org/2027/02/06/%E6%96%B0%E5%B9%B4%E5%BF%AB%E4%B9%90/"/>
+    <id>http://hxjj.dpdns.org/2027/02/06/%E6%96%B0%E5%B9%B4%E5%BF%AB%E4%B9%90/</id>
+    <published>2027-02-05T16:00:00.000Z</published>
+    <updated>2027-02-05T16:00:00.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;span id=&quot;more&quot;&gt;&lt;/span&gt;
+
+&lt;div id=&quot;ny-root&quot;&gt;&lt;/div&gt;
+&lt;script</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>冰箱里的月亮与十七个未接来电</title>
@@ -73,23 +97,6 @@
     <category term="nginx" scheme="http://hxjj.dpdns.org/tags/nginx/"/>
     
     <category term="Node.js" scheme="http://hxjj.dpdns.org/tags/Node-js/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>爱丽丝语翻译器：把正常文字变成爱丽丝语</title>
-    <link href="http://hxjj.dpdns.org/2026/09/21/alice-translator-guide/"/>
-    <id>http://hxjj.dpdns.org/2026/09/21/alice-translator-guide/</id>
-    <published>2026-09-20T20:47:18.000Z</published>
-    <updated>2026-09-21T13:10:24.209Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;打开就能玩，不用注册、不用安装：**&lt;a href=&quot;https://hxjj.dpdns.org/alice/&quot;&gt;https://hxjj.dpdns.org/alice/&lt;/a&gt;**&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="BLACKSOULS" scheme="http://hxjj.dpdns.org/tags/BLACKSOULS/"/>
     
   </entry>
   
