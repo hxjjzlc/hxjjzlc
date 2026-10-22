@@ -128,6 +128,15 @@
   });
   if (!secs.abyss) return;
 
+  /* ⚠ 关键：样式表是写在文章正文里的，属于 #article-container 的子节点。
+     下面这行 root.textContent = '' 会把它连同节点一起删掉，浏览器随即
+     卸载整张样式表 —— 于是"血海、翻转、四幕排版"全部消失，而 JS 还在正常
+     跑、控制台一声不响。之前反复"什么都没生效"，真正的病根就在这里。
+     所以在清空之前，先把 link / style 搬到 <head>。 */
+  [].slice.call(root.querySelectorAll('link, style')).forEach(function (n) {
+    try { D.head.appendChild(n); } catch (e) {}
+  });
+
   root.textContent = '';
   root.appendChild(sideA);
 
