@@ -151,15 +151,12 @@
 
   /* ---------- 3. 隐藏页面 ---------- */
 
+  /* 只留名字，不写任何说明——进去才知道是什么 */
   var PAGES = [
-    { href: '/vault/',   no: '壹', name: '解密台', en: 'THE VAULT',
-      desc: '六张纸、一台旧解码机', hint: '桌子上的六张纸' },
-    { href: '/arcade/',  no: '贰', name: '街机厅', en: 'THE ARCADE',
-      desc: '一台会掉星星的机器', hint: '会掉星星的机器' },
-    { href: '/atlas/',   no: '叁', name: '星图',   en: 'THE ATLAS',
-      desc: '天花板上的六颗与一颗', hint: '天花板上的星图' },
-    { href: '/seventh/', no: '肆', name: '第七夜', en: 'THE SEVENTH NIGHT',
-      desc: '要五片碎纸才肯开', hint: '门缝里没有光' }
+    { href: '/vault/',   no: '01', name: '一张桌子', icon: '🗝️' },
+    { href: '/arcade/',  no: '02', name: '街机厅',   icon: '🕹️' },
+    { href: '/atlas/',   no: '03', name: '星图',     icon: '🌌' },
+    { href: '/seventh/', no: '04', name: '第七夜',   icon: '🌑' }
   ];
 
   function foundList() {
@@ -522,13 +519,16 @@
 
   /* ---------- 9. 暗门菜单 / 主题面板 ---------- */
 
-  var DOOR_SVG = '<svg viewBox="0 0 16 16" width="22" height="22" shape-rendering="crispEdges" aria-hidden="true">' +
-    '<rect x="2" y="1" width="12" height="14" fill="#6b4423"/>' +
-    '<rect x="3" y="2" width="10" height="12" fill="#3f2713"/>' +
-    '<rect x="4" y="3" width="3" height="10" fill="#4d3018"/>' +
-    '<rect x="10" y="7" width="1" height="1" fill="#f4d06f"/></svg>';
+  var PAD_SVG = '<svg viewBox="0 0 16 16" width="20" height="20" shape-rendering="crispEdges" aria-hidden="true">' +
+    '<rect x="2" y="5" width="12" height="7" fill="#7a5c33"/>' +
+    '<rect x="3" y="6" width="10" height="5" fill="#c9a26b"/>' +
+    '<rect x="4" y="8" width="3" height="1" fill="#3a2a16"/>' +
+    '<rect x="5" y="7" width="1" height="3" fill="#3a2a16"/>' +
+    '<rect x="10" y="7" width="1" height="1" fill="#d9534f"/>' +
+    '<rect x="11" y="8" width="1" height="1" fill="#f0ad4e"/>' +
+    '<rect x="9" y="9" width="1" height="1" fill="#5cb85c"/></svg>';
 
-  var PALETTE_SVG = '<svg viewBox="0 0 16 16" width="22" height="22" shape-rendering="crispEdges" aria-hidden="true">' +
+  var PALETTE_SVG = '<svg viewBox="0 0 16 16" width="20" height="20" shape-rendering="crispEdges" aria-hidden="true">' +
     '<rect x="2" y="2" width="5" height="5" fill="#6fe3ff"/>' +
     '<rect x="9" y="2" width="5" height="5" fill="#b78bff"/>' +
     '<rect x="2" y="9" width="5" height="5" fill="#ff6f9c"/>' +
@@ -540,62 +540,38 @@
     wrap.id = 'hj-fabs';
     wrap.className = 'hj-fabs';
     wrap.innerHTML =
-      '<button class="hj-fab" id="hj-door-btn" aria-label="暗门菜单" aria-expanded="false">' +
-        DOOR_SVG + '<span class="hj-fab-label">暗门</span>' +
-        '<span class="hj-badge" id="hj-door-badge">0</span>' +
-      '</button>' +
-      '<button class="hj-fab" id="hj-theme-btn" aria-label="切换主题" aria-expanded="false">' +
-        PALETTE_SVG + '<span class="hj-fab-label">换个世界</span>' +
-      '</button>';
+      '<button class="hj-fab" id="hj-game-btn" aria-label="小游戏" aria-expanded="false">' + PAD_SVG + '</button>' +
+      '<button class="hj-fab" id="hj-theme-btn" aria-label="换颜色" aria-expanded="false">' + PALETTE_SVG + '</button>';
     D.body.appendChild(wrap);
 
-    var doorBtn = D.getElementById('hj-door-btn');
+    var gameBtn = D.getElementById('hj-game-btn');
     var themeBtn = D.getElementById('hj-theme-btn');
 
-    doorBtn.addEventListener('click', function (ev) { ev.stopPropagation(); toggleMenu(); });
+    gameBtn.addEventListener('click', function (ev) { ev.stopPropagation(); toggleMenu(); });
     themeBtn.addEventListener('click', function (ev) { ev.stopPropagation(); toggleThemePanel(); });
   }
 
   function buildMenu() {
     if (D.getElementById('hj-menu')) return;
-    var found = foundList();
     var items = PAGES.map(function (p) {
-      var locked = pageLocked(p);
-      var known = found.indexOf(p.href) >= 0;
-      return '<a class="hj-menu-item' + (locked ? ' is-locked' : '') + '" href="' + (locked ? '#' : p.href) + '" ' +
-        'data-href="' + p.href + '" data-locked="' + (locked ? '1' : '0') + '">' +
-        '<span class="hj-mi-no">' + p.no + '</span>' +
-        '<span class="hj-mi-body">' +
-          '<span class="hj-mi-name">' + (known ? p.name + ' <small style="opacity:.5">' + p.en + '</small>' : p.hint) + '</span>' +
-          '<span class="hj-mi-desc">' + (locked ? '还差 ' + Math.max(0, 5 - eggCount()) + ' 片碎纸' : p.desc) + '</span>' +
-        '</span></a>';
+      return '<a class="hj-menu-item" href="' + p.href + '" data-href="' + p.href + '">' +
+        '<span class="hj-mi-icon">' + p.icon + '</span>' +
+        '<span class="hj-mi-name">' + p.name + '</span>' +
+        '<span class="hj-mi-go">→</span></a>';
     }).join('');
 
     var el = D.createElement('div');
     el.id = 'hj-menu';
-    el.className = 'hj-panel';
+    el.className = 'hj-panel hj-panel-mini';
     el.hidden = true;
     el.innerHTML =
       '<div class="hj-panel-head">' +
-        '<span class="hj-panel-title">暗 门 · 不 在 导 航 里</span>' +
+        '<span class="hj-panel-title">小 游 戏</span>' +
         '<button class="hj-panel-close" aria-label="关闭">×</button>' +
       '</div>' +
-      '<div class="hj-menu-list">' + items + '</div>' +
-      '<div class="hj-menu-foot">已拾回 <b data-hj-egg-count>0 / 6</b> 片碎纸。<br>' +
-        '六片拼成一句话，除夕那晚会有烟花。别问为什么，问就是传统。</div>';
+      '<div class="hj-menu-list">' + items + '</div>';
     D.body.appendChild(el);
 
-    el.addEventListener('click', function (ev) {
-      var close = ev.target.closest('.hj-panel-close');
-      if (close) { toggleMenu(false); return; }
-      var a = ev.target.closest('.hj-menu-item');
-      if (!a) return;
-      if (a.getAttribute('data-locked') === '1') {
-        ev.preventDefault();
-        toast('门还锁着', '先去捡够五片碎纸', 'lock');
-        return;
-      }
-    });
     el.querySelector('.hj-panel-close').addEventListener('click', function () { toggleMenu(false); });
   }
 
@@ -643,7 +619,7 @@
   function toggleMenu(force) {
     buildMenu();
     var el = D.getElementById('hj-menu');
-    var btn = D.getElementById('hj-door-btn');
+    var btn = D.getElementById('hj-game-btn');
     var show = typeof force === 'boolean' ? force : el.hidden;
     if (show) toggleThemePanel(false);
     el.hidden = !show;
@@ -664,11 +640,6 @@
   function refreshUI() {
     var n = eggCount();
 
-    var badge = D.getElementById('hj-door-badge');
-    if (badge) {
-      badge.textContent = n;
-      badge.style.display = n ? '' : 'none';
-    }
     var cnt = D.querySelectorAll('[data-hj-egg-count]');
     for (var i = 0; i < cnt.length; i++) cnt[i].textContent = n + ' / 6';
 
@@ -680,34 +651,6 @@
       var chEl = slots[j].querySelector('.hj-egg-ch');
       if (chEl) chEl.textContent = got ? eggById(id).ch : '？';
       slots[j].setAttribute('title', got ? eggById(id).name : '还没找到');
-    }
-
-    var menu = D.getElementById('hj-menu');
-    if (menu) {
-      var found = foundList();
-      var items = menu.querySelectorAll('.hj-menu-item');
-      for (var k = 0; k < items.length; k++) {
-        var href = items[k].getAttribute('data-href');
-        var page = null;
-        for (var q = 0; q < PAGES.length; q++) if (PAGES[q].href === href) page = PAGES[q];
-        var locked = pageLocked(page || PAGES[0]);
-        items[k].classList.toggle('is-locked', locked);
-        items[k].setAttribute('data-locked', locked ? '1' : '0');
-        var nameEl = items[k].querySelector('.hj-mi-name');
-        if (nameEl && page) {
-          nameEl.innerHTML = (found.indexOf(href) >= 0 ? page.name + ' <small style="opacity:.5">' + page.en + '</small>' : page.hint);
-        }
-        var descEl = items[k].querySelector('.hj-mi-desc');
-        if (descEl && page) descEl.textContent = locked ? '还差 ' + Math.max(0, 5 - n) + ' 片碎纸' : page.desc;
-      }
-    }
-
-    var sv = D.querySelector('[data-hj-seventh]');
-    if (sv) {
-      var svLocked = n < 5;
-      sv.classList.toggle('hj-locked', svLocked);
-      var svDesc = sv.querySelector('[data-hj-seventh-desc]');
-      if (svDesc) svDesc.textContent = svLocked ? '要五片碎纸，门才肯开。' : '门开着。进去之后就没有回头路了。';
     }
 
     var tp = D.getElementById('hj-theme-panel');
@@ -727,21 +670,6 @@
 
   /* ---------- 11. 主页 ---------- */
 
-  var QUOTES = [
-    ['把服务器日志读成诗，需要一点耐心，和一点耳鸣。', 'README · 2019'],
-    ['所有秘密都在你自己的浏览器里，我这边什么都没有。', 'ARCHITECTURE · 纯静态'],
-    ['站点会老，域名会过期，只有 cookie 记得你来过。', 'COOKIE · 十年'],
-    ['六个字散在六个角落。找齐的人，除夕见。', '??? · 未署名'],
-    ['好看的页面不解决问题，但它让问题看起来体面一点。', 'DESIGN · 私心']
-  ];
-
-  var ROT = [
-    '// 六片碎纸散落在站点各处，集齐的人在除夕夜会看到烟花。',
-    '// 纯静态，没有数据库；所有秘密都存在你自己的浏览器里。',
-    '// 主题写在 cookie 里，有效期十年，化了再点一次就好。',
-    '// 暗门不在导航栏，它在左下角，长得像一个门。'
-  ];
-
   function el(tag, cls, html) {
     var n = D.createElement(tag);
     if (cls) n.className = cls;
@@ -749,60 +677,124 @@
     return n;
   }
 
+  var HERO_LINES = ['滚木。', '你好👋'];
+  var TYPE = { i: 0, n: 0, dir: 1, clicks: 0, timer: 0, wild: false, wildTimer: 0 };
+
   function buildHero() {
     var header = D.getElementById('page-header');
     if (!header || header.classList.contains('hj-hero')) return;
     header.classList.add('hj-hero');
 
-    var art = el('div', 'hj-hero-art', '<canvas id="hj-hero-canvas"></canvas>');
-    header.appendChild(art);
+    header.appendChild(el('div', 'hj-hero-art', '<canvas id="hj-hero-canvas"></canvas>'));
 
-    var meta = el('div', 'hj-hero-inner',
-      '<div class="hj-hero-kicker"><span class="hj-dot"></span>个人站 · EST. 2019 · 纯静态</div>' +
-      '<h1 class="hj-hero-title"><span>酒精</span><span>小站</span></h1>' +
-      '<p class="hj-hero-sub">在服务器日志与月亮之间，写一点没有用但很好看的东西。</p>' +
-      '<div class="hj-hero-rot" id="hj-rot"><span id="hj-rot-text"></span><i class="hj-caret"></i></div>' +
-      '<div class="hj-hero-actions">' +
-        '<a class="hj-btn hj-btn-primary" href="#recent-posts" data-hj-jump>读点什么 ↓</a>' +
-        '<button class="hj-btn" data-hj-open="menu">推开暗门</button>' +
-        '<button class="hj-btn" data-hj-open="theme">换个世界</button>' +
-      '</div>' +
-      '<div class="hj-hero-meta">' +
-        '<span>◆ 碎纸 <b data-hj-egg-count>0 / 6</b></span>' +
-        '<span>◆ 主题 <b>5</b></span>' +
-        '<span>◆ 数据库 <b>NONE</b></span>' +
-        '<span>◆ 秘密 <b>都在这页</b></span>' +
+    var inner = el('div', 'hj-hero-inner',
+      '<div class="hj-hero-fly"><img src="/img/butterfly-flap.svg" alt="" draggable="false"></div>' +
+      '<div class="hj-hero-type" id="hj-type">' +
+        '<span class="hj-type-text" id="hj-type-text"></span>' +
+        '<i class="hj-caret"></i>' +
       '</div>');
-    header.appendChild(meta);
+    header.appendChild(inner);
 
-    header.appendChild(el('div', 'hj-scroll', 'S C R O L L'));
-    startRotator();
+    startTyping();
+    bindTypeClick();
     startHeroCanvas();
   }
 
-  function startRotator() {
-    var target = D.getElementById('hj-rot-text');
-    if (!target) return;
-    var idx = 0, pos = 0, dir = 1;
-
-    function tick() {
-      var line = ROT[idx];
-      pos += dir;
-      if (pos > line.length) {
-        dir = -1;
-        setTimeout(tick, 2200);
-        return;
-      }
-      if (pos < 0) {
-        pos = 0; dir = 1; idx = (idx + 1) % ROT.length;
-        setTimeout(tick, 320);
-        return;
-      }
-      target.textContent = line.slice(0, pos);
-      setTimeout(tick, dir > 0 ? 46 : 18);
-    }
-    tick();
+  function typeSpeed() {
+    return Math.max(10, 145 / (1 + TYPE.clicks * 0.95));
   }
+
+  function typeTick() {
+    var out = D.getElementById('hj-type-text');
+    if (!out || TYPE.wild) return;
+    var line = Array.from(HERO_LINES[TYPE.i]);
+
+    if (TYPE.dir > 0) {
+      TYPE.n++;
+      out.textContent = line.slice(0, TYPE.n).join('');
+      if (TYPE.n >= line.length) {
+        TYPE.dir = -1;
+        danceChars(out);
+        TYPE.timer = setTimeout(typeTick, Math.max(700, 1900 - TYPE.clicks * 220));
+        return;
+      }
+    } else {
+      TYPE.n--;
+      out.textContent = line.slice(0, Math.max(0, TYPE.n)).join('');
+      if (TYPE.n <= 0) {
+        TYPE.dir = 1;
+        TYPE.i = (TYPE.i + 1) % HERO_LINES.length;
+        TYPE.timer = setTimeout(typeTick, 240);
+        return;
+      }
+    }
+    TYPE.timer = setTimeout(typeTick, TYPE.dir > 0 ? typeSpeed() : 30);
+  }
+
+  /* 打字完成时，每个字错峰跳一下 */
+  function danceChars(out) {
+    var s = Array.from(out.textContent || '');
+    out.innerHTML = '';
+    s.forEach(function (ch, k) {
+      var sp = D.createElement('span');
+      sp.className = 'hj-tch';
+      sp.textContent = ch;
+      sp.style.animationDelay = (k * 58) + 'ms';
+      out.appendChild(sp);
+    });
+  }
+
+  function startTyping() {
+    if (D.getElementById('hj-type-text')) {
+      TYPE.timer = setTimeout(typeTick, 520);
+    }
+  }
+
+  function bindTypeClick() {
+    var box = D.getElementById('hj-type');
+    if (!box) return;
+    box.addEventListener('click', function () {
+      if (TYPE.wild) return;
+      TYPE.clicks++;
+      box.style.setProperty('--jit', Math.min(10, TYPE.clicks * 1.7).toFixed(1) + 'px');
+      box.style.setProperty('--jit-f', Math.max(0.055, 0.36 - TYPE.clicks * 0.052).toFixed(3) + 's');
+      box.classList.remove('hj-kick');
+      void box.offsetWidth;
+      box.classList.add('hj-kick');
+      sound('tick');
+      if (TYPE.clicks >= 6) goWild();
+    });
+  }
+
+  /* 终态：字逐颗浮起来，各自的颜色，慢慢飘 */
+  function goWild() {
+    TYPE.wild = true;
+    clearTimeout(TYPE.timer);
+    var box = D.getElementById('hj-type');
+    if (box) box.classList.add('is-wild');
+    looseChars();
+    TYPE.wildTimer = setInterval(function () {
+      TYPE.i = (TYPE.i + 1) % HERO_LINES.length;
+      looseChars();
+    }, 3400);
+  }
+
+  function looseChars() {
+    var out = D.getElementById('hj-type-text');
+    if (!out) return;
+    var s = Array.from(HERO_LINES[TYPE.i]);
+    out.innerHTML = '';
+    s.forEach(function (ch, k) {
+      var sp = D.createElement('span');
+      sp.className = 'hj-tfloat';
+      sp.textContent = ch;
+      sp.style.color = 'hsl(' + Math.round((k * 52 + Math.random() * 46) % 360) + ', 92%, 68%)';
+      sp.style.animationDelay = (k * -0.7 + Math.random() * 0.4).toFixed(2) + 's';
+      sp.style.animationDuration = (2.4 + Math.random() * 1.8).toFixed(2) + 's';
+      out.appendChild(sp);
+    });
+  }
+
 
   function startHeroCanvas() {
     var cv = D.getElementById('hj-hero-canvas');
@@ -904,93 +896,6 @@
     window.addEventListener('resize', resize);
     window.addEventListener('hj:theme', colors);
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) requestAnimationFrame(frame);
-  }
-
-  function buildHomeSections() {
-    var header = D.getElementById('page-header');
-    if (!header || D.getElementById('hj-gates')) return;
-
-    var gates = el('section', 'hj-section', '');
-    gates.id = 'hj-gates';
-    gates.innerHTML =
-      '<div class="hj-sec-head"><span class="hj-sec-no">01</span><h2>三扇门，都不在导航里</h2>' +
-        '<p>它们不在菜单上，但确实存在。名字要自己走进去看。</p></div>' +
-      '<div class="hj-gate-grid">' +
-        '<a class="hj-gate" href="/vault/">' +
-          '<span class="hj-gate-ico">🗝️</span><span class="hj-gate-name">解密台</span>' +
-          '<span class="hj-gate-en">THE VAULT</span>' +
-          '<span class="hj-gate-desc">六张纸、一台旧解码机，和一句被拆开的话。</span></a>' +
-        '<a class="hj-gate" href="/arcade/">' +
-          '<span class="hj-gate-ico">🕹️</span><span class="hj-gate-name">街机厅</span>' +
-          '<span class="hj-gate-en">THE ARCADE</span>' +
-          '<span class="hj-gate-desc">一台会掉星星的老机器，接住十三颗试试。</span></a>' +
-        '<a class="hj-gate" href="/atlas/">' +
-          '<span class="hj-gate-ico">🌌</span><span class="hj-gate-name">星图</span>' +
-          '<span class="hj-gate-en">THE ATLAS</span>' +
-          '<span class="hj-gate-desc">天花板上有六颗星，还有一颗不该在那里。</span></a>' +
-        '<a class="hj-gate hj-locked" href="/seventh/" data-hj-seventh>' +
-          '<span class="hj-gate-ico">🌑</span><span class="hj-gate-name">第七夜</span>' +
-          '<span class="hj-gate-en">THE SEVENTH NIGHT</span>' +
-          '<span class="hj-gate-desc" data-hj-seventh-desc>要五片碎纸，门才肯开。</span></a>' +
-      '</div>';
-
-    var eggs = el('section', 'hj-section', '');
-    eggs.innerHTML =
-      '<div class="hj-sec-head"><span class="hj-sec-no">02</span><h2>六片碎纸</h2>' +
-        '<p>散在站点的六个角落。拼起来是六个字。</p></div>' +
-      '<div class="hj-eggs">' +
-        EGGS.map(function (e) {
-          return '<div class="hj-egg" data-hj-egg-slot="' + e.id + '">' +
-            '<span class="hj-egg-ch">？</span><small>' + e.no + '</small></div>';
-        }).join('') +
-      '</div>' +
-      '<p class="hj-eggs-note">在 <a href="/vault/">解密台</a> 把捡到的 base64 粘进去，它会自己翻译。</p>';
-
-    var quote = el('section', 'hj-section', '');
-    quote.innerHTML =
-      '<div class="hj-quote"><span id="hj-quote-text"></span>' +
-      '<span class="hj-quote-by" id="hj-quote-by"></span></div>';
-
-    var head = el('div', 'hj-section', '');
-    head.innerHTML = '<div class="hj-sec-head"><span class="hj-sec-no">03</span><h2>最近的文字</h2>' +
-      '<p>不一定有用，但都是真的。</p></div>';
-
-    var full = el('div', 'hj-home-full');
-    header.parentNode.insertBefore(full, header.nextSibling);
-    full.appendChild(gates);
-    full.appendChild(eggs);
-    full.appendChild(quote);
-    full.appendChild(head);
-
-    rotateQuote();
-    D.querySelectorAll('[data-hj-seventh]').forEach(function (a) {
-      a.addEventListener('click', function (ev) {
-        if (eggCount() < 5) {
-          ev.preventDefault();
-          toast('门还锁着', '先去捡够五片碎纸', 'lock');
-        }
-      });
-    });
-  }
-
-  function rotateQuote() {
-    var t = D.getElementById('hj-quote-text');
-    var b = D.getElementById('hj-quote-by');
-    if (!t) return;
-    var i = Math.floor(Math.random() * QUOTES.length);
-    function show() {
-      t.style.opacity = 0;
-      setTimeout(function () {
-        t.textContent = QUOTES[i][0];
-        b.textContent = '— ' + QUOTES[i][1];
-        t.style.transition = 'opacity .6s ease';
-        t.style.opacity = 1;
-        i = (i + 1) % QUOTES.length;
-      }, 260);
-    }
-    t.style.opacity = 1;
-    show();
-    setInterval(show, 7200);
   }
 
   /* ---------- 12. 主题粒子（背景层） ---------- */
@@ -1169,7 +1074,7 @@
         if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
       }
-      if (!ev.target.closest('#hj-menu') && !ev.target.closest('#hj-door-btn')) {
+      if (!ev.target.closest('#hj-menu') && !ev.target.closest('#hj-game-btn')) {
         var m = D.getElementById('hj-menu');
         if (m && !m.hidden) toggleMenu(false);
       }
@@ -1197,7 +1102,6 @@
     if (IS_HOME) {
       D.body.classList.add('hj-home');
       buildHero();
-      buildHomeSections();
       refreshUI();
     }
 

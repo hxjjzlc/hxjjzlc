@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-14 -14 228 198" width="228" height="198" role="img" aria-label="蝴蝶">
+  <defs>
+    <linearGradient id="bf-wing" x1="0.1" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#8ad9fd"/>
+      <stop offset="0.45" stop-color="#3aa3e0"/>
+      <stop offset="1" stop-color="#14659f"/>
+    </linearGradient>
+    <linearGradient id="bf-wing2" x1="0.1" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#bfeaff"/>
+      <stop offset="1" stop-color="#4fb4e8"/>
+    </linearGradient>
+    <radialGradient id="bf-glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7fd4ff" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#7fd4ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <style>
+    .bf-body {
+      transform-box: view-box;
+      transform-origin: 100px 88px;
+      animation: bf-bob 5.6s ease-in-out infinite;
+    }
+    @keyframes bf-bob {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%      { transform: translateY(-7px) rotate(-1.1deg); }
+    }
+
+    .bf-wing {
+      transform-box: view-box;
+      transform-origin: 100px 82px;
+    }
+    .bf-wl { animation: bf-flap 4.8s cubic-bezier(0.42, 0, 0.36, 1) infinite; }
+    .bf-wr { animation: bf-flap 4.8s cubic-bezier(0.42, 0, 0.36, 1) infinite; animation-delay: -0.06s; }
+    @keyframes bf-flap {
+      0%, 100% { transform: scaleX(1); }
+      44%, 56% { transform: scaleX(0.55); }
+    }
+
+    .bf-halo {
+      transform-box: view-box;
+      transform-origin: 100px 88px;
+      animation: bf-pulse 6.4s ease-in-out infinite;
+    }
+    @keyframes bf-pulse {
+      0%, 100% { opacity: 0.42; transform: scale(1); }
+      50%      { opacity: 0.75; transform: scale(1.07); }
+    }
+  </style>
+
+  <ellipse class="bf-halo" cx="100" cy="86" rx="88" ry="76" fill="url(#bf-glow)"/>
+
+  <g class="bf-body">
+    <g class="bf-wing bf-wl">
+      <path d="M100 70 C95 46 76 18 50 20 C26 22 18 48 32 68 C46 88 82 82 100 70 Z" fill="url(#bf-wing)"/>
+      <path d="M100 70 C94 52 80 32 62 33 C46 34 38 50 48 64 C60 78 88 77 100 70 Z" fill="url(#bf-wing2)" opacity="0.55"/>
+      <path d="M100 82 C86 84 66 90 58 106 C51 120 62 133 76 128 C90 122 99 103 100 82 Z" fill="url(#bf-wing)"/>
+      <path d="M100 86 C90 88 76 92 68 105 C62 116 70 125 81 120 C91 115 98 100 100 86 Z" fill="url(#bf-wing2)" opacity="0.46"/>
+    </g>
+
+    <g class="bf-wing bf-wr">
+      <g transform="translate(200,0) scale(-1,1)">
+        <path d="M100 70 C95 46 76 18 50 20 C26 22 18 48 32 68 C46 88 82 82 100 70 Z" fill="url(#bf-wing)"/>
+        <path d="M100 70 C94 52 80 32 62 33 C46 34 38 50 48 64 C60 78 88 77 100 70 Z" fill="url(#bf-wing2)" opacity="0.55"/>
+        <path d="M100 82 C86 84 66 90 58 106 C51 120 62 133 76 128 C90 122 99 103 100 82 Z" fill="url(#bf-wing)"/>
+        <path d="M100 86 C90 88 76 92 68 105 C62 116 70 125 81 120 C91 115 98 100 100 86 Z" fill="url(#bf-wing2)" opacity="0.46"/>
+      </g>
+    </g>
+
+    <ellipse cx="100" cy="98" rx="5" ry="27" fill="#12588c"/>
+    <circle cx="100" cy="63" r="6.2" fill="#12588c"/>
+    <path d="M100 56 C95 38 89 20 80 7" stroke="#0d4a76" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <path d="M100 56 C105 38 111 20 120 7" stroke="#0d4a76" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <circle cx="79" cy="6" r="3.1" fill="#3aa3e0"/>
+    <circle cx="121" cy="6" r="3.1" fill="#3aa3e0"/>
+  </g>
+</svg>
