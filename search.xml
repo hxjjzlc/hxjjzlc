@@ -498,9 +498,9 @@
   <entry>
     <title>四渡 · 镜湖</title>
     <url>/2026/10/23/sidu-mirror-lake/</url>
-    <content><![CDATA[<link rel="stylesheet" href="/fx/odyssey/odyssey.css?v=6">
+    <content><![CDATA[<link rel="stylesheet" href="/fx/odyssey/odyssey.css?v=7">
 <script>document.documentElement.classList.add('od-mode');</script>
-<script src="/fx/odyssey/odyssey.js?v=6" defer></script>
+<script src="/fx/odyssey/odyssey.js?v=7" defer></script>
 
 <!--
   幕的写法（Markdown 里唯一的"特定格式"）：

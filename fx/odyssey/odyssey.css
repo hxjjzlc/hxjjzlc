@@ -648,6 +648,10 @@ html.od-locked #nav {
 }
 html.od-turning .od-side-a { opacity: 0; transition: opacity 0.45s ease; }
 html.od-turning #nav { opacity: 0; }
+/* 旋转那 0.6 秒里，正面的标题栏还挂在左上角，会从翻转中的反面文字背后透出来。
+   它得和正文一起先退场，"整页翻过去"才成立。 */
+html.od-turning #page-header,
+html.od-turning #page-header.full_page { opacity: 0; transition: opacity 0.5s ease; }
 
 /* --------------------------------------------------------- 13 镜中世界 */
 .od-inv {
