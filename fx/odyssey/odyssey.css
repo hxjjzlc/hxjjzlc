@@ -433,42 +433,61 @@ html.od-mode #article-container {
 .od-act-mirror a { color: #bfe0ff !important; text-decoration: none; }
 
 /* ------------------------------------------------ 8 镜面倒影（另一个人写的） */
+/* 每句话下面压着一句语义相反的话。之前几乎看不见：0.46 的淡蓝 + 被血海压着。
+   现在血海整段退到屏幕外（见 odyssey.js updateMirror），底下是纯黑墨底，
+   再把颜色、光晕、水面高光一起提起来，倒影才读得出来。 */
 .od-mline {
   position: relative;
-  margin-bottom: 2.6em !important;
+  margin-bottom: 2.9em !important;
 }
 .od-mline::after {
   content: attr(data-refl);
   display: block;
-  margin-top: 0.55em;
+  margin-top: 0.62em;
   transform: scaleY(-1);
-  transform-origin: top center;
-  color: rgba(168, 202, 232, 0.46);
-  font-size: 0.86em;
-  letter-spacing: 0.12em;
-  line-height: 1.5;
-  filter: blur(0.8px);
-  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.02));
-  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.02));
+  /* 绕自身中心翻转：元素仍然占在正文下方，只是内容上下倒过来。
+     原来写的是 top center —— 那是绕顶边翻，整块文字会被翻到正文上面去压住正文，
+     看起来就是"倒影没了"。 */
+  transform-origin: 50% 50%;
+  color: rgba(200, 232, 255, 0.78);
+  font-size: 0.9em;
+  letter-spacing: 0.13em;
+  line-height: 1.55;
+  filter: blur(0.55px);
+  /* to top：翻转之后，"靠近正文"那一端才是不透明的一端 */
+  -webkit-mask-image: linear-gradient(to top,
+    rgba(0, 0, 0, 0.98) 0%, rgba(0, 0, 0, 0.72) 46%,
+    rgba(0, 0, 0, 0.3) 76%, rgba(0, 0, 0, 0) 97%);
+  mask-image: linear-gradient(to top,
+    rgba(0, 0, 0, 0.98) 0%, rgba(0, 0, 0, 0.72) 46%,
+    rgba(0, 0, 0, 0.3) 76%, rgba(0, 0, 0, 0) 97%);
   pointer-events: none;
   user-select: none;
-  text-shadow: 0 0 18px rgba(150, 200, 240, 0.30);
+  text-shadow:
+    0 0 10px rgba(160, 210, 250, 0.62),
+    0 0 26px rgba(110, 170, 225, 0.42),
+    0 0 52px rgba(70, 130, 200, 0.26);
   animation: od-ripple 7.5s ease-in-out infinite;
 }
 @keyframes od-ripple {
-  0%, 100% { letter-spacing: 0.12em; filter: blur(0.8px); }
-  50% { letter-spacing: 0.135em; filter: blur(1.1px); }
+  0%, 100% { letter-spacing: 0.13em; filter: blur(0.55px); }
+  50%      { letter-spacing: 0.148em; filter: blur(0.95px); }
 }
-.od-mline::before {
-  /* 倒影与水面的分界：一道几乎看不见的亮线 */
-  content: "";
-  position: absolute;
-  left: 0; right: 0;
-  bottom: -0.1em;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(190, 225, 255, 0.28), transparent);
-  pointer-events: none;
+/* 水面本身：正文与倒影之间那道"水线"。
+   不能用 absolute + top:100% 去量（元素高度包含倒影，那样线会落到倒影底下），
+   也不能挂在 ::after 的 border-top（元素绕中心翻转，边框跟着跑到视觉底部）。
+   所以直接画在 ::after 的顶部一条背景线上，它的顶边正好贴在正文脚下。 */
+.od-mline::after {
+  background-image: linear-gradient(90deg,
+    transparent, rgba(170, 218, 250, 0.45) 12%, rgba(232, 246, 255, 0.92) 50%,
+    rgba(170, 218, 250, 0.45) 88%, transparent);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  /* 元素绕中心 scaleY(-1)，内部底部 = 视觉顶部，所以线画在 100% 才贴着正文 */
+  background-position: 0 100%;
 }
+
+
 
 /* ------------------------------------------------------------ 9 浮层 UI */
 .od-ui {
@@ -549,8 +568,19 @@ body.od-drown .od-act-ink p { color: rgba(140, 155, 175, 0.5); }
 /* ------------------------------------------------------- 11 终局：镜面锁屏 */
 html.od-locked,
 html.od-locked body { overflow: hidden !important; }
-html.od-locked .od-side-a { filter: blur(7px) brightness(0.28); transition: filter 1.8s ease; }
-/* 锁屏之后"只剩下一行小字"——顶栏也要退场，否则它会压在小字上面还挡点击 */
+/* 锁屏之后"只剩下一行小字"——所以正面世界要退得**干净**。
+   之前只做了 blur + brightness，标题栏、文章标题、底部那条分隔线还浮在血海上，
+   看上去像没收拾完。现在整套压到几乎不可见，再加上隐藏标题栏。 */
+html.od-locked .od-side-a {
+  opacity: 0.02;
+  filter: blur(16px);
+  transition: opacity 1.8s ease, filter 1.8s ease;
+}
+html.od-locked #page-header,
+html.od-locked #page-header.full_page {
+  display: none !important;
+}
+/* 顶栏也要退场，否则它会压在小字上面还挡点击 */
 html.od-locked #nav {
   opacity: 0 !important;
   pointer-events: none !important;
@@ -626,32 +656,46 @@ html.od-locked #nav {
 @keyframes od-blink { 0%, 100% { opacity: 0.15; } 50% { opacity: 0.6; } }
 
 /* ------------------------------------------------------------- 12 翻面 */
+/* 一次翻面要分四段，不能只让内容转半圈：
+     ① 正面世界被卷起来（缩小、倾斜、虚化）—— 像被吸进镜面
+     ② 血漩涡从中心涨开，吞掉整屏（.od-turn）
+     ③ 反面从 -24° 一路转到 180° 落定，同时从模糊里聚焦
+     ④ 反面文字从下方浮上来
+
+   ⚠ ①② 的动画由 odyssey.js 的 driveTurn() 逐帧写 inline style 驱动，
+   不是 CSS animation —— 实测 CSS animation 在这类环境下会停在第一帧
+   （getAnimations() 报 running 但 currentTime 一直是 0），
+   整个"翻转"就退化成"内容直接换个方向"。用 JS 驱动，任何环境都一定跑得动。
+   所以这里只留静态样式，别有 animation。 */
 .od-turn {
   position: fixed;
   inset: -35%;
   z-index: 400;              /* 旋转遮罩要盖住一切，包括终局小字 */
   pointer-events: none;
   opacity: 0;
+  transform: scale(0.08);
+  transform-origin: 50% 50%;
   background:
     conic-gradient(from 0deg at 50% 50%,
       rgba(120, 0, 10, 0.96), rgba(6, 2, 8, 1) 22%,
       rgba(150, 10, 20, 0.94) 50%, rgba(6, 2, 8, 1) 76%,
       rgba(120, 0, 10, 0.96));
-  filter: blur(20px);
+  filter: blur(9px);
+  will-change: transform, opacity;
 }
-.od-turn.run { animation: od-turn 1.9s cubic-bezier(.62, 0, .34, 1) forwards; }
-@keyframes od-turn {
-  0%   { opacity: 0; transform: rotate(0deg) scale(0.15); }
-  16%  { opacity: 1; }
-  62%  { opacity: 1; transform: rotate(150deg) scale(1.5); }
-  100% { opacity: 0; transform: rotate(360deg) scale(2.8); }
+/* 漩涡中心那团暗核：让"吞没"有个实心的底，不至于透出背后的字 */
+.od-turn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(2, 1, 4, 0.99) 0%, rgba(48, 0, 7, 0.96) 40%, rgba(10, 1, 6, 0.6) 64%, transparent 82%);
 }
-html.od-turning .od-side-a { opacity: 0; transition: opacity 0.45s ease; }
+html.od-turning .od-side-a { opacity: 0; transition: opacity 0.5s ease; }
 html.od-turning #nav { opacity: 0; }
-/* 旋转那 0.6 秒里，正面的标题栏还挂在左上角，会从翻转中的反面文字背后透出来。
-   它得和正文一起先退场，"整页翻过去"才成立。 */
+/* 正面世界在翻面时由 JS 卷走，标题栏跟着一起退场（两边都别留在屏幕上） */
 html.od-turning #page-header,
-html.od-turning #page-header.full_page { opacity: 0; transition: opacity 0.5s ease; }
+html.od-turning #page-header.full_page { opacity: 0; }
 
 /* --------------------------------------------------------- 13 镜中世界 */
 .od-inv {
@@ -662,15 +706,27 @@ html.od-turning #page-header.full_page { opacity: 0; transition: opacity 0.5s ea
   overflow-y: auto;
   overflow-x: hidden;
   opacity: 0;
-  transform: rotate(0deg);
+  /* 起点放在 -24°：落定时转过 204°，而且带缩放和失焦，
+     比"老老实实从 0° 转到 180°"多一层"从很深的地方翻出来"的感觉。 */
+  transform: rotate(-24deg) scale(0.88);
   transform-origin: 50% 50%;
-  transition: transform 1.25s cubic-bezier(.62, 0, .34, 1), opacity 0.85s ease;
-  will-change: transform;
+  filter: blur(14px) brightness(0.35);
+  transition: transform 1.55s cubic-bezier(.16, .84, .24, 1),
+              opacity 1.05s ease,
+              filter 1.3s ease;
+  will-change: transform, filter;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
 .od-inv::-webkit-scrollbar { width: 0; height: 0; }
-.od-inv.on { opacity: 1; transform: rotate(180deg); }
+.od-inv.on {
+  opacity: 1;
+  transform: rotate(180deg) scale(1);
+  filter: blur(0) brightness(1);
+}
+/* ④ 落定后文字浮上来交给 JS 的 opacity 过渡（.od-inv 自身那条），
+   不再挂 CSS animation —— 用 animation + fill-mode: both 的话，
+   一旦动画没启动（某些环境会停在第一帧）内容就永远停在 opacity 0，整页空白。 */
 html.od-flipped,
 html.od-flipped body { overflow: hidden !important; height: 100%; }
 html.od-flipped .od-side-a { display: none; }
@@ -692,6 +748,23 @@ html.od-flipped .od-inv, html.od-flipped .od-inv * { visibility: visible; }
   letter-spacing: 0.02em;
   color: #cfd9e4;
 }
+
+/* ⚠ 反面是整页 rotate(180deg) 的容器：内容越靠后，在屏幕上越靠上。
+   所以"inner 的 padding-bottom"会跑到视觉**顶部**，".od-act 的 padding-bottom"
+   也会跑到下一幕的视觉顶部去 —— 两者的留白全堆在屏幕上半部分，
+   于是滚到反面第一幕时，上半屏是空的、字全挤在下面，看起来就像"已经在页面最下面"。
+   反向世界里把这堆留白一起收紧，第一幕才铺得满一屏。 */
+html.od-flipped .od-inv-inner { padding-top: 4vh; padding-bottom: 7vh; }
+/* 每一幕按"一整屏"来排，内容在中间垂直居中。
+   不这么做的话，四幕高低不齐，翻过去第一眼就是半屏空白 + 一坨字挤在底下。 */
+html.od-flipped .od-act {
+  padding: 6vh 0;
+  min-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+html.od-flipped .od-act > * { flex: 0 0 auto; }
 
 /* 反面的四幕：色温比正面低一档，像隔着一层玻璃看 */
 .od-act-rev1 h2, .od-act-rev2 h2, .od-act-rev3 h2, .od-act-rev4 h2 {

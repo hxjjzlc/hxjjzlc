@@ -175,6 +175,9 @@
   var locked = false, flipped = false, tailOpen = false;
   var last = 0;
   var TOP = {};
+  /* 反面坐标原点（= 第一幕在容器里的 offsetTop）。翻转后所有 TOP 都减去它，
+     这样 TOP.rev1 === 0，curScroll() 也以它为原点，两边才谈得上"进度"。 */
+  var FLIP_BASE = 0;
 
   var S = { act: 0, sea: 0, ink: 0 };
 
@@ -191,11 +194,15 @@
     return y;
   }
   function curScroll() {
-    return flipped ? inv.scrollTop : (W.pageYOffset || HTML.scrollTop || 0);
+    /* 反面是整页 rotate(180deg) 的容器：屏幕**底部**才是内容开头，
+       屏幕顶部反而是内容末尾。所以反面的进度不能取 scrollTop，
+       必须换算到"故事坐标"——以第一幕的位置为原点（见 measure() 里的 FLIP_BASE）。 */
+    return flipped ? (inv.scrollTop - FLIP_BASE) : (W.pageYOffset || HTML.scrollTop || 0);
   }
   function vh() { return W.innerHeight || 800; }
   function docH() {
-    return flipped ? inv.scrollHeight : Math.max(D.body.scrollHeight, HTML.scrollHeight);
+    return flipped ? Math.max(1, inv.scrollHeight - FLIP_BASE)
+                   : Math.max(D.body.scrollHeight, HTML.scrollHeight);
   }
 
   /* --------------------------------------------- 5. 时间线（只插值 sea/ink） */
@@ -265,11 +272,24 @@
 
   /* ------------------------------------------------------------- 7. 定位 */
   function measure() {
-    TOP = {};
+    var raw = {};
     var list = flipped ? BACKWARD : FORWARD;
     list.forEach(function (k) {
-      if (secs[k]) TOP[k] = absTop(secs[k]);
+      if (secs[k]) raw[k] = absTop(secs[k]);
     });
+    if (flipped) {
+      /* 反面：把坐标原点挪到第一幕，让 TOP.rev1 = 0。
+         不这么做的话，curScroll()（从 0 起）永远追不上 TOP.rev2 以后的偏移，
+         四幕的进度就全挤在 0 上，血海一路不动。 */
+      FLIP_BASE = raw.rev1 || 0;
+      TOP = {};
+      list.forEach(function (k) {
+        if (raw[k] != null) TOP[k] = raw[k] - FLIP_BASE;
+      });
+    } else {
+      FLIP_BASE = 0;
+      TOP = raw;
+    }
   }
   /* 测量是否可信：最后一幕的偏移确实落在下面（而不是全部挤在 0）。
      布局没稳定时 offsetTop 全 0，这时任何"当前在哪一幕"的判断都不能信。 */
@@ -309,14 +329,18 @@
   function updateMirror() {
     var p = actProgress('mirror');
     var sea;
-    if (p < 0.08) {
+    /* 血海必须彻底退到屏幕外（sea=0 → translateY(100%)），不能只留 0.03。
+       0.03 时那条血面正好横在正文下方，倒影是淡蓝的，压在红雾上等于消失 —— 
+       "文字下的反射没了"就是这么来的。退干净以后底下是纯黑墨底，
+       倒影才有对比度，镜面这一段也才成立。 */
+    if (p < 0.015) {
       sea = 1;                                          /* 切进来：血海是满的 */
-    } else if (p < 0.42) {
-      sea = 1 - ease((p - 0.08) / 0.34) * 0.97;         /* 退下去，露出墨底 */
-    } else if (p < 0.70) {
-      sea = 0.03;                                       /* 这一段只剩倒影文字撑着 */
+    } else if (p < 0.09) {
+      sea = 1 - ease((p - 0.015) / 0.075);              /* 滚一小段就退干净，别压着倒影 */
+    } else if (p < 0.76) {
+      sea = 0;                                          /* 这一段只有倒影文字撑着 */
     } else {
-      sea = 0.03 + ease(clamp((p - 0.70) / 0.22, 0, 1)) * 0.97;  /* 涨回来，铺满 */
+      sea = ease(clamp((p - 0.76) / 0.14, 0, 1));       /* 涨回来，正好在锁屏时铺满 */
     }
     S.sea = clamp(sea, 0, 1);
     S.ink = 0.55;
@@ -352,6 +376,9 @@
     S.sea = clamp(sea, 0, 1);
     S.ink = clamp(ink, 0, 1);
     S.act = S.sea > 0.5 ? 3 : (S.sea > 0.15 ? 1 : 0);
+
+    /* 让 curAct 跟着走，ODDEBUG.cur() 才不会一直报 rev1（纯调试信息，不影响画面） */
+    curAct = p4 > 0.02 ? 'rev4' : p3 > 0.02 ? 'rev3' : seg('rev2') > 0.02 ? 'rev2' : 'rev1';
 
     if (p4 > 0.55 && !tailOpen) {
       tailOpen = true;
@@ -397,6 +424,61 @@
 
   /* ------------------------------------------------------------ 11. 翻面 */
   var turn = null;
+  var bodyWrap = D.getElementById('body-wrap') || D.getElementById('page');
+  /* 翻面动画的时间原点。-1 = 等下一帧启动，0 = 没在翻，其余 = 启动时刻。
+     用 rAF 的 now 当基准，和 tick 同一个时钟，不会有偏差。 */
+  var turnAt = 0;
+  var TURN_MS = 2700;
+
+  /* 翻面的 ①② 两段由这里逐帧写 inline style。
+     没用 CSS animation：实测它在部分环境里 getAnimations() 报 running、
+     但 currentTime 永远停在 0 —— 血漩涡和"正面被卷走"一次都没播出来，
+     用户看到的就是"旋转真就旋转呗，什么都没有"。JS 驱动没有这个问题。 */
+  function driveTurn(now) {
+    if (turnAt === 0) return;
+    if (turnAt < 0) turnAt = now;
+    var t = now - turnAt;
+
+    /* ① 正面世界被卷进去：0 → 980ms，二次加速，最后完全虚化消失 */
+    var k1 = clamp(t / 980, 0, 1), e1 = k1 * k1;
+    if (bodyWrap) {
+      bodyWrap.style.opacity = (1 - e1).toFixed(3);
+      bodyWrap.style.transform =
+        'rotate(' + (-13 * e1).toFixed(2) + 'deg) scale(' + (1 - 0.18 * e1).toFixed(3) + ')';
+      bodyWrap.style.filter =
+        'blur(' + (9 * e1).toFixed(1) + 'px) brightness(' + (1 - 0.7 * e1).toFixed(3) + ')';
+    }
+
+    /* ② 血漩涡：从小点涨开、一路转着填满整屏，再转着淡出 */
+    var k2 = clamp(t / 2350, 0, 1);
+    var op = k2 < 0.10 ? k2 / 0.10 : (k2 < 0.72 ? 1 : 1 - (k2 - 0.72) / 0.28);
+    var sc = 0.08 + 3.32 * easeOut(k2);
+    turn.style.opacity = op.toFixed(3);
+    turn.style.transform = 'rotate(' + (360 * k2).toFixed(1) + 'deg) scale(' + sc.toFixed(3) + ')';
+
+    /* ③ 世界翻过去：血漩涡最浓的那一刻切，之后反面从 -24° 转到 180° 落定 */
+    if (t >= 1080) {
+      applyFlipWorld();
+      var k3 = clamp((t - 1080) / 1550, 0, 1);
+      var e3 = 1 - Math.pow(1 - k3, 3);
+      inv.style.transform = 'rotate(' + (-24 + 204 * e3).toFixed(2) + 'deg) scale(' + (0.88 + 0.12 * e3).toFixed(3) + ')';
+      inv.style.opacity = (k3 < 0.12 ? k3 / 0.12 : 1).toFixed(3);
+      inv.style.filter = 'blur(' + (14 * (1 - e3)).toFixed(1) + 'px) brightness(' + (0.35 + 0.65 * e3).toFixed(3) + ')';
+      if (k3 >= 1) {
+        inv.style.transform = 'rotate(180deg) scale(1)';
+        inv.style.opacity = '1';
+        inv.style.filter = 'none';
+      }
+    }
+
+    if (t >= TURN_MS) {
+      turnAt = 0;
+      HTML.classList.remove('od-turning');
+      turn.style.opacity = '0';
+      if (bodyWrap) { bodyWrap.style.opacity = ''; bodyWrap.style.transform = ''; bodyWrap.style.filter = ''; }
+      measure();
+    }
+  }
 
   /* 锁屏之后，整页任何一次点击都算"翻面"——那行小字只是提示，不是唯一的按钮。
      早期版本只在 .od-end 上挂监听，一旦主题插了层遮罩盖住它，点下去就毫无反应。 */
@@ -415,10 +497,25 @@
     try { W.dispatchEvent(new Event('resize')); } catch (e) {}
   }
 
+  /* ③ 世界翻过去的那一刻要做的事。由 driveTurn 在 t>=1080ms 时触发一次，
+     另有一个 setTimeout 兜底（标签页在后台时 rAF 不跑）。 */
+  var worldApplied = false;
+  function applyFlipWorld() {
+    if (worldApplied) return;
+    worldApplied = true;
+    HTML.classList.add('od-flipped');
+    moveTail();
+    measure();                                  /* 反面 padding 变了，重新量 */
+    inv.scrollTop = 0;
+    S.act = 3; S.sea = 1; S.ink = 0.62;
+    HTML.classList.remove('od-locked');
+    if (endEl) endEl.style.display = 'none';
+    curAct = 'rev1';
+  }
+
   function flip() {
     if (flipped) return;
     flipped = true;
-    measure();                                  /* 用正面布局再校一次，免得翻转后偏移错位 */
     if (endEl) endEl.classList.remove('on');
     S.sea = 1;
     if (!turn) {
@@ -426,37 +523,20 @@
       turn.className = 'od-turn';
       D.body.appendChild(turn);
     }
-    /* 先把反面挂成"可测量但不可见"的状态。
-       之前是把 display 留到 620ms 才开，等于在旋转开始前一刻才排版，
-       低端机上很容易量到一半的高度，翻过去就是一堆错位的文字。 */
+    /* 先把反面挂成"可测量但不可见"的状态，否则 offsetTop 全是 0。
+       注意一定要在 measure() **之前** —— measure() 现在按 flipped 走反面分支。 */
     inv.style.display = 'block';
     void inv.offsetHeight;
+    measure();
+    inv.scrollTop = 0;                          /* 视觉上就是第一幕那一头 */
+    /* 反面落定的起始状态（后面的旋转由 driveTurn 逐帧推） */
+    inv.style.opacity = '0';
+    inv.style.transform = 'rotate(-24deg) scale(0.88)';
+    inv.style.filter = 'blur(14px) brightness(0.35)';
+
     HTML.classList.add('od-turning');
-    void turn.offsetWidth;
-    turn.classList.add('run');
-
-    setTimeout(function () {
-      HTML.classList.add('od-flipped');
-      moveTail();
-      measure();
-      inv.scrollTop = 0;
-      S.act = 3; S.sea = 1; S.ink = 0.62;
-      HTML.classList.remove('od-locked');
-      if (endEl) endEl.style.display = 'none';
-      curAct = 'rev1';
-      /* 双 rAF：保证以 rotate(0)/opacity 0 真的绘过一帧，transition 才会跑 */
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () { inv.classList.add('on'); });
-      });
-      /* 兜底：标签页在后台时 rAF 不跑，1.3s 后无论如何也要转过去 */
-      setTimeout(function () { inv.classList.add('on'); }, 1300);
-    }, 620);
-
-    setTimeout(function () {
-      HTML.classList.remove('od-turning');
-      turn.classList.remove('run');
-      measure();
-    }, 1900);
+    turnAt = -1;                                /* 下一帧启动 */
+    setTimeout(applyFlipWorld, 2600);           /* 兜底：rAF 被节流时也不能卡住 */
   }
 
   W.addEventListener('resize', function () { measure(); }, { passive: true });
@@ -477,6 +557,7 @@
     last = now;
 
     stepTL(dt);
+    if (turnAt !== 0) driveTurn(now);
 
     if (!busy && !flipped) {
       var n = currentName();
