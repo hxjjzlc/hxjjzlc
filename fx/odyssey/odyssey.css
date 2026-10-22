@@ -55,21 +55,94 @@ html.od-mode #nav #site-name,
 html.od-mode #nav .site-page { color: #cfc2ea !important; }
 
 /* ---------------------------------------------------------------- 2 舞台 */
+/* 这里原来是一整块 WebGL（花海 / 墨流体 / 血雨粒子），很多设备带不动。
+   现在只剩一件事：侧视角的血海，随滚动上升、下降。
+   全部落在合成层上，只动 transform / opacity，不重绘、不读纹理，
+   连集成显卡和低端手机也能跑满帧。 */
 #od-stage {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  overflow: hidden;
   transform-origin: 50% 50%;
   transition: transform 1.35s cubic-bezier(.62, 0, .34, 1);
   will-change: transform;
-}
-#od-stage canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
+  background:
+    radial-gradient(120% 78% at 50% -8%, rgba(74, 22, 52, 0.55), transparent 62%),
+    linear-gradient(180deg, #0b0509 0%, #090409 42%, #05020a 100%);
 }
 html.od-flipped #od-stage { transform: rotate(180deg); }
+
+/* 墨色空气：浓度由 --od-ink 控制，越往下有雾 */
+#od-stage .od-air {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(6, 3, 10, 0.05) 0%, rgba(3, 2, 7, 0.92) 100%);
+  opacity: calc(var(--od-ink, 0) * 0.9);
+}
+
+/* 血海：整层往下推。--od-sea=0 全在屏幕外，=1 铺满整屏 */
+#od-stage .od-sea-wrap {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 100%;
+  transform: translate3d(0, calc((1 - var(--od-sea, 0)) * 100%), 0);
+  will-change: transform;
+}
+#od-stage .od-sea {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    #7d0e19 0%, #620a13 6%, #40060e 22%,
+    #26040b 50%, #150207 76%, #0a0105 100%);
+  animation: od-tide 11s ease-in-out infinite;
+}
+@keyframes od-tide {
+  0%, 100% { transform: translate3d(0, -0.7%, 0); }
+  50%      { transform: translate3d(0, 0.7%, 0); }
+}
+
+/* 血面：一条亮边，加一层从水面浮起来的雾光 */
+#od-stage .od-sea::before {
+  content: "";
+  position: absolute;
+  left: -10%; right: -10%;
+  top: -1px;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent, rgba(255, 92, 96, 0.85) 22%, rgba(255, 172, 152, 0.96) 50%,
+    rgba(255, 92, 96, 0.85) 78%, transparent);
+  filter: blur(0.4px);
+  opacity: 0.92;
+}
+#od-stage .od-sea::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: 0;
+  height: 26vh;
+  background: radial-gradient(140% 100% at 50% 0%,
+    rgba(214, 46, 58, 0.40), rgba(120, 12, 24, 0.15) 46%, transparent 72%);
+  pointer-events: none;
+}
+
+/* 血面上的斜光：慢速横扫，制造"水在动"的错觉（同样只用 transform） */
+#od-stage .od-sheen {
+  position: absolute;
+  left: -30%; right: -30%;
+  top: 0; height: 100%;
+  background: repeating-linear-gradient(102deg,
+    rgba(255, 192, 176, 0.055) 0px, rgba(255, 192, 176, 0.055) 2px,
+    transparent 2px, transparent 9px);
+  animation: od-sweep 22s linear infinite;
+  opacity: 0.55;
+  will-change: transform;
+}
+@keyframes od-sweep {
+  0%   { transform: translate3d(-7%, 0, 0); }
+  100% { transform: translate3d(7%, 0, 0); }
+}
 
 /* ------------------------------------------------------------ 3 文章骨架 */
 html.od-mode #article-container {
