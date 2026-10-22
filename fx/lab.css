@@ -1,0 +1,460 @@
+/* =========================================================
+   lab.css —— 隐藏页面（解密台 / 街机厅 / 星图 / 第七夜）
+   这些页面用 skip_render 直出，不套主题，但要沿用主题变量
+   ========================================================= */
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+body.lab {
+  margin: 0;
+  min-height: 100vh;
+  padding: 0 0 120px;
+  background: transparent !important;
+  color: var(--hj-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+.lab-wrap {
+  width: min(900px, calc(100% - 36px));
+  margin: 0 auto;
+  padding-top: 48px;
+  animation: lab-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes lab-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.lab-back {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 1.6px;
+  color: var(--hj-muted) !important;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--hj-line);
+  transition: color 0.2s, box-shadow 0.2s;
+}
+.lab-back:hover { color: var(--hj-accent) !important; box-shadow: inset 0 0 0 1px var(--hj-accent); }
+
+.lab-kicker {
+  margin-top: 30px;
+  font-family: "Consolas", monospace;
+  font-size: 11px;
+  letter-spacing: 5px;
+  color: var(--hj-accent);
+  opacity: 0.8;
+}
+.lab-head h1 {
+  margin: 10px 0 8px;
+  font-size: clamp(30px, 5vw, 52px);
+  line-height: 1.2;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--hj-ink);
+}
+.lab-head h1 em {
+  font-style: normal;
+  background-image: linear-gradient(100deg, var(--hj-accent), var(--hj-accent2), var(--hj-gold), var(--hj-accent));
+  background-size: 280% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: lab-shine 9s linear infinite;
+}
+@keyframes lab-shine {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 280% 50%; }
+}
+.lab-head p {
+  margin: 0;
+  max-width: 620px;
+  font-size: 14px;
+  color: var(--hj-muted);
+  line-height: 2;
+}
+
+.lab-card {
+  margin-top: 22px;
+  padding: 24px;
+  border-radius: 18px;
+  background: var(--hj-card);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: inset 0 0 0 1px var(--hj-line), 0 18px 46px rgba(0, 0, 0, 0.2);
+}
+.lab-card h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--hj-ink);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.lab-card h2 .lab-no {
+  font-family: "Consolas", monospace;
+  font-size: 10px;
+  letter-spacing: 1.6px;
+  color: var(--hj-accent);
+  opacity: 0.75;
+  font-weight: 400;
+}
+.lab-card > p {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--hj-muted);
+  line-height: 1.95;
+}
+.lab-card code, .lab-mono {
+  font-family: "Consolas", "SFMono-Regular", monospace;
+  font-size: 0.92em;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: rgba(127, 127, 127, 0.14);
+  color: var(--hj-accent);
+}
+
+/* 碎片槽 */
+.lab-slots { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.lab-slot {
+  aspect-ratio: 1 / 1.18;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border-radius: 14px;
+  background: rgba(127, 127, 127, 0.08);
+  box-shadow: inset 0 0 0 1px var(--hj-line);
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 900;
+  color: var(--hj-muted);
+  transition: all 0.35s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+.lab-slot small {
+  font-family: "Consolas", monospace;
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  color: var(--hj-muted);
+  font-weight: 400;
+}
+.lab-slot.on {
+  background: linear-gradient(160deg, var(--hj-accent), var(--hj-accent2));
+  color: var(--hj-bg0);
+  box-shadow: 0 0 26px var(--hj-glow), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  transform: translateY(-3px);
+}
+.lab-slot.on small { color: var(--hj-bg0); opacity: 0.7; }
+
+.lab-assembled {
+  margin-top: 20px;
+  padding: 18px;
+  border-radius: 14px;
+  text-align: center;
+  background: rgba(127, 127, 127, 0.07);
+  box-shadow: inset 0 0 0 1px var(--hj-line);
+}
+.lab-assembled .lab-as-label {
+  display: block;
+  font-family: "Consolas", monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--hj-muted);
+  margin-bottom: 8px;
+}
+.lab-assembled .lab-as-chars {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 4px;
+}
+.lab-assembled .lab-as-chars i {
+  font-style: normal;
+  opacity: 0.25;
+  transition: all 0.4s;
+}
+.lab-assembled .lab-as-chars i.got {
+  opacity: 1;
+  color: var(--hj-accent);
+  text-shadow: 0 0 20px var(--hj-glow);
+}
+.lab-assembled .lab-as-hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--hj-muted);
+}
+
+/* 输入 */
+.lab-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.lab-input {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 11px;
+  border: 0;
+  background: rgba(127, 127, 127, 0.1);
+  box-shadow: inset 0 0 0 1px var(--hj-line);
+  color: var(--hj-ink);
+  font: inherit;
+  font-family: "Consolas", monospace;
+  font-size: 14px;
+  outline: none;
+  transition: box-shadow 0.2s;
+}
+.lab-input:focus { box-shadow: inset 0 0 0 1px var(--hj-accent), 0 0 0 3px var(--hj-glow); }
+.lab-input::placeholder { color: var(--hj-muted); opacity: 0.6; }
+
+.lab-btn {
+  border: 0;
+  cursor: pointer;
+  padding: 12px 22px;
+  border-radius: 11px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--hj-bg0);
+  background: linear-gradient(100deg, var(--hj-accent), var(--hj-accent2));
+  box-shadow: 0 10px 26px var(--hj-glow);
+  transition: transform 0.2s, filter 0.2s;
+}
+.lab-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.lab-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.lab-btn.ghost {
+  color: var(--hj-ink);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--hj-line);
+}
+.lab-btn.ghost:hover { box-shadow: inset 0 0 0 1px var(--hj-accent); }
+
+.lab-out {
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--hj-muted);
+  min-height: 24px;
+}
+.lab-out b { color: var(--hj-accent); }
+.lab-out.bad b, .lab-out.bad { color: #ff7b6b; }
+.lab-out.good { color: var(--hj-ink); }
+
+/* 线索簿 */
+.lab-clues { list-style: none; margin: 0; padding: 0; }
+.lab-clues li {
+  display: flex;
+  gap: 12px;
+  padding: 13px 4px;
+  border-bottom: 1px dashed var(--hj-line);
+  font-size: 13px;
+  color: var(--hj-muted);
+  line-height: 1.8;
+}
+.lab-clues li:last-child { border-bottom: 0; }
+.lab-clues .lab-c-no {
+  flex: 0 0 auto;
+  width: 24px; height: 24px;
+  display: grid; place-items: center;
+  border-radius: 7px;
+  font-family: "Consolas", monospace;
+  font-size: 10px;
+  color: var(--hj-accent);
+  box-shadow: inset 0 0 0 1px var(--hj-line);
+}
+.lab-clues li.done { color: var(--hj-ink); }
+.lab-clues li.done .lab-c-no {
+  color: var(--hj-bg0);
+  background: var(--hj-accent);
+  box-shadow: none;
+}
+
+.lab-foot {
+  margin-top: 26px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--hj-muted);
+  letter-spacing: 0.6px;
+}
+.lab-foot a { color: var(--hj-muted); }
+
+/* ===== 街机厅 ===== */
+.arcade-stage {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px var(--hj-line), 0 20px 50px rgba(0, 0, 0, 0.3);
+  background: rgba(4, 6, 15, 0.55);
+}
+#game-canvas { display: block; width: 100%; height: auto; }
+.arcade-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 12px 4px 0;
+  font-family: "Consolas", monospace;
+  font-size: 12px;
+  letter-spacing: 1.4px;
+  color: var(--hj-muted);
+}
+.arcade-hud b { color: var(--hj-accent); font-size: 15px; }
+.arcade-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 22px;
+  background: rgba(4, 6, 15, 0.72);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  transition: opacity 0.35s;
+}
+.arcade-overlay[hidden] { display: none !important; }
+.arcade-overlay h3 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--hj-ink);
+}
+.arcade-overlay p {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--hj-muted);
+  max-width: 380px;
+}
+.arcade-keys {
+  margin-top: 12px;
+  font-family: "Consolas", monospace;
+  font-size: 11px;
+  color: var(--hj-muted);
+  letter-spacing: 1px;
+}
+
+/* ===== 星图 ===== */
+.atlas-map {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 50%, rgba(90, 70, 180, 0.16), transparent 70%);
+  box-shadow: inset 0 0 0 1px var(--hj-line);
+}
+.atlas-map svg { display: block; width: 100%; height: auto; }
+.atlas-node { cursor: pointer; transition: transform 0.3s, opacity 0.3s; transform-origin: center; }
+.atlas-node:hover { opacity: 1 !important; }
+.atlas-node circle { transition: all 0.3s; }
+.atlas-node text {
+  font-family: "Consolas", monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  fill: var(--hj-muted);
+  pointer-events: none;
+}
+.atlas-node.found circle { fill: var(--hj-accent); }
+.atlas-node.found text { fill: var(--hj-ink); }
+.atlas-info {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(127, 127, 127, 0.08);
+  box-shadow: inset 0 0 0 1px var(--hj-line);
+  font-size: 13px;
+  color: var(--hj-muted);
+  line-height: 1.9;
+  min-height: 62px;
+}
+.atlas-info b { color: var(--hj-accent); }
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.theme-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 0;
+  border-radius: 13px;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: var(--hj-ink);
+  background: rgba(127, 127, 127, 0.07);
+  box-shadow: inset 0 0 0 1px var(--hj-line);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.theme-card:hover { transform: translateY(-3px); box-shadow: inset 0 0 0 1px var(--hj-accent); }
+.theme-card.is-active { box-shadow: inset 0 0 0 2px var(--hj-accent), 0 0 24px var(--hj-glow); }
+.theme-card.is-locked { opacity: 0.45; cursor: not-allowed; }
+.theme-card .theme-sw {
+  width: 42px; height: 42px;
+  flex: 0 0 auto;
+  border-radius: 11px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+.theme-card .theme-nm { display: block; font-size: 13px; font-weight: 700; line-height: 1.6; }
+.theme-card .theme-ds { display: block; font-size: 11px; color: var(--hj-muted); line-height: 1.6; margin-top: 2px; }
+.theme-card > span:last-child { min-width: 0; }
+
+/* ===== 第七夜 ===== */
+.night-lock {
+  text-align: center;
+  padding: 60px 24px;
+}
+.night-lock .night-moon {
+  font-size: 64px;
+  line-height: 1;
+  filter: drop-shadow(0 0 30px var(--hj-glow));
+  animation: lab-breathe 5s ease-in-out infinite;
+}
+@keyframes lab-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%      { transform: scale(1.06); opacity: 1; }
+}
+.night-lock p { color: var(--hj-muted); font-size: 13px; }
+.night-seven {
+  font-size: clamp(48px, 12vw, 96px);
+  font-weight: 900;
+  letter-spacing: 10px;
+  background-image: linear-gradient(100deg, var(--hj-accent), var(--hj-accent2), var(--hj-gold), var(--hj-accent));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: lab-shine 10s linear infinite;
+  filter: drop-shadow(0 0 30px var(--hj-glow));
+}
+
+.poem {
+  font-size: 14px;
+  line-height: 2.4;
+  color: var(--hj-ink);
+  opacity: 0.9;
+  white-space: pre-line;
+  border-left: 2px solid var(--hj-accent);
+  padding-left: 18px;
+}
+
+@media (max-width: 640px) {
+  .lab-slots { grid-template-columns: repeat(3, 1fr); }
+  .lab-card { padding: 18px; }
+  .lab-wrap { padding-top: 30px; }
+  .lab-assembled .lab-as-chars { font-size: 24px; gap: 6px; }
+}

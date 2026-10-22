@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>解密台 · THE VAULT</title>
+<link rel="icon" href="/favicon.ico">
+<script src="/fx/theme-boot.js"></script>
+<link rel="stylesheet" href="/fx/site.css">
+<link rel="stylesheet" href="/fx/lab.css">
+</head>
+<body class="lab">
+<div class="lab-wrap">
+
+  <a class="lab-back" href="/">← 回到地面</a>
+
+  <header class="lab-head">
+    <div class="lab-kicker">HIDDEN PAGE 01 · THE VAULT</div>
+    <h1>六张纸，<em>一句话</em></h1>
+    <p>桌上摊着六片碎纸。它们本来是一句话，被人沿着笔画剪开，散在站点的不同角落。
+      有的夹在源码里，有的被游戏吐出来，有的要解一道很老的密码。</p>
+  </header>
+
+  <section class="lab-card">
+    <h2><span class="lab-no">01 / SLOTS</span>碎片槽</h2>
+    <p>找回来的碎纸会自己落到对应的格子里。六个字，拼起来是一句过年时才会说的话。</p>
+    <div class="lab-slots" id="vault-slots"></div>
+    <div class="lab-assembled" id="vault-assembled"></div>
+    <p class="lab-foot" style="margin-top:14px"><span id="vault-status"></span></p>
+  </section>
+
+  <section class="lab-card">
+    <h2><span class="lab-no">02 / DECODER</span>碎纸回收口</h2>
+    <p>你在别处捡到的多半是一串 base64 —— 比如页面源码注释里那种。
+      原样粘进来，机器会替你翻译成一个字。</p>
+    <div class="lab-row">
+      <input class="lab-input" id="vault-input" placeholder="粘贴碎纸上的那串字符，例如 5paw" autocomplete="off" spellcheck="false">
+      <button class="lab-btn" id="vault-decode">翻 译</button>
+    </div>
+    <div class="lab-out" id="vault-result"></div>
+  </section>
+
+  <section class="lab-card">
+    <h2><span class="lab-no">03 / CAESAR</span>凯撒轮盘</h2>
+    <p>密文 <code>QHZBHDU</code>。它被往右推了三步，所以你要往左推回来。
+      推对了是一句和这个季节有关的英文，把明文填进去。</p>
+    <div class="lab-row">
+      <input class="lab-input" id="caesar-input" placeholder="推回来的明文" autocomplete="off" spellcheck="false">
+      <button class="lab-btn" id="caesar-go">转 一 下</button>
+    </div>
+    <div class="lab-out" id="caesar-result"></div>
+  </section>
+
+  <section class="lab-card">
+    <h2><span class="lab-no">04 / CLUES</span>线索簿</h2>
+    <p>六条线索，对应六片碎纸。已拾回的会自动划掉。</p>
+    <ul class="lab-clues" id="vault-clues"></ul>
+  </section>
+
+  <div class="lab-foot">
+    <span>THE VAULT · 纯前端 · 进度存在你自己的 cookie 里</span>
+    <button class="lab-btn ghost" id="vault-reset">把碎纸重新散开</button>
+  </div>
+
+</div>
+<script src="/fx/site.js"></script>
+<script src="/fx/lab.js"></script>
+</body>
+</html>

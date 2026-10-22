@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>街机厅 · THE ARCADE</title>
+<link rel="icon" href="/favicon.ico">
+<script src="/fx/theme-boot.js"></script>
+<link rel="stylesheet" href="/fx/site.css">
+<link rel="stylesheet" href="/fx/lab.css">
+</head>
+<body class="lab">
+<div class="lab-wrap">
+
+  <a class="lab-back" href="/">← 回到地面</a>
+
+  <header class="lab-head">
+    <div class="lab-kicker">HIDDEN PAGE 02 · THE ARCADE</div>
+    <h1>接住<em>十三颗星</em></h1>
+    <p>角落里那台机器还在通电，屏幕上有星星往下掉。
+      它不记分，只记你接住了几颗。十三颗的时候，它会吐出一张纸条。</p>
+  </header>
+
+  <section class="lab-card">
+    <div class="arcade-stage">
+      <canvas id="game-canvas" width="760" height="460"></canvas>
+      <div class="arcade-overlay" id="arcade-overlay">
+        <div>
+          <h3>投币口是坏的，直接开始吧</h3>
+          <p>移动鼠标 / 手指，或者用方向键 ← → 控制那只篮子。<br>漏掉不扣分，接住十三颗就行。</p>
+          <button class="lab-btn" id="arcade-start">开 始</button>
+        </div>
+      </div>
+    </div>
+    <div class="arcade-hud">
+      <span>接住 <b id="arcade-score">0</b> / 13</span>
+      <span>漏掉 <b id="arcade-lost">0</b></span>
+      <span>金色 +1 · 青色 +2</span>
+    </div>
+    <p class="arcade-keys">提示：这机器里藏着一片碎纸。它不会告诉你哪一片。</p>
+  </section>
+
+  <div class="lab-foot">
+    <span>THE ARCADE · 用 canvas 手写的，没有引擎</span>
+    <a href="/vault/">拿着纸条去解密台 →</a>
+  </div>
+
+</div>
+<script src="/fx/site.js"></script>
+<script src="/fx/lab.js"></script>
+</body>
+</html>
