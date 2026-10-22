@@ -380,7 +380,13 @@
     /* 让 curAct 跟着走，ODDEBUG.cur() 才不会一直报 rev1（纯调试信息，不影响画面） */
     curAct = p4 > 0.02 ? 'rev4' : p3 > 0.02 ? 'rev3' : seg('rev2') > 0.02 ? 'rev2' : 'rev1';
 
-    if (p4 > 0.55 && !tailOpen) {
+    /* 两条件取或：
+       p4 是"第四幕滚到哪了"；nearEnd 是"已经在反向世界的尽头"。
+       反面容器是 rotate(180deg) 的，滚动量 0 才是视觉最底，
+       所以"尽头"要用 scrollHeight-clientHeight-scrollTop 来判断，不能看 scrollTop。
+       只靠 p4 的话，某些屏幕比例下 seg(rev4) 到不了 0.55，评论区就永远不出来。 */
+    var nearEnd = (inv.scrollHeight - inv.clientHeight - inv.scrollTop) < vh() * 0.9;
+    if ((p4 > 0.55 || nearEnd) && !tailOpen) {
       tailOpen = true;
       tail.classList.add('open');
       D.body.classList.add('od-tail-open');

@@ -832,6 +832,30 @@ html.od-mode .od-tail #post-comment-wrap {
   font-size: 14px;
 }
 .od-tail #post-comment { margin-top: 40px; }
+/* 评论区是主题自带的浅色皮肤，整片白贴在反转后的黑红世界里非常扎眼。
+   这里做一层暗色覆盖，只动背景/边框/字色，不动任何结构。 */
+html.od-flipped .od-tail #post-comment { color-scheme: dark; }
+html.od-flipped .od-tail #post-comment .wl-panel,
+html.od-flipped .od-tail #post-comment .wl-editor,
+html.od-flipped .od-tail #post-comment .wl-header,
+html.od-flipped .od-tail #post-comment .wl-power,
+html.od-flipped .od-tail #post-comment .wl-empty,
+html.od-flipped .od-tail #post-comment .wl-comment {
+  background-color: rgba(15, 20, 29, 0.86) !important;
+  border-color: rgba(150, 190, 230, 0.16) !important;
+  color: #cfdae7 !important;
+}
+html.od-flipped .od-tail #post-comment [contenteditable],
+html.od-flipped .od-tail #post-comment textarea,
+html.od-flipped .od-tail #post-comment input {
+  background-color: rgba(8, 12, 19, 0.9) !important;
+  color: #e3ecf6 !important;
+  border-color: rgba(150, 190, 230, 0.22) !important;
+}
+html.od-flipped .od-tail #post-comment .wl-btn.primary {
+  background-color: rgba(150, 28, 45, 0.85) !important;
+  border-color: rgba(200, 60, 70, 0.5) !important;
+}
 
 /* ------------------------------------------------------------ 15 移动端 */
 @media (max-width: 720px) {
