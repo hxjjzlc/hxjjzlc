@@ -47,7 +47,7 @@
     { id: 'midnight', name: '深空蓝',   en: 'MIDNIGHT', dark: true,  desc: '没有月亮，只有星屑',
       sw: 'linear-gradient(140deg,#05040f,#1a1440 58%,#a78bfa)' },
     { id: 'newyear',  name: '新年',     en: 'NEW YEAR', dark: true,  locked: true,
-      desc: '红与金 · 集齐六片碎纸才开',
+      desc: '红与金 · 爆竹、灯笼和一点雪',
       sw: 'linear-gradient(140deg,#2a0606,#7a1409 55%,#ffcf5c)' }
   ];
 
@@ -61,15 +61,12 @@
 
   function applyTheme(id, opts) {
     var t = themeById(id) || THEMES[0];
-    if (t.locked && !isNewYearUnlocked()) {
-      toast('还差一点', '新年主题还锁着', 'lock');
-      return false;
-    }
+    if (t.locked && !isNewYearUnlocked()) return false;
     H.setAttribute('data-hj-theme', t.id);
     H.setAttribute('data-hj-dark', t.dark ? '1' : '0');
     writeState('hj_theme', t.id);
     if (window.HJ && HJ.particles) HJ.particles.setTheme(t.id);
-    if (!(opts && opts.silent)) achievement('换个世界', t.name + ' · ' + t.en, 'theme');
+    /* 换主题不再弹任何提示：能看见的东西不需要被宣布 */
     refreshUI();
     try { D.dispatchEvent(new CustomEvent('hj:theme', { detail: { theme: t.id } })); } catch (e) { /* 老浏览器 */ }
     return true;
@@ -578,12 +575,14 @@
   function buildThemePanel() {
     if (D.getElementById('hj-theme-panel')) return;
     var cur = H.getAttribute('data-hj-theme');
-    var rows = THEMES.map(function (t) {
-      var locked = t.locked && !isNewYearUnlocked();
-      return '<button class="hj-theme-row' + (t.id === cur ? ' is-active' : '') + (locked ? ' is-locked' : '') + '" ' +
-        'data-theme-id="' + t.id + '" data-locked="' + (locked ? '1' : '0') + '">' +
+    /* 没解锁的主题整行不渲染：不摆锁图标、不写解锁条件、不留格子 */
+    var rows = THEMES.filter(function (t) {
+      return !(t.locked && !isNewYearUnlocked());
+    }).map(function (t) {
+      return '<button class="hj-theme-row' + (t.id === cur ? ' is-active' : '') + '" ' +
+        'data-theme-id="' + t.id + '" data-locked="0">' +
         '<span class="hj-swatch" style="background:' + t.sw + '"></span>' +
-        '<span><span class="hj-tr-name">' + t.name + (locked ? ' 🔒' : '') + '</span>' +
+        '<span><span class="hj-tr-name">' + t.name + '</span>' +
         '<span class="hj-tr-desc">' + t.desc + '</span></span>' +
         '<span class="hj-tr-lock">' + (t.id === cur ? '当前' : (t.en)) + '</span>' +
       '</button>';
@@ -597,8 +596,7 @@
       '<div class="hj-panel-head">' +
         '<span class="hj-panel-title">换 个 世 界</span>' +
         '<button class="hj-panel-close" aria-label="关闭">×</button>' +
-      '</div>' + rows +
-      '<div class="hj-menu-foot">主题存在 cookie 里，有效期十年。<br>换设备要重新选，这是纯静态的代价。</div>';
+      '</div>' + rows;
     D.body.appendChild(el);
 
     el.addEventListener('click', function (ev) {
@@ -606,10 +604,6 @@
       var row = ev.target.closest('.hj-theme-row');
       if (!row) return;
       var id = row.getAttribute('data-theme-id');
-      if (row.getAttribute('data-locked') === '1') {
-        toast('还差一点', '集齐六片碎纸才开新年主题', 'lock');
-        return;
-      }
       applyTheme(id);
       toggleThemePanel(false);
     });
@@ -1105,13 +1099,7 @@
       refreshUI();
     }
 
-    /* 首访成就 */
-    if (readState('hj_seen', '') !== '1') {
-      writeState('hj_seen', '1');
-      setTimeout(function () {
-        achievement('成就已达成！', '第一次来，欢迎', 'door');
-      }, 2600);
-    }
+    /* 首访不再弹任何成就框：进站就被剧透的系统，不如没有 */
 
     autoNewYearFireworks();
   }
