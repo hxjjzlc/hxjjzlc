@@ -537,40 +537,14 @@
     wrap.id = 'hj-fabs';
     wrap.className = 'hj-fabs';
     wrap.innerHTML =
-      '<button class="hj-fab" id="hj-game-btn" aria-label="小游戏" aria-expanded="false">' + PAD_SVG + '</button>' +
       '<button class="hj-fab" id="hj-theme-btn" aria-label="换颜色" aria-expanded="false">' + PALETTE_SVG + '</button>';
     D.body.appendChild(wrap);
 
-    var gameBtn = D.getElementById('hj-game-btn');
     var themeBtn = D.getElementById('hj-theme-btn');
-
-    gameBtn.addEventListener('click', function (ev) { ev.stopPropagation(); toggleMenu(); });
     themeBtn.addEventListener('click', function (ev) { ev.stopPropagation(); toggleThemePanel(); });
   }
 
-  function buildMenu() {
-    if (D.getElementById('hj-menu')) return;
-    var items = PAGES.map(function (p) {
-      return '<a class="hj-menu-item" href="' + p.href + '" data-href="' + p.href + '">' +
-        '<span class="hj-mi-icon">' + p.icon + '</span>' +
-        '<span class="hj-mi-name">' + p.name + '</span>' +
-        '<span class="hj-mi-go">→</span></a>';
-    }).join('');
-
-    var el = D.createElement('div');
-    el.id = 'hj-menu';
-    el.className = 'hj-panel hj-panel-mini';
-    el.hidden = true;
-    el.innerHTML =
-      '<div class="hj-panel-head">' +
-        '<span class="hj-panel-title">小 游 戏</span>' +
-        '<button class="hj-panel-close" aria-label="关闭">×</button>' +
-      '</div>' +
-      '<div class="hj-menu-list">' + items + '</div>';
-    D.body.appendChild(el);
-
-    el.querySelector('.hj-panel-close').addEventListener('click', function () { toggleMenu(false); });
-  }
+  /* 隐藏页不再有菜单入口：想去哪儿，只能自己走到那儿 */
 
   function buildThemePanel() {
     if (D.getElementById('hj-theme-panel')) return;
@@ -610,21 +584,11 @@
     el.querySelector('.hj-panel-close').addEventListener('click', function () { toggleThemePanel(false); });
   }
 
-  function toggleMenu(force) {
-    buildMenu();
-    var el = D.getElementById('hj-menu');
-    var btn = D.getElementById('hj-game-btn');
-    var show = typeof force === 'boolean' ? force : el.hidden;
-    if (show) toggleThemePanel(false);
-    el.hidden = !show;
-    if (btn) btn.setAttribute('aria-expanded', show ? 'true' : 'false');
-  }
   function toggleThemePanel(force) {
     buildThemePanel();
     var el = D.getElementById('hj-theme-panel');
     var btn = D.getElementById('hj-theme-btn');
     var show = typeof force === 'boolean' ? force : el.hidden;
-    if (show) toggleMenu(false);
     el.hidden = !show;
     if (btn) btn.setAttribute('aria-expanded', show ? 'true' : 'false');
   }
@@ -1047,7 +1011,6 @@
   function init() {
     ensureBg();
     buildFabs();
-    buildMenu();
     buildThemePanel();
     markPageFound();
     refreshUI();
@@ -1057,7 +1020,6 @@
       var open = ev.target.closest && ev.target.closest('[data-hj-open]');
       if (open) {
         var what = open.getAttribute('data-hj-open');
-        if (what === 'menu') toggleMenu(true);
         if (what === 'theme') toggleThemePanel(true);
         return;
       }
@@ -1068,10 +1030,6 @@
         if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
       }
-      if (!ev.target.closest('#hj-menu') && !ev.target.closest('#hj-game-btn')) {
-        var m = D.getElementById('hj-menu');
-        if (m && !m.hidden) toggleMenu(false);
-      }
       if (!ev.target.closest('#hj-theme-panel') && !ev.target.closest('#hj-theme-btn')) {
         var p = D.getElementById('hj-theme-panel');
         if (p && !p.hidden) toggleThemePanel(false);
@@ -1079,13 +1037,7 @@
     });
 
     D.addEventListener('keydown', function (ev) {
-      if (ev.key === 'Escape') { toggleMenu(false); toggleThemePanel(false); }
-      if (ev.key === '~' || ev.key === '`') {
-        if (!/input|textarea/i.test((D.activeElement || {}).tagName || '')) {
-          ev.preventDefault();
-          toggleMenu();
-        }
-      }
+      if (ev.key === 'Escape') { toggleThemePanel(false); }
     });
 
     window.addEventListener('scroll', function () {

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title> </title>
+<style>
+  :root{
+    --ink:#e8dfcd; --dim:#6f675c; --gold:#c9a26b; --gold-hi:#f2d9a4;
+    --red:#c1121f;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:radial-gradient(ellipse at 50% 30%,#14100e 0%,#08070a 55%,#040406 100%);
+    color:var(--ink);font:16px/1.8 "Noto Serif SC","Songti SC",STSong,serif;
+    display:flex;align-items:center;justify-content:center;letter-spacing:.06em;
+    overflow:hidden;
+  }
+  /* 落下来的灰 */
+  .ash{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+  .ash i{
+    position:absolute;top:-10px;width:2px;height:2px;border-radius:50%;
+    background:var(--gold);opacity:0;animation:fall linear infinite;
+  }
+  @keyframes fall{
+    0%{opacity:0;transform:translateY(-10px)}
+    12%{opacity:.55}
+    100%{opacity:0;transform:translateY(105vh)}
+  }
+
+  .room{position:relative;z-index:1;width:min(86vw,520px);text-align:center}
+
+  .riddle{
+    display:flex;justify-content:center;align-items:baseline;gap:.2em;
+    border-bottom:1px solid #2a2622;padding-bottom:10px;
+  }
+  #ans{
+    width:100%;background:none;border:0;outline:0;color:var(--ink);
+    font:inherit;font-size:clamp(22px,4.4vw,30px);letter-spacing:.34em;text-align:center;
+    padding:6px 0;caret-color:var(--gold);
+  }
+  #ans::placeholder{color:#3b3730;letter-spacing:.34em}
+  .riddle.shake{animation:shake .34s cubic-bezier(.36,.07,.19,.97) both}
+  @keyframes shake{
+    10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}
+    30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}
+  }
+
+  .say{margin-top:22px;min-height:1.8em;font-size:13px;color:var(--dim);letter-spacing:.18em}
+
+  /* 答对之后 */
+  .done{display:none}
+  .done.on{display:block;animation:rise .9s ease both}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .six{
+    display:flex;justify-content:center;gap:clamp(6px,2.4vw,16px);margin-bottom:26px;
+  }
+  .six b{
+    font-weight:400;font-size:clamp(26px,6vw,42px);
+    background:linear-gradient(180deg,#fff6e2,#e0b878 55%,#9a6a33);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 26px rgba(224,184,120,.22);
+    animation:glow 3.6s ease-in-out infinite;
+  }
+  .six b:nth-child(2){animation-delay:.2s}.six b:nth-child(3){animation-delay:.4s}
+  .six b:nth-child(4){animation-delay:.6s}.six b:nth-child(5){animation-delay:.8s}
+  .six b:nth-child(6){animation-delay:1s}
+  @keyframes glow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
+  .line{font-size:14px;color:#8a8175;letter-spacing:.2em;line-height:2.1}
+  .line em{font-style:normal;color:var(--gold-hi)}
+  .go{
+    display:inline-block;margin-top:26px;padding:12px 30px;color:#0b0a09;text-decoration:none;
+    background:linear-gradient(180deg,#f0d9a8,#c9a26b);border-radius:2px;letter-spacing:.3em;
+    font-size:14px;box-shadow:0 10px 30px rgba(201,162,107,.16)
+  }
+  .seal{
+    position:fixed;right:6vw;bottom:7vh;width:52px;height:52px;border:2px solid rgba(193,18,31,.55);
+    color:rgba(193,18,31,.7);display:flex;align-items:center;justify-content:center;
+    font-size:13px;letter-spacing:.1em;transform:rotate(-6deg);border-radius:3px;
+    writing-mode:vertical-rl;line-height:1.15;opacity:.55;pointer-events:none
+  }
+</style>
+</head>
+<body>
+<div class="ash" id="ash"></div>
+
+<div class="room">
+  <form class="riddle" id="form" autocomplete="off">
+    <input id="ans" maxlength="16" aria-label="六个字" placeholder="六个字">
+  </form>
+  <div class="say" id="say"></div>
+
+  <div class="done" id="done">
+    <div class="six" id="six"></div>
+    <div class="line" id="line"></div>
+    <div id="slot"></div>
+  </div>
+</div>
+
+<div class="seal">未至</div>
+
+<script src="/fx/ny.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* 灰烬 */
+  var ash = document.getElementById('ash');
+  for (var i = 0; i < 26; i++) {
+    var d = document.createElement('i');
+    d.style.left = (Math.random() * 100) + 'vw';
+    d.style.animationDuration = (7 + Math.random() * 9) + 's';
+    d.style.animationDelay = (-Math.random() * 16) + 's';
+    d.style.opacity = 0;
+    ash.appendChild(d);
+  }
+
+  var ANSWERS = ['辞旧迎新团圆'];
+  var form = document.getElementById('form');
+  var ans = document.getElementById('ans');
+  var say = document.getElementById('say');
+  var done = document.getElementById('done');
+  var tries = 0;
+
+  function normalize(s) {
+    return (s || '').replace(/[\s,，.。、·\-—_/\\|"'“”‘’]/g, '');
+  }
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var v = normalize(ans.value);
+    if (!v) return;
+
+    if (ANSWERS.indexOf(v) === -1) {
+      tries++;
+      var box = document.querySelector('.riddle');
+      box.classList.remove('shake');
+      void box.offsetWidth;
+      box.classList.add('shake');
+      say.textContent = tries >= 2 ? '不是这个。' : '';
+      if (tries >= 4) say.textContent = '顺序也对，字也对，只是你还没凑齐。';
+      return;
+    }
+
+    if (window.NY) {
+      try { localStorage.setItem('hj_ny_key', '1'); } catch (e) { /* 隐身模式 */ }
+    }
+
+    form.style.display = 'none';
+    say.style.display = 'none';
+    done.classList.add('on');
+
+    var six = document.getElementById('six');
+    six.innerHTML = v.split('').map(function (c) { return '<b>' + c + '</b>'; }).join('');
+
+    var line = document.getElementById('line');
+    var slot = document.getElementById('slot');
+    if (window.NY && NY.open()) {
+      line.innerHTML = '门开了。<em>今天是初一。</em>';
+      slot.innerHTML = '<a class="go" href="/2027/02/06/guonian/">进去看看 →</a>';
+    } else if (window.NY && NY.gone()) {
+      line.innerHTML = '门开过一次，已经关上了。';
+    } else {
+      line.innerHTML = '你把这六个字凑齐了。<br>但门要到<em>丁未年正月初一</em>才开。';
+      slot.innerHTML = '<div class="line" style="margin-top:18px;font-size:13px;color:#5f584f">还有 ' +
+        (window.NY ? NY.humanLeft() : '一段日子') + '</div>';
+    }
+  });
+})();
+</script>
+</body>
+</html>

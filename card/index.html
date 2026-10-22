@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>贺卡工坊</title>
+<style>
+  :root{
+    --bg:#0b0605; --panel:#140c09; --line:#3a2418; --ink:#efe3cf; --dim:#8a7b69;
+    --gold:#d9b678; --gold-hi:#ffe7b8; --red:#b3121a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink)}
+  body{
+    font:15px/1.75 "Noto Serif SC","Songti SC",STSong,serif;letter-spacing:.04em;
+    background:
+      radial-gradient(60% 40% at 50% 0%,rgba(179,18,26,.18),transparent 70%),
+      radial-gradient(40% 30% at 90% 100%,rgba(120,80,20,.12),transparent 70%),
+      var(--bg);
+    min-height:100vh;
+  }
+  a{color:#cdbfa9;text-decoration:none}
+  .bar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 26px;font-size:13px;letter-spacing:.24em;color:var(--dim);
+    border-bottom:1px solid #1e1510;
+  }
+  .bar b{font-weight:400;color:var(--gold-hi);letter-spacing:.42em}
+
+  .wrap{
+    max-width:1180px;margin:0 auto;padding:34px 22px 90px;
+    display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:38px;align-items:start;
+  }
+  @media (max-width:900px){
+    .wrap{grid-template-columns:1fr;gap:26px;padding:22px 16px 70px}
+    .bar{padding:14px 16px}
+  }
+
+  .stage{position:sticky;top:24px}
+  @media (max-width:900px){ .stage{position:static} }
+  #card{
+    width:100%;max-width:520px;display:block;margin:0 auto;border-radius:3px;
+    box-shadow:0 30px 70px rgba(0,0,0,.6),0 0 0 1px rgba(217,182,120,.14);
+    background:#5a070a;
+  }
+  .hint{text-align:center;color:#5e5246;font-size:12px;margin-top:14px;letter-spacing:.16em}
+
+  .panel{display:flex;flex-direction:column;gap:20px}
+  .field{display:flex;flex-direction:column;gap:8px}
+  .field>label{font-size:12px;color:var(--dim);letter-spacing:.24em}
+  input[type=text],textarea,select{
+    width:100%;background:#0d0806;border:1px solid var(--line);color:var(--ink);
+    font:inherit;font-size:14px;padding:10px 12px;border-radius:2px;outline:none;
+  }
+  input[type=text]:focus,textarea:focus,select:focus{border-color:#6b4526}
+  textarea{resize:vertical;min-height:84px;line-height:1.85}
+  .row{display:flex;gap:8px}
+  .row>*{flex:1}
+  button{
+    background:#1a100c;border:1px solid var(--line);color:#dccdb4;font:inherit;font-size:13px;
+    padding:9px 12px;border-radius:2px;cursor:pointer;letter-spacing:.12em;transition:.2s;
+  }
+  button:hover{border-color:#6b4526;color:var(--gold-hi)}
+  button.on{background:linear-gradient(180deg,rgba(179,18,26,.55),rgba(179,18,26,.2));border-color:#8a3a24;color:#ffe3b8}
+  .tabs{display:flex;gap:6px}
+  .tabs button{flex:1}
+  .sub{display:none}
+  .sub.on{display:block;animation:fade .3s ease both}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+
+  #pad{
+    width:100%;height:150px;background:
+      repeating-linear-gradient(90deg,transparent 0 27px,#1a120d 27px 28px),
+      #0d0806;
+    border:1px dashed var(--line);border-radius:2px;touch-action:none;cursor:crosshair;display:block;
+  }
+  .pad-tip{font-size:11.5px;color:#5e5246;margin-top:6px;letter-spacing:.12em}
+
+  .exports{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+  .exports button{padding:12px 8px;letter-spacing:.2em}
+  .exports button.pri{background:linear-gradient(180deg,rgba(217,182,120,.22),rgba(217,182,120,.06));border-color:#6b4526;color:var(--gold-hi)}
+  .note{font-size:11.5px;color:#5b4f44;line-height:1.9;letter-spacing:.1em}
+  .divider{height:1px;background:linear-gradient(90deg,transparent,#2a1c13,transparent)}
+</style>
+</head>
+<body>
+
+<div class="bar"><a href="/">← 酒精小站</a><b>贺卡工坊</b><span>丁未年 · 初一至十五</span></div>
+
+<div class="wrap">
+  <div class="stage">
+    <canvas id="card"></canvas>
+    <div class="hint">点签名区可以换字体，写坏了就重来</div>
+  </div>
+
+  <div class="panel">
+    <div class="field">
+      <label>写给谁</label>
+      <input type="text" id="to" placeholder="留空就不写抬头" maxlength="24">
+    </div>
+
+    <div class="field">
+      <label>寄语 <span style="color:#4b4137">· 随机语录</span></label>
+      <textarea id="quote" maxlength="120"></textarea>
+      <button id="dice">换一句</button>
+    </div>
+
+    <div class="field">
+      <label>落款</label>
+      <input type="text" id="from" placeholder="你的名字" maxlength="16" value="">
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="field">
+      <label>签名</label>
+      <div class="tabs" id="tabs">
+        <button data-mode="none" class="on">不签</button>
+        <button data-mode="hand">手写</button>
+        <button data-mode="art">艺术字</button>
+      </div>
+
+      <div class="sub" id="sub-hand">
+        <canvas id="pad" width="700" height="300"></canvas>
+        <div class="row" style="margin-top:8px">
+          <button id="undo">撤销</button>
+          <button id="clr">清空</button>
+        </div>
+        <div class="pad-tip">用鼠标 / 手指直接写，写完自动盖到卡上</div>
+      </div>
+
+      <div class="sub" id="sub-art">
+        <input type="text" id="art" placeholder="要签的名字" maxlength="10">
+        <div class="row" style="margin-top:8px">
+          <select id="font">
+            <option value="0">行楷</option>
+            <option value="1">隶书</option>
+            <option value="2">草书</option>
+          </select>
+          <button id="mkart">生成</button>
+        </div>
+        <div class="pad-tip">按这个字体把字画成签名，再配一枚章</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="field">
+      <label>导出</label>
+      <div class="exports">
+        <button class="pri" data-fmt="png">PNG 图片</button>
+        <button class="pri" data-fmt="jpg">JPG 图片</button>
+        <button data-fmt="html">HTML 网页</button>
+        <button data-fmt="eml">EML 邮件</button>
+      </div>
+      <div class="note">
+        图片是 1440×2037 的成品；HTML 是单文件，发给谁都能直接打开；
+        EML 拖进邮箱就是一封带图的贺年信。
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/fx/ny.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ---- 时间闸门：不是初一至十五，一律 404 ---- */
+  if (!window.NY || window.__NY_404__) { if (window.NY) NY.notFound(); return; }
+  if (!NY.open()) { NY.notFound(); return; }
+
+  var W = 900, H = 1273, S = 1.6;
+  var cv = document.getElementById('card');
+  cv.width = W * S; cv.height = H * S;
+  var g = cv.getContext('2d');
+
+  var QUOTES = [
+    '新年快乐，万事胜意。',
+    '愿新的一年，风调雨顺，也如你所愿。',
+    '恭喜发财，利是拿来。',
+    '今年也要好好吃饭，好好睡觉。',
+    '愿你所求皆如愿，所行化坦途。',
+    '岁岁常欢愉，年年皆胜意。',
+    '丁未年，羊羊得意。',
+    '愿新年，胜旧年。',
+    '把去年的疲惫留在去年。',
+    '愿你有酒有肉，有存款有自由。',
+    '愿你今年少加班，多拿钱。',
+    '新岁启封，万事顺遂。',
+    '愿你所念之人，平安喜乐。',
+    '愿你眼里有光，卡里有粮。',
+    '一年之计在于春，春天先睡饱。',
+    '愿你不慌不忙，心之所向。',
+    '愿今年没有坏消息。',
+    '旧疾当愈，新愿当成。',
+    '愿你被这世界温柔以待。',
+    '愿今年比去年更像自己。',
+    '岁寒松柏，春到人间。',
+    '愿你事事有着落，件件有回音。',
+    '诸事顺遂，喜乐长安。',
+    '愿你有突如其来的好运。'
+  ];
+
+  var FONTS = [
+    '"STXingkai","华文行楷","Xingkai SC","KaiTi","STKaiti",serif',
+    '"STLiti","隶书","LiSu","Baoli SC","KaiTi",serif',
+    '"STCaoshu","草书","Caoshu","STKaiti",serif'
+  ];
+
+  var st = {
+    to: '', from: '', quote: '',
+    mode: 'none',
+    strokes: [],          // [{pts:[{x,y}]}] 归一化
+    drawing: null,
+    artText: '', font: 0,
+    seal: '大吉'
+  };
+
+  /* ================= 绘制 ================= */
+
+  function cloud(ctx, x, y, s, a) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,214,150,' + a + ')';
+    ctx.lineWidth = s * 0.09;
+    for (var i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.arc(x + i * s * 0.85, y, s * (0.62 - i * 0.12), Math.PI * 1.05, Math.PI * 1.95);
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.moveTo(x - s * 0.5, y + s * 0.12);
+    ctx.lineTo(x + s * 2.1, y + s * 0.12);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function bg(ctx) {
+    var grd = ctx.createLinearGradient(0, 0, W * .35, H);
+    grd.addColorStop(0, '#7d0c10');
+    grd.addColorStop(.34, '#a5111b');
+    grd.addColorStop(.62, '#8f0d14');
+    grd.addColorStop(1, '#5d070b');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+
+    var glow = ctx.createRadialGradient(W * .5, H * .16, 20, W * .5, H * .16, H * .62);
+    glow.addColorStop(0, 'rgba(255,190,120,.20)');
+    glow.addColorStop(.55, 'rgba(255,120,80,.06)');
+    glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+
+    /* 云纹 */
+    var rows = [150, 300, 455, 610, 765, 920, 1075, 1210];
+    for (var r = 0; r < rows.length; r++) {
+      var off = (r % 2) ? 60 : 0;
+      for (var x = -40 + off; x < W + 60; x += 132) {
+        cloud(ctx, x, rows[r], 30, 0.055);
+      }
+    }
+
+    /* 暗角 */
+    var vg = ctx.createRadialGradient(W / 2, H / 2, H * .28, W / 2, H / 2, H * .78);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,0,.5)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  function frame(ctx) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(240,205,140,.55)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(38, 38, W - 76, H - 76);
+    ctx.strokeStyle = 'rgba(240,205,140,.26)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(50, 50, W - 100, H - 100);
+
+    /* 四角 */
+    var cs = 26;
+    var pts = [[38, 38, 1, 1], [W - 38, 38, -1, 1], [38, H - 38, 1, -1], [W - 38, H - 38, -1, -1]];
+    for (var i = 0; i < pts.length; i++) {
+      var p = pts[i];
+      ctx.beginPath();
+      ctx.moveTo(p[0] + p[2] * cs, p[1]);
+      ctx.lineTo(p[0], p[1]);
+      ctx.lineTo(p[0], p[1] + p[3] * cs);
+      ctx.strokeStyle = 'rgba(255,220,160,.8)'; ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function spaced(ctx, text, cx, y, size, gap, fill) {
+    var total = 0, i;
+    ctx.font = size + 'px "STKaiti","KaiTi","Songti SC",serif';
+    for (i = 0; i < text.length; i++) total += ctx.measureText(text[i]).width + gap;
+    total -= gap;
+    var x = cx - total / 2;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    for (i = 0; i < text.length; i++) {
+      ctx.fillStyle = fill();
+      ctx.fillText(text[i], x, y);
+      x += ctx.measureText(text[i]).width + gap;
+    }
+    return total;
+  }
+
+  function goldFill(ctx, y0, y1) {
+    var grd = ctx.createLinearGradient(0, y0, 0, y1);
+    grd.addColorStop(0, '#fff6e0');
+    grd.addColorStop(.42, '#f0cf95');
+    grd.addColorStop(.72, '#d3a35c');
+    grd.addColorStop(1, '#a9762f');
+    return grd;
+  }
+
+  function wrap(ctx, text, maxW, font) {
+    ctx.font = font;
+    var lines = [], cur = '';
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i];
+      if (ch === '\n') { lines.push(cur); cur = ''; continue; }
+      if (ctx.measureText(cur + ch).width > maxW && cur) { lines.push(cur); cur = ch; }
+      else cur += ch;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+
+  function drawSeal(ctx, x, y, size, txt) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(-0.05);
+    ctx.fillStyle = 'rgba(176,20,26,.94)';
+    roundRect(ctx, 0, 0, size, size, size * .1);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,225,180,.85)';
+    ctx.lineWidth = size * .045;
+    roundRect(ctx, size * .09, size * .09, size * .82, size * .82, size * .06);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,240,215,.95)';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    var chars = txt.slice(0, 2);
+    if (chars.length === 1) {
+      ctx.font = (size * .5) + 'px "STKaiti","KaiTi",serif';
+      ctx.fillText(chars, size / 2, size * .54);
+    } else {
+      ctx.font = (size * .33) + 'px "STKaiti","KaiTi",serif';
+      ctx.fillText(chars[0], size / 2, size * .34);
+      ctx.fillText(chars[1], size / 2, size * .7);
+    }
+    ctx.restore();
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  /* 签名区 */
+  var SIG = { x: 505, y: 1010, w: 320, h: 150 };
+
+  function drawHandSignature(ctx) {
+    if (!st.strokes.length) return;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(SIG.x, SIG.y, SIG.w, SIG.h);
+    ctx.clip();
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(255,240,214,.95)';
+    ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 3;
+    for (var i = 0; i < st.strokes.length; i++) {
+      var pts = st.strokes[i].pts;
+      if (pts.length < 2) {
+        if (pts.length === 1) {
+          ctx.beginPath();
+          ctx.arc(SIG.x + pts[0].x * SIG.w, SIG.y + pts[0].y * SIG.h, 1.6, 0, 6.3);
+          ctx.fillStyle = 'rgba(255,240,214,.95)';
+          ctx.fill();
+        }
+        continue;
+      }
+      ctx.lineWidth = 3.2;
+      ctx.beginPath();
+      ctx.moveTo(SIG.x + pts[0].x * SIG.w, SIG.y + pts[0].y * SIG.h);
+      for (var k = 1; k < pts.length; k++) {
+        var a = pts[k - 1], b = pts[k];
+        ctx.quadraticCurveTo(
+          SIG.x + a.x * SIG.w, SIG.y + a.y * SIG.h,
+          SIG.x + (a.x + b.x) / 2 * SIG.w, SIG.y + (a.y + b.y) / 2 * SIG.h
+        );
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawArtSignature(ctx) {
+    var txt = st.artText || st.from || '';
+    if (!txt) return;
+    var n = txt.length;
+    var size = n <= 2 ? 96 : (n <= 3 ? 84 : (n <= 5 ? 66 : 52));
+    ctx.save();
+    ctx.font = size + 'px ' + FONTS[st.font];
+    var tw = ctx.measureText(txt).width;
+    var bx = SIG.x + SIG.w;
+    ctx.translate(bx, SIG.y + SIG.h * 0.72);
+    ctx.rotate(-0.055);
+    ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = goldFill(ctx, -size, size * .2);
+    ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 6; ctx.shadowOffsetY = 2;
+    ctx.fillText(txt, 0, 0);
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+    /* 拖笔 */
+    var x0 = -tw - 26, x1 = 14;
+    var cy = size * .22;
+    ctx.strokeStyle = 'rgba(255,225,170,.55)';
+    ctx.lineWidth = 3.4; ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(x0, cy);
+    ctx.bezierCurveTo(x0 + tw * .3, cy - size * .18, x0 + tw * .62, cy + size * .12, x1, cy - size * .05);
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,225,170,.28)';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(x0 + 8, cy + 9);
+    ctx.bezierCurveTo(x0 + tw * .35, cy + size * .02, x0 + tw * .7, cy + size * .2, x1 - 4, cy + 5);
+    ctx.stroke();
+    ctx.restore();
+
+    drawSeal(ctx, SIG.x + SIG.w - 62, SIG.y + SIG.h - 26, 68, st.seal);
+  }
+
+  function draw() {
+    g.setTransform(S, 0, 0, S, 0, 0);
+    g.clearRect(0, 0, W, H);
+    bg(g);
+    frame(g);
+
+    /* 年号 */
+    g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+    g.font = '26px "STKaiti","KaiTi",serif';
+    g.fillStyle = 'rgba(255,226,178,.62)';
+    spaced(g, '丁未', W / 2, 118, 30, 22, function () { return 'rgba(255,226,178,.62)'; });
+    g.font = '13px "STKaiti","KaiTi",serif';
+    g.fillStyle = 'rgba(255,214,160,.34)';
+    g.fillText('LUNAR NEW YEAR · 2027', W / 2, 152);
+
+    /* 线 */
+    g.strokeStyle = 'rgba(240,205,140,.4)';
+    g.lineWidth = 1;
+    g.beginPath(); g.moveTo(210, 178); g.lineTo(W - 210, 178); g.stroke();
+
+    /* 主标题 */
+    g.save();
+    g.font = '168px "STKaiti","KaiTi","Songti SC",serif';
+    var tY = 372;
+    var grd = goldFill(g, tY - 150, tY + 20);
+    g.shadowColor = 'rgba(60,0,0,.45)'; g.shadowBlur = 16; g.shadowOffsetY = 6;
+    spaced(g, '新年快乐', W / 2, tY, 168, 12, function () { return grd; });
+    g.restore();
+
+    /* 副标 */
+    g.textAlign = 'center';
+    g.font = '19px "STKaiti","KaiTi",serif';
+    g.fillStyle = 'rgba(255,220,170,.5)';
+    spaced(g, '岁 岁 平 安', W / 2, 438, 22, 8, function () { return 'rgba(255,222,172,.72)'; });
+
+    /* 抬头 */
+    var y = 596;
+    if (st.to) {
+      g.textAlign = 'left';
+      g.font = '32px "STKaiti","KaiTi",serif';
+      g.fillStyle = 'rgba(255,232,196,.9)';
+      g.fillText('致　' + st.to + '：', 110, y);
+      y += 74;
+    }
+
+    /* 寄语 */
+    var lines = wrap(g, st.quote, W - 240, '34px "STKaiti","KaiTi",serif');
+    lines = lines.slice(0, 4);
+    g.textAlign = 'left';
+    g.font = '34px "STKaiti","KaiTi",serif';
+    g.fillStyle = 'rgba(255,238,208,.92)';
+    for (var i = 0; i < lines.length; i++) {
+      g.fillText(lines[i], 110, y + i * 62);
+    }
+
+    /* 落款 */
+    if (st.from) {
+      g.textAlign = 'left';
+      g.font = '30px "STKaiti","KaiTi",serif';
+      g.fillStyle = 'rgba(255,224,178,.78)';
+      g.fillText('——　' + st.from, 110, 934);
+    }
+
+    /* 日期 */
+    g.textAlign = 'left';
+    g.font = '18px "STKaiti","KaiTi",serif';
+    g.fillStyle = 'rgba(255,214,160,.42)';
+    g.fillText('丁未年 正月初一', 110, 980);
+
+    /* 签名 */
+    if (st.mode === 'hand') drawHandSignature(g);
+    if (st.mode === 'art') drawArtSignature(g);
+
+    /* 底部 */
+    g.textAlign = 'center';
+    g.font = '13px "STKaiti","KaiTi",serif';
+    g.fillStyle = 'rgba(255,214,160,.28)';
+    g.fillText('h x j j . d p d n s . o r g', W / 2, H - 72);
+  }
+
+  /* ================= 交互 ================= */
+
+  var $ = function (id) { return document.getElementById(id); };
+  var toEl = $('to'), fromEl = $('from'), quoteEl = $('quote');
+
+  function setQuote(q) { st.quote = q; quoteEl.value = q; draw(); }
+  setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+
+  toEl.addEventListener('input', function () { st.to = toEl.value.trim(); draw(); });
+  fromEl.addEventListener('input', function () {
+    st.from = fromEl.value.trim();
+    if (!st.artText) $('art').value = st.from;
+    draw();
+  });
+  quoteEl.addEventListener('input', function () { st.quote = quoteEl.value; draw(); });
+
+  $('dice').addEventListener('click', function () {
+    var q = st.quote;
+    for (var i = 0; i < 8 && q === st.quote; i++) q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+    setQuote(q);
+  });
+
+  /* 模式切换 */
+  var tabs = $('tabs');
+  tabs.addEventListener('click', function (ev) {
+    var b = ev.target.closest('button[data-mode]');
+    if (!b) return;
+    st.mode = b.getAttribute('data-mode');
+    [].forEach.call(tabs.children, function (x) { x.classList.toggle('on', x === b); });
+    $('sub-hand').classList.toggle('on', st.mode === 'hand');
+    $('sub-art').classList.toggle('on', st.mode === 'art');
+    if (st.mode === 'art' && !$('art').value) $('art').value = st.from;
+    draw();
+  });
+
+  /* 手写板 */
+  var pad = $('pad'), pg = pad.getContext('2d');
+  function padClear() {
+    pg.setTransform(1, 0, 0, 1, 0, 0);
+    pg.clearRect(0, 0, pad.width, pad.height);
+  }
+  function padRedraw() {
+    padClear();
+    pg.lineCap = 'round'; pg.lineJoin = 'round';
+    pg.strokeStyle = '#ffe7b8'; pg.lineWidth = 6;
+    for (var i = 0; i < st.strokes.length; i++) {
+      var pts = st.strokes[i].pts;
+      if (pts.length < 2) continue;
+      pg.beginPath();
+      pg.moveTo(pts[0].x * pad.width, pts[0].y * pad.height);
+      for (var k = 1; k < pts.length; k++) {
+        var a = pts[k - 1], b = pts[k];
+        pg.quadraticCurveTo(a.x * pad.width, a.y * pad.height,
+          (a.x + b.x) / 2 * pad.width, (a.y + b.y) / 2 * pad.height);
+      }
+      pg.stroke();
+    }
+  }
+
+  function padPos(ev) {
+    var r = pad.getBoundingClientRect();
+    return {
+      x: Math.min(1, Math.max(0, (ev.clientX - r.left) / r.width)),
+      y: Math.min(1, Math.max(0, (ev.clientY - r.top) / r.height))
+    };
+  }
+
+  pad.addEventListener('pointerdown', function (ev) {
+    ev.preventDefault();
+    pad.setPointerCapture(ev.pointerId);
+    st.drawing = { pts: [padPos(ev)] };
+    st.strokes.push(st.drawing);
+    padRedraw();
+    draw();
+  });
+  pad.addEventListener('pointermove', function (ev) {
+    if (!st.drawing) return;
+    ev.preventDefault();
+    st.drawing.pts.push(padPos(ev));
+    padRedraw();
+    draw();
+  });
+  function endStroke() { st.drawing = null; }
+  pad.addEventListener('pointerup', endStroke);
+  pad.addEventListener('pointercancel', endStroke);
+  pad.addEventListener('pointerleave', endStroke);
+
+  $('undo').addEventListener('click', function () {
+    st.strokes.pop(); padRedraw(); draw();
+  });
+  $('clr').addEventListener('click', function () {
+    st.strokes = []; padRedraw(); draw();
+  });
+
+  /* 艺术签名 */
+  $('art').addEventListener('input', function () { st.artText = $('art').value.trim(); draw(); });
+  $('font').addEventListener('change', function () { st.font = +this.value; draw(); });
+  $('mkart').addEventListener('click', function () {
+    var v = $('art').value.trim() || st.from || '新年快乐';
+    $('art').value = v;
+    st.artText = v;
+    st.seal = v.length >= 2 ? v.slice(-2) : '大吉';
+    st.mode = 'art';
+    [].forEach.call(tabs.children, function (x) { x.classList.toggle('on', x.getAttribute('data-mode') === 'art'); });
+    $('sub-hand').classList.remove('on');
+    $('sub-art').classList.add('on');
+    draw();
+  });
+
+  /* 导出 */
+  function b64utf8(s) {
+    var bytes = new TextEncoder().encode(s), bin = '';
+    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+  }
+  function wrap76(s) {
+    var out = [];
+    for (var i = 0; i < s.length; i += 76) out.push(s.slice(i, i + 76));
+    return out.join('\r\n');
+  }
+  function dl(blob, name) {
+    var a = document.createElement('a');
+    var url = URL.createObjectURL(blob);
+    a.href = url; a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 400);
+  }
+  function flat(kind) {
+    var c = document.createElement('canvas');
+    c.width = W * S; c.height = H * S;
+    var x = c.getContext('2d');
+    x.fillStyle = kind === 'jpg' ? '#ffffff' : '#ffffff';
+    x.fillRect(0, 0, c.width, c.height);
+    x.drawImage(cv, 0, 0);
+    return c;
+  }
+  function stampName() {
+    var d = new Date();
+    var p = function (n) { return String(n).padStart(2, '0'); };
+    return '贺卡-' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes());
+  }
+
+  var HTML_TPL_HEAD = '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>新年贺卡</title><style>' +
+    'html,body{margin:0;background:#120606;min-height:100%}' +
+    'body{display:flex;align-items:center;justify-content:center;padding:24px}' +
+    'img{max-width:min(92vw,760px);width:100%;height:auto;display:block;border-radius:4px;' +
+    'box-shadow:0 30px 80px rgba(0,0,0,.7)}' +
+    '</style><body>';
+
+  function buildExport(fmt) {
+    return new Promise(function (resolve) {
+      if (fmt === 'png' || fmt === 'jpg') {
+        flat(fmt).toBlob(function (blob) {
+          resolve({ blob: blob, name: stampName() + '.' + fmt });
+        }, fmt === 'png' ? 'image/png' : 'image/jpeg', 0.94);
+        return;
+      }
+
+      var b64 = flat('jpg').toDataURL('image/jpeg', 0.92).split(',')[1];
+      var text = st.quote || '';
+      var title = (st.to ? '给' + st.to + '：' : '') + '新年快乐';
+
+      if (fmt === 'html') {
+        var html = HTML_TPL_HEAD +
+          '<img alt="新年贺卡" src="data:image/jpeg;base64,' + b64 + '">' +
+          '</body>';
+        resolve({ blob: new Blob([html], { type: 'text/html;charset=utf-8' }), name: stampName() + '.html' });
+        return;
+      }
+
+    /* EML */
+    var inner = HTML_TPL_HEAD + '<img alt="新年贺卡" src="cid:nycard">' +
+      '<div style="display:none">' + text.replace(/[<>&]/g, '') + '</div></body>';
+    var boundary = 'NYCARD_' + Math.random().toString(36).slice(2, 10).toUpperCase();
+    var crlf = '\r\n';
+    var eml = [
+      'MIME-Version: 1.0',
+      'Content-Type: multipart/related; boundary="' + boundary + '"',
+      'Subject: =?UTF-8?B?' + b64utf8(title) + '?=',
+      'X-Unsent: 1',
+      '',
+      '--' + boundary,
+      'Content-Type: text/html; charset="UTF-8"',
+      'Content-Transfer-Encoding: base64',
+      '',
+      wrap76(b64utf8(inner)),
+      '',
+      '--' + boundary,
+      'Content-Type: image/jpeg; name="card.jpg"',
+      'Content-Transfer-Encoding: base64',
+      'Content-ID: <nycard>',
+      'Content-Disposition: inline; filename="card.jpg"',
+      '',
+      wrap76(b64),
+      '',
+      '--' + boundary + '--',
+      ''
+    ].join(crlf);
+
+      resolve({ blob: new Blob([eml], { type: 'message/rfc822' }), name: stampName() + '.eml' });
+    });
+  }
+
+  document.querySelector('.exports').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button[data-fmt]');
+    if (!b) return;
+    var fmt = b.getAttribute('data-fmt');
+    var old = b.textContent;
+    b.textContent = '…';
+    buildExport(fmt).then(function (r) {
+      dl(r.blob, r.name);
+      b.textContent = old;
+    }, function () {
+      b.textContent = '出错';
+      setTimeout(function () { b.textContent = old; }, 1500);
+    });
+  });
+
+  window.NY_CARD = { build: buildExport, state: st, redraw: draw };
+
+  draw();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { draw(); });
+  }
+})();
+</script>
+</body>
+</html>
