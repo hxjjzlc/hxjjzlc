@@ -48,10 +48,7 @@
       sw: 'linear-gradient(140deg,#05040f,#1a1440 58%,#a78bfa)' },
     { id: 'newyear',  name: '新年',     en: 'NEW YEAR', dark: true,  locked: true,
       desc: '红与金 · 爆竹、灯笼和一点雪',
-      sw: 'linear-gradient(140deg,#2a0606,#7a1409 55%,#ffcf5c)' },
-    { id: 'abyss',    name: '四渡',     en: 'ABYSS',    dark: true,  locked: true,
-      desc: '幻紫彼岸 · 墨 · 血 · 镜面（只在一篇文章里会出现）',
-      sw: 'linear-gradient(140deg,#06030a,#3a1358 55%,#c084fc)' }
+      sw: 'linear-gradient(140deg,#2a0606,#7a1409 55%,#ffcf5c)' }
   ];
 
   function themeById(id) {

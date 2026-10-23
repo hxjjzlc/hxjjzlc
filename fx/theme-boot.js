@@ -4,8 +4,8 @@
    ========================================================= */
 (function () {
   'use strict';
-  var VALID = { rain: 1, ink: 1, sakura: 1, midnight: 1, newyear: 1, abyss: 1 };
-  var DARK = { rain: 1, midnight: 1, newyear: 1, abyss: 1 };
+  var VALID = { rain: 1, ink: 1, sakura: 1, midnight: 1, newyear: 1 };
+  var DARK = { rain: 1, midnight: 1, newyear: 1 };
 
   function cookie(name) {
     var m = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
