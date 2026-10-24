@@ -337,6 +337,7 @@
 <li>F5 公告：<code>CVE-2026-97205</code>、<code>CVE-2026-93479</code>、<code>CVE-2026-15176</code>、<code>CVE-2026-97629</code>、<code>CVE-2026-95101</code></li>
 <li>Node.js 2026 年 10 月 21 日安全发布：<a href="https://nodejs.org/en/blog/vulnerability/october-2026-security-releases">https://nodejs.org/en/blog/vulnerability/october-2026-security-releases</a></li>
 </ul>
+<div class="ai-declare" role="note"><svg class="ai-declare__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.86 3.13a1 1 0 0 0-1.72 0L.86 19.9A1 1 0 0 0 1.72 21.4h20.56a1 1 0 0 0 .86-1.5Z" fill="#f2b01e"/><path d="M12 8.1a1.1 1.1 0 0 1 1.1 1.1v5a1.1 1.1 0 0 1-2.2 0v-5A1.1 1.1 0 0 1 12 8.1Z" fill="#2b1f02"/><circle cx="12" cy="17.6" r="1.25" fill="#2b1f02"/></svg><div class="ai-declare__body"><span class="ai-declare__title">AI 生成声明</span><span class="ai-declare__text">本文由 AI 生成或经 AI 辅助撰写，内容可能存在偏差、错漏或过时信息，请自行核实后参考。</span></div></div>
 ]]></content>
       <tags>
         <tag>安全</tag>
@@ -461,6 +462,7 @@
 <blockquote>
 <p>「别问我为什么把它抄在散文后面，问就是传统。」<br>—— 一个在凌晨四点还在剪字的人 🫥</p>
 </blockquote>
+<div class="ai-declare" role="note"><svg class="ai-declare__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.86 3.13a1 1 0 0 0-1.72 0L.86 19.9A1 1 0 0 0 1.72 21.4h20.56a1 1 0 0 0 .86-1.5Z" fill="#f2b01e"/><path d="M12 8.1a1.1 1.1 0 0 1 1.1 1.1v5a1.1 1.1 0 0 1-2.2 0v-5A1.1 1.1 0 0 1 12 8.1Z" fill="#2b1f02"/><circle cx="12" cy="17.6" r="1.25" fill="#2b1f02"/></svg><div class="ai-declare__body"><span class="ai-declare__title">AI 生成声明</span><span class="ai-declare__text">本文由 AI 生成或经 AI 辅助撰写，内容可能存在偏差、错漏或过时信息，请自行核实后参考。</span></div></div>
 ]]></content>
       <categories>
         <category>意识流</category>
@@ -476,7 +478,9 @@
   <entry>
     <title>本站介绍</title>
     <url>/2025/12/29/hello-world/</url>
-    <content><![CDATA[<h1 id="这有啥好介绍的"><a href="#这有啥好介绍的" class="headerlink" title="这有啥好介绍的"></a>这有啥好介绍的</h1><h2 id="乱做的"><a href="#乱做的" class="headerlink" title="乱做的"></a>乱做的</h2>]]></content>
+    <content><![CDATA[<h1 id="这有啥好介绍的"><a href="#这有啥好介绍的" class="headerlink" title="这有啥好介绍的"></a>这有啥好介绍的</h1><h2 id="乱做的"><a href="#乱做的" class="headerlink" title="乱做的"></a>乱做的</h2>
+<div class="ai-declare" role="note"><svg class="ai-declare__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.86 3.13a1 1 0 0 0-1.72 0L.86 19.9A1 1 0 0 0 1.72 21.4h20.56a1 1 0 0 0 .86-1.5Z" fill="#f2b01e"/><path d="M12 8.1a1.1 1.1 0 0 1 1.1 1.1v5a1.1 1.1 0 0 1-2.2 0v-5A1.1 1.1 0 0 1 12 8.1Z" fill="#2b1f02"/><circle cx="12" cy="17.6" r="1.25" fill="#2b1f02"/></svg><div class="ai-declare__body"><span class="ai-declare__title">AI 生成声明</span><span class="ai-declare__text">本文由 AI 生成或经 AI 辅助撰写，内容可能存在偏差、错漏或过时信息，请自行核实后参考。</span></div></div>
+]]></content>
   </entry>
   <entry>
     <title>新年快乐</title>
@@ -485,6 +489,7 @@
 
 <div id="ny-root"></div>
 <script src="/fx/ny-post.js?v=2610c"></script>
+<div class="ai-declare" role="note"><svg class="ai-declare__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.86 3.13a1 1 0 0 0-1.72 0L.86 19.9A1 1 0 0 0 1.72 21.4h20.56a1 1 0 0 0 .86-1.5Z" fill="#f2b01e"/><path d="M12 8.1a1.1 1.1 0 0 1 1.1 1.1v5a1.1 1.1 0 0 1-2.2 0v-5A1.1 1.1 0 0 1 12 8.1Z" fill="#2b1f02"/><circle cx="12" cy="17.6" r="1.25" fill="#2b1f02"/></svg><div class="ai-declare__body"><span class="ai-declare__title">AI 生成声明</span><span class="ai-declare__text">本文由 AI 生成或经 AI 辅助撰写，内容可能存在偏差、错漏或过时信息，请自行核实后参考。</span></div></div>
 ]]></content>
   </entry>
   <entry>
@@ -493,6 +498,7 @@
     <content><![CDATA[<blockquote>
 <p><a href="https://store.steampowered.com/app/1671210/DELTARUNE/"><em>DELTARUNE</em></a></p>
 </blockquote>
+<div class="ai-declare" role="note"><svg class="ai-declare__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.86 3.13a1 1 0 0 0-1.72 0L.86 19.9A1 1 0 0 0 1.72 21.4h20.56a1 1 0 0 0 .86-1.5Z" fill="#f2b01e"/><path d="M12 8.1a1.1 1.1 0 0 1 1.1 1.1v5a1.1 1.1 0 0 1-2.2 0v-5A1.1 1.1 0 0 1 12 8.1Z" fill="#2b1f02"/><circle cx="12" cy="17.6" r="1.25" fill="#2b1f02"/></svg><div class="ai-declare__body"><span class="ai-declare__title">AI 生成声明</span><span class="ai-declare__text">本文由 AI 生成或经 AI 辅助撰写，内容可能存在偏差、错漏或过时信息，请自行核实后参考。</span></div></div>
 ]]></content>
   </entry>
 </search>

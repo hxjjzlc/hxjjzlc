@@ -967,3 +967,61 @@ a:hover { color: var(--hj-accent2); }
     animation: none !important;
   }
 }
+
+/* ========== 11. 页脚小字 · AI 生成声明 ========== */
+
+/* 页脚：ai意识流文章每周一更新（custom_text，见 themes/butterfly/_config.yml） */
+.footer-weekly-note {
+  margin: 8px 0 0;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+  color: var(--font-color);
+  opacity: 0.62;
+  text-align: center;
+}
+
+/* 文章末尾的 AI 生成声明：左边一枚黄色迷你警告图标
+   由 scripts/ai-declare.js 在 after_post_render 时追加，一篇文章最多一次 */
+.ai-declare {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 28px 0 6px;
+  padding: 11px 14px 12px;
+  border: 1px solid rgba(242, 176, 30, 0.34);
+  border-left: 3px solid #f2b01e;
+  border-radius: 8px;
+  background: rgba(242, 176, 30, 0.08);
+  font-size: 13.5px;
+  line-height: 1.75;
+  text-align: left;
+}
+.ai-declare__icon {
+  flex: 0 0 17px;
+  width: 17px;
+  height: 17px;
+  margin-top: 3px;
+  display: block;
+}
+.ai-declare__body { flex: 1 1 auto; min-width: 0; }
+.ai-declare__title {
+  display: block;
+  margin-bottom: 1px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #a8730a;         /* 浅色主题（ink / sakura） */
+}
+.ai-declare__text {
+  display: block;
+  color: var(--font-color);
+  opacity: 0.8;
+}
+html[data-hj-dark="1"] .ai-declare__title { color: #ffcf5c; }   /* 深色主题 */
+
+@media (max-width: 768px) {
+  .ai-declare { font-size: 12.5px; padding: 10px 12px; }
+  .ai-declare__icon { flex-basis: 16px; width: 16px; height: 16px; }
+}
