@@ -43,12 +43,10 @@
   opacity: 0.8;
 }
 
-/* ---------- 天头 ---------- */
-#article-container .cp .cp-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
+/* ---------- 天头（走伪元素，避免混进首页摘要） ---------- */
+#article-container .cp::before {
+  content: "影印件 · 第三次 · 留存未归档";
+  display: block;
   margin: 0 0 2.6rem;
   padding-bottom: 0.5rem;
   border-bottom: 3px double var(--cp-rule);
@@ -56,13 +54,13 @@
   font-size: 0.79rem;
   letter-spacing: 0.26em;
   color: var(--cp-ink);
-  text-indent: 0;
   line-height: 1.5;
   opacity: 0.75;
 }
 
 /* ---------- 红章 ---------- */
-#article-container .cp .cp-stamp {
+#article-container .cp::after {
+  content: "原件缺失";
   position: absolute;
   top: 1.15rem;
   right: 2.3rem;
@@ -97,7 +95,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #article-container .cp .cp-stamp {
+  #article-container .cp::after {
     animation: none;
   }
 }
@@ -124,7 +122,7 @@
 
 #article-container .cp > p:first-of-type::first-letter {
   float: left;
-  margin: 0.14em 0.14em 0 0;
+  margin: 0.16em 0.14em 0 0;
   font-size: 2.85em;
   font-weight: 600;
   line-height: 0.92;
@@ -220,12 +218,12 @@ html:not([data-hj-dark]) #article-container .cp {
     font-size: 1rem;
     line-height: 2;
   }
-  #article-container .cp .cp-head {
+  #article-container .cp::before {
     margin-bottom: 2.5rem;
     font-size: 0.7rem;
     letter-spacing: 0.18em;
   }
-  #article-container .cp .cp-stamp {
+  #article-container .cp::after {
     top: 0.85rem;
     right: 1.05rem;
     font-size: 0.72rem;
