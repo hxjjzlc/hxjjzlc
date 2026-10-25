@@ -1,0 +1,60 @@
+/* 日记页样式 —— 只作用于 /diary/ */
+
+.dy-head {
+  margin: 0 0 1.6rem;
+  padding: 0 0 1rem;
+  border-bottom: 1px dashed rgba(128, 128, 128, 0.35);
+}
+.dy-head .dy-t {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.dy-head .dy-s {
+  margin-top: 0.4rem;
+  font-size: 0.86rem;
+  opacity: 0.62;
+  line-height: 1.6;
+}
+
+.dy-entry {
+  margin: 0 0 2.2rem;
+  padding-left: 1rem;
+  border-left: 3px solid rgba(120, 160, 255, 0.45);
+}
+.dy-entry:last-child {
+  margin-bottom: 0.6rem;
+}
+.dy-entry .dy-meta {
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  opacity: 0.55;
+  margin-bottom: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+.dy-entry p {
+  margin: 0.55rem 0;
+  line-height: 1.95;
+}
+.dy-entry p:first-of-type {
+  margin-top: 0;
+}
+
+/* 日记里引用的“梦” */
+.dy-dream {
+  margin: 1rem 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 6px;
+  background: rgba(140, 120, 255, 0.08);
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.dy-foot {
+  margin-top: 2rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed rgba(128, 128, 128, 0.35);
+  font-size: 0.78rem;
+  opacity: 0.5;
+  text-align: center;
+}
