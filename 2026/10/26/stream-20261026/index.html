@@ -1,0 +1,323 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>🌫️ 缓存里的第二十四小时，与一只拒绝关闭的标签页 | 酒精小站</title><meta name="author" content="酒精小站"><meta name="copyright" content="酒精小站"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一只怎么关都关不掉的标签页、一小时不存在的时间、一份关于缓存的私人备忘录，和一台在雾里反复刷新自己的机器。纯意识流，读完请自行清空缓存。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🌫️ 缓存里的第二十四小时，与一只拒绝关闭的标签页">
+<meta property="og:url" content="http://hxjj.dpdns.org/2026/10/26/stream-20261026/index.html">
+<meta property="og:site_name" content="酒精小站">
+<meta property="og:description" content="一只怎么关都关不掉的标签页、一小时不存在的时间、一份关于缓存的私人备忘录，和一台在雾里反复刷新自己的机器。纯意识流，读完请自行清空缓存。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hxjj.dpdns.org/img/butterfly-flap.svg">
+<meta property="article:published_time" content="2026-10-25T17:10:00.000Z">
+<meta property="article:modified_time" content="2026-10-25T17:10:00.000Z">
+<meta property="article:author" content="酒精小站">
+<meta property="article:tag" content="意识流">
+<meta property="article:tag" content="随笔">
+<meta property="article:tag" content="花哨">
+<meta property="article:tag" content="缓存">
+<meta property="article:tag" content="凌晨">
+<meta property="article:tag" content="浏览器">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hxjj.dpdns.org/img/butterfly-flap.svg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "🌫️ 缓存里的第二十四小时，与一只拒绝关闭的标签页",
+  "url": "http://hxjj.dpdns.org/2026/10/26/stream-20261026/",
+  "image": "http://hxjj.dpdns.org/img/butterfly-flap.svg",
+  "datePublished": "2026-10-25T17:10:00.000Z",
+  "dateModified": "2026-10-25T17:10:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "酒精小站",
+      "url": "http://hxjj.dpdns.org"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://hxjj.dpdns.org/2026/10/26/stream-20261026/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '🌫️ 缓存里的第二十四小时，与一只拒绝关闭的标签页',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/fx/site.css?v=2610d"><script src="/fx/theme-boot.js?v=2610d"></script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="酒精小站" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/butterfly-flap.svg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">酒精小站</span></a><a class="nav-page-title" href="/"><span class="site-name">🌫️ 缓存里的第二十四小时，与一只拒绝关闭的标签页</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">🌫️ 缓存里的第二十四小时，与一只拒绝关闭的标签页</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-25T17:10:00.000Z" title="发表于 2026-10-26 01:10:00">2026-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-25T17:10:00.000Z" title="更新于 2026-10-26 01:10:00">2026-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%84%8F%E8%AF%86%E6%B5%81/">意识流</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span class="waline-pageview-count" data-path="/2026/10/26/stream-20261026/"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2026/10/26/stream-20261026/#post-comment"><span class="waline-comment-count" data-path="/2026/10/26/stream-20261026/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div><article class="container post-content" id="article-container"><!-- scene -->
+<link rel="stylesheet" href="/fx/fx.css">
+<div id="fx-root"></div>
+<script src="/fx/fx.js"></script>
+
+<blockquote>
+<p>『一天只有二十四个小时，可我总在第二十四个小时之后醒来。那一小时不属于任何人，所以它归我。』<br>—— 一个把闹钟设成 00:59 又按掉的人 ⏳</p>
+</blockquote>
+<span id="more"></span>
+
+<hr>
+<h2 id="🌀-一、开头总是从一个不该存在的标签页开始"><a href="#🌀-一、开头总是从一个不该存在的标签页开始" class="headerlink" title="🌀 一、开头总是从一个不该存在的标签页开始"></a>🌀 一、开头总是从一个不该存在的标签页开始</h2><p>我打开浏览器的时候，它有十七个标签页。我发誓昨天只有十六个。🌙 多出来的那一个没有标题，图标是空白的，像一张被撕掉了脸的照片。我点开它，它显示一片白，白得很干净，干净到我开始怀疑是不是我把它想复杂了——它可能只是一个正常的、加载失败的、无辜的页面。🫧</p>
+<p>但我不敢关它。你懂那种感觉吗？关掉一个空白的标签页，就像往一个没人的房间喊了一声「有人吗」，然后自己把门锁上。🔒</p>
+<p>我后来去查了<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Stream_of_consciousness">意识流</a>这个词的英文条目，发现它最早是心理学词汇，后来被文学借走，借走之后就没打算还。📚 这很像我的充电器。也像这篇文章的结构——它没有结构，它只有惯性。而且惯性比结构诚实：结构是给别人看的，惯性是给自己用的。</p>
+<hr>
+<h2 id="🧊-二、机器、热度，以及一台会发呆的旧笔记本"><a href="#🧊-二、机器、热度，以及一台会发呆的旧笔记本" class="headerlink" title="🧊 二、机器、热度，以及一台会发呆的旧笔记本"></a>🧊 二、机器、热度，以及一台会发呆的旧笔记本</h2><p>笔记本的风扇在响，声音不规则，像有人在里面用很轻的力气磨牙。🦷 我摸了摸出风口，温的，不算烫。它现在的状态大概是「努力了，但不知道在为什么努力」——这句话我本来想用来形容自己，结果先给了它。🫠</p>
+<p>机器里有一层东西叫<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Cache_%28computing%29">缓存</a>。它不聪明，但它记性好；它不分轻重，它只分新旧。你把一份重要文件交给它，它存着；你把一段三秒的广告交给它，它也存着，而且存得一样认真。📦 某种意义上它比人公平——至少它不评价内容，只评价时间戳。</p>
+<p>我有时会想，如果人的记忆也长这样就好了：清一次，掉一半，剩下的还能用，只是图片变成了低分辨率的马赛克。🧩 那样的话，某些下午就会自动模糊，而某些无关紧要的句子——比如便利店店员说的「袋子要吗」——会清清楚楚留一辈子。这不合理，但缓存从来不讲理。</p>
+<hr>
+<h2 id="🌫️-三、雾、露点，和一种叫体感温度的东西"><a href="#🌫️-三、雾、露点，和一种叫体感温度的东西" class="headerlink" title="🌫️ 三、雾、露点，和一种叫体感温度的东西"></a>🌫️ 三、雾、露点，和一种叫体感温度的东西</h2><p>窗外起雾了。不是那种浪漫的、电影里的雾，是那种把路灯糊成一团橘黄色光斑的、有点脏的雾。🌫️ 我住在三楼，看下去，楼下的车像在水底开，刹车灯是两条不肯沉的红色小鱼。🚗</p>
+<p>查天气的时候我学到了两个词：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Fog">雾</a>其实是贴近地面的云，<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Dew_point">露点</a>是空气开始析出水的那种温度。💧 也就是说，雾不是一个东西，雾是一个条件。它不是从天上下来的，它是空气自己憋不住了的产物。☁️ 我很喜欢这个解释，因为它把雾从「景象」降级成了「状态」，而状态是可以变的，景象只能被观看。</p>
+<p>体感温度就更玄了。同样是十四度，有风的时候像十度，有太阳的时候像十八度。🌡️ 数字没变，人变了。我们一直在用仪器校准世界，然后用感觉推翻仪器——这两件事同时进行，谁也没赢，谁也没停。</p>
+<hr>
+<h2 id="🧾-四、一份关于缓存的私人备忘录（附一段没人会跑的代码）"><a href="#🧾-四、一份关于缓存的私人备忘录（附一段没人会跑的代码）" class="headerlink" title="🧾 四、一份关于缓存的私人备忘录（附一段没人会跑的代码）"></a>🧾 四、一份关于缓存的私人备忘录（附一段没人会跑的代码）</h2><p>我给自己写过一条规则：<strong>不确定的东西，先存着，别急着判断。</strong> 📝 这条规则的坏处是，我的硬盘和我的脑子都满了；好处是，我很少后悔。缓存策略大概也是这个逻辑，只是它写在头里，写在 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Cache-Control"><code>Cache-Control</code></a> 里，写得比我干脆得多。</p>
+<p>时间也一样。我们以为时间是连续的，其实它是被格式化过的。<a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc3339">RFC 3339</a> 把时间写成一串带 <code>T</code> 和 <code>Z</code> 的字符，漂亮、精确、毫无感情。🕰️ 我很喜欢那个 <code>Z</code>，它代表零时区，也代表「到此为止，后面没有了」。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 一段凌晨写的、没有任何生产价值的代码 🧩</span></span><br><span class="line"><span class="keyword">const</span> 缓存 = <span class="keyword">new</span> <span class="title class_">Map</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> 记住(键, 值, ttl = <span class="number">3600_000</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> 缓存.<span class="title function_">set</span>(键, &#123; 值, 过期: <span class="title class_">Date</span>.<span class="title function_">now</span>() + ttl &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> 想起(键) &#123;</span><br><span class="line">  <span class="keyword">const</span> 条目 = 缓存.<span class="title function_">get</span>(键);</span><br><span class="line">  <span class="keyword">if</span> (!条目) <span class="keyword">return</span> <span class="string">&#x27;没存过，或者你记错了 🫥&#x27;</span>;</span><br><span class="line">  <span class="keyword">if</span> (<span class="title class_">Date</span>.<span class="title function_">now</span>() &gt; 条目.过期) <span class="keyword">return</span> <span class="string">&#x27;存过，但已经凉了 🧊&#x27;</span>;</span><br><span class="line">  <span class="keyword">return</span> 条目.值;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">记住(<span class="string">&#x27;今天说过的话&#x27;</span>, <span class="string">&#x27;算了，不重要&#x27;</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(想起(<span class="string">&#x27;今天说过的话&#x27;</span>)); <span class="comment">// 算了，不重要</span></span><br></pre></td></tr></table></figure>
+
+<p>这段代码最大的问题是：它把「忘记」实现得非常优雅，优雅到我差点以为忘记是一种功能。✨</p>
+<hr>
+<h2 id="🪞-五、镜子、掉帧，与恐怖谷的护栏"><a href="#🪞-五、镜子、掉帧，与恐怖谷的护栏" class="headerlink" title="🪞 五、镜子、掉帧，与恐怖谷的护栏"></a>🪞 五、镜子、掉帧，与恐怖谷的护栏</h2><p>洗手间的镜子有一道水痕，从左上斜到右下，像某个很懒的人画的一道光。🪞 我站在它前面刷牙，刷到一半突然不确定镜子里那个人是不是也在刷——不是恐怖片那种不确定，是那种很日常的、轻微的错位感。🫧</p>
+<p>后来我知道了有个词叫<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Uncanny_valley">恐怖谷</a>：当一个东西像人但又不是人，像到某个临界点，好感会突然掉进一个坑里。🕳️ 我觉得这个曲线不只适用于机器人，也适用于所有「差一点」的东西：差一点的复制品、差一点的道歉、差一点的自己。📉</p>
+<p>技术上也一样。网页掉帧的时候，画面还是那个画面，只是每一帧都慢了半拍，于是熟悉的东西开始变得不对劲。<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/WebGL_API">WebGL</a> 跑满的机器会发热，发热会降频，降频会掉帧——一条非常诚实的因果链，比大部分人际关系清楚。🔥</p>
+<hr>
+<h2 id="🕳️-六、404-有三种，而我只怕第二种"><a href="#🕳️-六、404-有三种，而我只怕第二种" class="headerlink" title="🕳️ 六、404 有三种，而我只怕第二种"></a>🕳️ 六、404 有三种，而我只怕第二种</h2><p>我一直在收集「找不到」的不同写法。📭 搜索引擎说「没有找到相关结果」，服务器说 404，档案馆说「该馆藏暂不对外开放」，朋友说「我回头想想」。这四种意思完全不一样，但语气可以完全一样。</p>
+<table>
+<thead>
+<tr>
+<th>🏷️ 说法</th>
+<th>📍 说话的人</th>
+<th>🧠 真实含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>404 Not Found</code></td>
+<td>服务器</td>
+<td>我这里确实没有这个东西</td>
+</tr>
+<tr>
+<td>「没有找到相关结果」</td>
+<td>搜索引擎</td>
+<td>有，但我不想让你现在看到</td>
+</tr>
+<tr>
+<td>「暂不开放」</td>
+<td><a target="_blank" rel="noopener" href="https://archive.org/">档案馆</a></td>
+<td>有，且我知道它在哪一格</td>
+</tr>
+<tr>
+<td>「我回头想想」</td>
+<td>一个人</td>
+<td>我不打算想了，但我希望你晚点再问 😶</td>
+</tr>
+</tbody></table>
+<p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status/404">404</a> 其实是这三种里最善良的一个：它不撒谎，它只是没有。🌫️ 而「我回头想想」是四层缓存全部命中失败之后，还坚持返回 200 的那种接口——你拿到了一具空壳，壳上写着成功。📦</p>
+<p>顺便说，<a target="_blank" rel="noopener" href="https://archive.org/">互联网档案馆</a>里真的存着 1998 年的网页。我翻到过一个个人主页，背景是星空 GIF，访客计数器停在 000137。✨ 那个数字让我安静了一会儿。有人来过，而且只有一百三十七个人来过，但它还是把灯开着。💡</p>
+<hr>
+<h2 id="📮-七、金色唱片，和人类最理直气壮的一次自我介绍"><a href="#📮-七、金色唱片，和人类最理直气壮的一次自我介绍" class="headerlink" title="📮 七、金色唱片，和人类最理直气壮的一次自我介绍"></a>📮 七、金色唱片，和人类最理直气壮的一次自我介绍</h2><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Voyager_Golden_Record">旅行者金唱片</a>这件事，我每次想起来都觉得荒诞又动人。🚀 我们往宇宙里扔了一张铜盘，上面刻着五十五种语言的问候、鲸鱼的叫声、一段 Bach，还有一张用脉冲星标出地球位置的地图。🎵</p>
+<p>问题是，它没有收件人。它不指向任何人，它只是被扔出去，然后一直飞。🛰️ 这大概是人类做过的最不功利的一件事——比<a target="_blank" rel="noopener" href="https://www.gnu.org/">自由软件运动</a>还纯粹，因为开源至少还有下一个人会用，而金唱片的下一个读者可能是一块石头。🪨</p>
+<p><a target="_blank" rel="noopener" href="https://www.loc.gov/">美国国会图书馆</a>里存着大量「没有明确用途」的东西：菜单、电话簿、洗衣店的小票。🧾 我一开始觉得这是浪费，后来觉得这才是正经事。因为用途是会过期的，而存在不会。你把一张 1954 年的餐厅菜单留下来，它就不再是菜单了，它变成了一个证据：证明那天有人点了一份 35 美分的汤。🥣</p>
+<hr>
+<h2 id="🧵-八、折叠起来的那一段，和我自己的待办"><a href="#🧵-八、折叠起来的那一段，和我自己的待办" class="headerlink" title="🧵 八、折叠起来的那一段，和我自己的待办"></a>🧵 八、折叠起来的那一段，和我自己的待办</h2><p>有些话我写在折叠区里，不是因为它们不重要，恰恰相反，是因为它们太占地方了。🗂️ 就像<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Leap_second">闰秒</a>——为了让人造的时间追上天上的时间，我们偶尔要在某一年里塞进去一秒钟。⏱️ 那一秒不属于任何人，全世界一起把它过掉，谁也没察觉。</p>
+<p>我不止一次想过，如果能把某些下午也这样处理就好了：宣布它不算数，所有人一起跳过，事后谁都不许提。🫥</p>
+<details>
+<summary>🗃️ 点开这里，是一张我自己写的、永远做不完的清单</summary>
+
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 把雾看完 🌫️</li>
+<li><input checked="" disabled="" type="checkbox"> 把十七个标签页数清楚</li>
+<li><input checked="" disabled="" type="checkbox"> 承认多出来的那一个关不掉</li>
+<li><input disabled="" type="checkbox"> 清一次缓存（说了三个月了）</li>
+<li><input disabled="" type="checkbox"> 把那段代码改成有用的东西</li>
+<li><input disabled="" type="checkbox"> 找到 000137 那个网站的站长 🕯️</li>
+<li><input disabled="" type="checkbox"> 学会在一秒钟里什么都不做 ⏳</li>
+</ul>
+<blockquote>
+<p>这张清单的格式很正式，执行率很随便。📋<br>我甚至给它加了个标题，好让它看起来像某种计划。</p>
+</blockquote>
+</details>
+
+<p>写到这里我意识到，我前面还欠着两件荒唐事：<a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc2324">RFC 2324</a> 规定，如果一个茶壶被要求煮咖啡，它应该返回 418；而 <a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc1149">RFC 1149</a> 认真讨论过用信鸽传输 IP 数据包，还给出了丢包率和延迟统计，甚至考虑了鸽子被鹰拦截的情况。🕊️ 这两份文档都是真的，都能访问，都被认真归档过。</p>
+<p>我为这件事高兴了很久。因为这说明：<strong>世界上确实有人在替荒唐事写说明书。</strong> 📜 而我此刻写的这篇东西，大概也属于同一类文档——规格很松，实现很乱，但确实是真心写的。🫀</p>
+<hr>
+<h2 id="🕰️-九、第二十四小时（它其实不存在，所以我把它留给我自己）"><a href="#🕰️-九、第二十四小时（它其实不存在，所以我把它留给我自己）" class="headerlink" title="🕰️ 九、第二十四小时（它其实不存在，所以我把它留给我自己）"></a>🕰️ 九、第二十四小时（它其实不存在，所以我把它留给我自己）</h2><p>一天有二十四小时，这个数字是<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Coordinated_Universal_Time">约定</a>出来的，不是宇宙规定的。🌍 地球转得不太准，所以我们发明了闰秒；我们睡得不太准，所以我们发明了闹钟；闹钟响的时候我们不太想起，所以我们发明了「再睡五分钟」。😴 一层一层地补，补到最后，那张网已经不像网了，但它还能捞住人。</p>
+<p>我最后看了一眼那只空白标签页。它还在。白色，没有标题，图标位置是一个灰色的小方块。🧱 我右键，选了「关闭」，它消失了半秒，然后又出现在最右边，顺序都没变——仿佛它从来就在那里，只是我刚才没看见。👁️</p>
+<p>于是我决定不关了。🌙 就当它是这栋房子里的一间我不知道用途的房间，门开着，灯亮着，谁也没进去过。有些东西的存在方式就是「不被处理」——缓存会过期，标签页会被回收，雾会在太阳出来之后自己散掉，而我不需要为此做任何事。🫧</p>
+<p>那就这样吧。我把耳机摘下来，听见冰箱在另一个房间嗡嗡地响（对，还是那台冰箱，它一直都在），听见楼下有人在很慢地倒车，听见自己打了第二个哈欠。🥱</p>
+<p>如果你读到这里还没关掉，那我得说一句：你也有一点乱。不过没关系，<strong>乱说明你还在加载，而不是已经失败。</strong> 🔄</p>
+<hr>
+<p><sub>⚠️ 自嘲式免责声明：本文作者在写这篇东西的时候，脑子里同时开着十七个标签页，其中至少三个是空白的；所以文中任何看起来像道理的部分，请当作巧合处理。清空缓存不承担任何后果，唯一后果是你可能会忘记自己为什么打开它。🗑️</sub></p>
+<div class="ai-declare" role="note"><svg class="ai-declare__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.86 3.13a1 1 0 0 0-1.72 0L.86 19.9A1 1 0 0 0 1.72 21.4h20.56a1 1 0 0 0 .86-1.5Z" fill="#f2b01e"/><path d="M12 8.1a1.1 1.1 0 0 1 1.1 1.1v5a1.1 1.1 0 0 1-2.2 0v-5A1.1 1.1 0 0 1 12 8.1Z" fill="#2b1f02"/><circle cx="12" cy="17.6" r="1.25" fill="#2b1f02"/></svg><div class="ai-declare__body"><span class="ai-declare__title">AI 生成声明</span><span class="ai-declare__text">本文由 AI 生成或经 AI 辅助撰写，内容可能存在偏差、错漏或过时信息，请自行核实后参考。</span></div></div>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://hxjj.dpdns.org">酒精小站</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://hxjj.dpdns.org/2026/10/26/stream-20261026/">http://hxjj.dpdns.org/2026/10/26/stream-20261026/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://hxjj.dpdns.org" target="_blank">酒精小站</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%84%8F%E8%AF%86%E6%B5%81/">意识流</a><a class="post-meta__tags" href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a><a class="post-meta__tags" href="/tags/%E8%8A%B1%E5%93%A8/">花哨</a><a class="post-meta__tags" href="/tags/%E7%BC%93%E5%AD%98/">缓存</a><a class="post-meta__tags" href="/tags/%E5%87%8C%E6%99%A8/">凌晨</a><a class="post-meta__tags" href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/">浏览器</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-flap.svg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2027/02/06/%E6%96%B0%E5%B9%B4%E5%BF%AB%E4%B9%90/" title="新年快乐"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">新年快乐</div></div><div class="info-2"><div class="info-item-1">    AI 生成声明本文由 AI 生成或经 AI 辅助撰写，内容可能存在偏差、错漏或过时信息，请自行核实后参考。 </div></div></div></a><a class="pagination-related" href="/2026/10/22/fridge-moon/" title="冰箱里的月亮与十七个未接来电"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">冰箱里的月亮与十七个未接来电</div></div><div class="info-2"><div class="info-item-1">       『我并不是在写一份文档，我只是把脑子里那台老式收音机的杂音，一个字一个字地抄下来。』—— 某个凌晨三点、头发还没干透的人 🛁     🌀 一、关于开头的开头（而开头总是迟到）我本来想从一台冰箱写起。真的，就一台冰箱，白色的，门缝里夹着一张过期的优惠券。可是它半夜会嗡嗡地响，像有人在里面小声地背圆周率，背到小数点后第四十七位就忘了，于是重新开始。🎧 我趴在厨房的地砖上听过一次，地砖很凉，凉得像薛定谔的那只猫还没决定要不要活着——你打开门，牛奶还在；你不打开，牛奶既在又不在，而且它有点酸了。🥛 这里必须说清楚一件事，虽然我并不打算说清楚任何事：段落是给呼吸用的。所以你看到空行，不是因为我换了话题，而是因为我换了一口气。🌬️ 至于话题，它一直没变，它只是绕了一圈，从冰箱绕到月亮，再绕回来的时候，顺手把冰箱门带上了，里面就黑了。🌑 黑得很讲道理。 顺便一提，意识流这个词本身就很不意识流，它太整齐了，像有人把一团毛线团熨平了，还打了折痕。🧶  🧦 二、洗衣机、袜子与一门叫拓扑学的手艺洗衣机是另一个会唱歌的家电，但它唱得比较急，像赶末班车。🚌 我数过，一次标准...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/10/22/fridge-moon/" title="冰箱里的月亮与十七个未接来电"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-22</div><div class="info-item-2">冰箱里的月亮与十七个未接来电</div></div><div class="info-2"><div class="info-item-1">       『我并不是在写一份文档，我只是把脑子里那台老式收音机的杂音，一个字一个字地抄下来。』—— 某个凌晨三点、头发还没干透的人 🛁     🌀 一、关于开头的开头（而开头总是迟到）我本来想从一台冰箱写起。真的，就一台冰箱，白色的，门缝里夹着一张过期的优惠券。可是它半夜会嗡嗡地响，像有人在里面小声地背圆周率，背到小数点后第四十七位就忘了，于是重新开始。🎧 我趴在厨房的地砖上听过一次，地砖很凉，凉得像薛定谔的那只猫还没决定要不要活着——你打开门，牛奶还在；你不打开，牛奶既在又不在，而且它有点酸了。🥛 这里必须说清楚一件事，虽然我并不打算说清楚任何事：段落是给呼吸用的。所以你看到空行，不是因为我换了话题，而是因为我换了一口气。🌬️ 至于话题，它一直没变，它只是绕了一圈，从冰箱绕到月亮，再绕回来的时候，顺手把冰箱门带上了，里面就黑了。🌑 黑得很讲道理。 顺便一提，意识流这个词本身就很不意识流，它太整齐了，像有人把一团毛线团熨平了，还打了折痕。🧶  🧦 二、洗衣机、袜子与一门叫拓扑学的手艺洗衣机是另一个会唱歌的家电，但它唱得比较急，像赶末班车。🚌 我数过，一次标准...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-flap.svg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">酒精小站</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%80-%E4%B8%80%E3%80%81%E5%BC%80%E5%A4%B4%E6%80%BB%E6%98%AF%E4%BB%8E%E4%B8%80%E4%B8%AA%E4%B8%8D%E8%AF%A5%E5%AD%98%E5%9C%A8%E7%9A%84%E6%A0%87%E7%AD%BE%E9%A1%B5%E5%BC%80%E5%A7%8B"><span class="toc-number">1.</span> <span class="toc-text">🌀 一、开头总是从一个不该存在的标签页开始</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A7%8A-%E4%BA%8C%E3%80%81%E6%9C%BA%E5%99%A8%E3%80%81%E7%83%AD%E5%BA%A6%EF%BC%8C%E4%BB%A5%E5%8F%8A%E4%B8%80%E5%8F%B0%E4%BC%9A%E5%8F%91%E5%91%86%E7%9A%84%E6%97%A7%E7%AC%94%E8%AE%B0%E6%9C%AC"><span class="toc-number">2.</span> <span class="toc-text">🧊 二、机器、热度，以及一台会发呆的旧笔记本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8C%AB%EF%B8%8F-%E4%B8%89%E3%80%81%E9%9B%BE%E3%80%81%E9%9C%B2%E7%82%B9%EF%BC%8C%E5%92%8C%E4%B8%80%E7%A7%8D%E5%8F%AB%E4%BD%93%E6%84%9F%E6%B8%A9%E5%BA%A6%E7%9A%84%E4%B8%9C%E8%A5%BF"><span class="toc-number">3.</span> <span class="toc-text">🌫️ 三、雾、露点，和一种叫体感温度的东西</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A7%BE-%E5%9B%9B%E3%80%81%E4%B8%80%E4%BB%BD%E5%85%B3%E4%BA%8E%E7%BC%93%E5%AD%98%E7%9A%84%E7%A7%81%E4%BA%BA%E5%A4%87%E5%BF%98%E5%BD%95%EF%BC%88%E9%99%84%E4%B8%80%E6%AE%B5%E6%B2%A1%E4%BA%BA%E4%BC%9A%E8%B7%91%E7%9A%84%E4%BB%A3%E7%A0%81%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">🧾 四、一份关于缓存的私人备忘录（附一段没人会跑的代码）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%AA%9E-%E4%BA%94%E3%80%81%E9%95%9C%E5%AD%90%E3%80%81%E6%8E%89%E5%B8%A7%EF%BC%8C%E4%B8%8E%E6%81%90%E6%80%96%E8%B0%B7%E7%9A%84%E6%8A%A4%E6%A0%8F"><span class="toc-number">5.</span> <span class="toc-text">🪞 五、镜子、掉帧，与恐怖谷的护栏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%95%B3%EF%B8%8F-%E5%85%AD%E3%80%81404-%E6%9C%89%E4%B8%89%E7%A7%8D%EF%BC%8C%E8%80%8C%E6%88%91%E5%8F%AA%E6%80%95%E7%AC%AC%E4%BA%8C%E7%A7%8D"><span class="toc-number">6.</span> <span class="toc-text">🕳️ 六、404 有三种，而我只怕第二种</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%93%AE-%E4%B8%83%E3%80%81%E9%87%91%E8%89%B2%E5%94%B1%E7%89%87%EF%BC%8C%E5%92%8C%E4%BA%BA%E7%B1%BB%E6%9C%80%E7%90%86%E7%9B%B4%E6%B0%94%E5%A3%AE%E7%9A%84%E4%B8%80%E6%AC%A1%E8%87%AA%E6%88%91%E4%BB%8B%E7%BB%8D"><span class="toc-number">7.</span> <span class="toc-text">📮 七、金色唱片，和人类最理直气壮的一次自我介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A7%B5-%E5%85%AB%E3%80%81%E6%8A%98%E5%8F%A0%E8%B5%B7%E6%9D%A5%E7%9A%84%E9%82%A3%E4%B8%80%E6%AE%B5%EF%BC%8C%E5%92%8C%E6%88%91%E8%87%AA%E5%B7%B1%E7%9A%84%E5%BE%85%E5%8A%9E"><span class="toc-number">8.</span> <span class="toc-text">🧵 八、折叠起来的那一段，和我自己的待办</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%95%B0%EF%B8%8F-%E4%B9%9D%E3%80%81%E7%AC%AC%E4%BA%8C%E5%8D%81%E5%9B%9B%E5%B0%8F%E6%97%B6%EF%BC%88%E5%AE%83%E5%85%B6%E5%AE%9E%E4%B8%8D%E5%AD%98%E5%9C%A8%EF%BC%8C%E6%89%80%E4%BB%A5%E6%88%91%E6%8A%8A%E5%AE%83%E7%95%99%E7%BB%99%E6%88%91%E8%87%AA%E5%B7%B1%EF%BC%89"><span class="toc-number">9.</span> <span class="toc-text">🕰️ 九、第二十四小时（它其实不存在，所以我把它留给我自己）</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2027/02/06/%E6%96%B0%E5%B9%B4%E5%BF%AB%E4%B9%90/" title="新年快乐">新年快乐</a><time datetime="2027-02-05T16:00:00.000Z" title="发表于 2027-02-06 00:00:00">2027-02-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/26/stream-20261026/" title="🌫️ 缓存里的第二十四小时，与一只拒绝关闭的标签页">🌫️ 缓存里的第二十四小时，与一只拒绝关闭的标签页</a><time datetime="2026-10-25T17:10:00.000Z" title="发表于 2026-10-26 01:10:00">2026-10-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/22/fridge-moon/" title="冰箱里的月亮与十七个未接来电">冰箱里的月亮与十七个未接来电</a><time datetime="2026-10-21T22:58:00.000Z" title="发表于 2026-10-22 06:58:00">2026-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/22/emudhra-php-nginx-nodejs/" title="四天之内三连爆：eMudhra 中间证书私钥可被推算，以及同期爆发的 PHP、nginx、Node.js 漏洞">四天之内三连爆：eMudhra 中间证书私钥可被推算，以及同期爆发的 PHP、nginx、Node.js 漏洞</a><time datetime="2026-10-21T20:23:36.000Z" title="发表于 2026-10-22 04:23:36">2026-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/29/hello-world/" title="本站介绍">本站介绍</a><time datetime="2025-12-28T17:46:38.000Z" title="发表于 2025-12-29 01:46:38">2025-12-29</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 酒精小站</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><p class="footer-weekly-note">ai意识流文章每周一更新</p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = {"lang":"zh-CN","emoji":["https://cdn.jsdelivr.net/npm/@waline/emojis@1/bilibili","https://unpkg.com/@waline/emojis@1.4.0/weibo","https://cdn.jsdelivr.net/npm/@waline/emojis@1/tieba"],"meta":["nick","mail","link"],"requiredMeta":["nick","mail"],"wordLimit":0,"imageUploader":true,"login":"enable","pageview":true}
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://jmcomic.qzz.io',
+      pageview: true,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client@3.8.0/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client@3.8.0/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script src="/fx/site.js?v=2610d"></script><!-- build 5pen --><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
