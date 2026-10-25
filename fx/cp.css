@@ -1,0 +1,256 @@
+/* ============================================================
+   影印页 / copy sheet
+   只被 2026-10-26 那篇《原件找不到了》引用。
+   不进 inject、不带 JS、不动别的页面。
+   ============================================================ */
+
+#article-container .cp {
+  --cp-paper: #e6dfcb;
+  --cp-ink: #201e1a;
+  --cp-ink2: #56513f;
+  --cp-rule: rgba(32, 30, 26, 0.2);
+  --cp-red: #9a382c;
+
+  position: relative;
+  margin: 1.05rem -0.9rem 1.5rem;
+  padding: 1.9rem 2.9rem 2.1rem;
+  color: var(--cp-ink);
+  background-color: var(--cp-paper);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.015) 0 1px, rgba(0, 0, 0, 0) 1px 5px),
+    url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.2'/%3E%3C/svg%3E");
+  background-blend-mode: multiply, multiply;
+  border-radius: 2px;
+  box-shadow:
+    inset 0 0 0 1px rgba(32, 30, 26, 0.09),
+    0 1px 0 rgba(255, 255, 255, 0.55),
+    0 20px 38px -24px rgba(0, 0, 0, 0.62);
+  font-family: "Songti SC", "STSong", "Noto Serif SC", "SimSun", serif;
+  font-size: 1.09rem;
+  line-height: 2.04;
+  letter-spacing: 0.015em;
+  text-shadow: 0.35px 0.35px 0 rgba(32, 30, 26, 0.13);
+  overflow-wrap: break-word;
+}
+
+/* 引子（在 <!-- more --> 之前，列表页也会用到，故不加依赖 .cp 的样式） */
+#article-container > .cp-lead {
+  margin: 0 0 0.2rem;
+  font-family: "Songti SC", "STSong", "Noto Serif SC", "SimSun", serif;
+  font-size: 0.95rem;
+  line-height: 2;
+  letter-spacing: 0.02em;
+  opacity: 0.8;
+}
+
+/* ---------- 天头 ---------- */
+#article-container .cp .cp-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 2.6rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px double var(--cp-rule);
+  font-family: "KaiTi", "Kaiti SC", "STKaiti", serif;
+  font-size: 0.79rem;
+  letter-spacing: 0.26em;
+  color: var(--cp-ink);
+  text-indent: 0;
+  line-height: 1.5;
+  opacity: 0.75;
+}
+
+/* ---------- 红章 ---------- */
+#article-container .cp .cp-stamp {
+  position: absolute;
+  top: 1.15rem;
+  right: 2.3rem;
+  padding: 0.3em 0.55em;
+  border: 1.5px solid var(--cp-red);
+  border-radius: 2px;
+  color: var(--cp-red);
+  font-family: "KaiTi", "Kaiti SC", "STKaiti", serif;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  opacity: 0.6;
+  transform: rotate(-4.5deg);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  animation: cp-stamp-in 0.85s cubic-bezier(0.2, 0.85, 0.25, 1) 0.4s both;
+}
+
+@keyframes cp-stamp-in {
+  from {
+    opacity: 0;
+    transform: rotate(-4.5deg) scale(1.25);
+  }
+  65% {
+    opacity: 0.72;
+  }
+  to {
+    opacity: 0.6;
+    transform: rotate(-4.5deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #article-container .cp .cp-stamp {
+    animation: none;
+  }
+}
+
+/* ---------- 正文 ---------- */
+#article-container .cp p {
+  margin: 0;
+  padding: 0;
+  text-indent: 2em;
+  color: var(--cp-ink);
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  background: none;
+}
+
+#article-container .cp p + p {
+  margin-top: 0.5em;
+}
+
+#article-container .cp > p:first-of-type {
+  text-indent: 0;
+}
+
+#article-container .cp > p:first-of-type::first-letter {
+  float: left;
+  margin: 0.14em 0.14em 0 0;
+  font-size: 2.85em;
+  font-weight: 600;
+  line-height: 0.92;
+  color: var(--cp-ink);
+}
+
+/* ---------- 段落之间的断口 ---------- */
+#article-container .cp .cp-gap {
+  position: relative;
+  height: 1px;
+  margin: 1.55rem 0;
+  border: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(32, 30, 26, 0) 0%,
+    var(--cp-rule) 14%,
+    var(--cp-rule) 86%,
+    rgba(32, 30, 26, 0) 100%
+  );
+}
+
+#article-container .cp .cp-gap::after {
+  content: "· · ·";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0 0.75em;
+  background: var(--cp-paper);
+  font-size: 0.62rem;
+  line-height: 1;
+  letter-spacing: 0.42em;
+  color: var(--cp-ink);
+  opacity: 0.7;
+}
+
+/* ---------- 单独拎出来的一句 ---------- */
+#article-container .cp p.cp-q {
+  margin: 1.55rem 0 1.55rem 1.1rem;
+  padding-left: 1.05rem;
+  border-left: 2px solid var(--cp-red);
+  font-family: "KaiTi", "Kaiti SC", "STKaiti", serif;
+  font-size: 1.14rem;
+  line-height: 1.95;
+  letter-spacing: 0.07em;
+  text-indent: 0;
+}
+
+/* ---------- 地脚 ---------- */
+#article-container .cp .cp-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 2.4rem 0 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--cp-rule);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Courier New", monospace;
+  font-size: 0.68rem;
+  line-height: 1.6;
+  letter-spacing: 0.16em;
+  color: var(--cp-ink);
+  opacity: 0.72;
+  text-indent: 0;
+}
+
+#article-container .cp .cp-foot i {
+  font-style: normal;
+  letter-spacing: 0;
+}
+
+/* ---------- 暗色主题下把纸压暗一点，别晃眼 ---------- */
+html[data-hj-dark] #article-container .cp {
+  --cp-paper: #d9d2be;
+  --cp-ink: #1b1915;
+  --cp-ink2: #4e4a3c;
+  --cp-rule: rgba(27, 25, 21, 0.22);
+}
+
+html:not([data-hj-dark]) #article-container .cp {
+  --cp-paper: #e8e1cd;
+  box-shadow:
+    inset 0 0 0 1px rgba(32, 30, 26, 0.13),
+    0 2px 0 rgba(255, 255, 255, 0.6),
+    0 22px 40px -26px rgba(60, 50, 30, 0.5);
+}
+
+/* ---------- 窄屏 ---------- */
+@media (max-width: 767px) {
+  #article-container .cp {
+    margin: 0.9rem -0.55rem 1.2rem;
+    padding: 1.4rem 1.15rem 1.5rem;
+    font-size: 1rem;
+    line-height: 2;
+  }
+  #article-container .cp .cp-head {
+    margin-bottom: 2.5rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+  }
+  #article-container .cp .cp-stamp {
+    top: 0.85rem;
+    right: 1.05rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-indent: 0.2em;
+  }
+  #article-container .cp p.cp-q {
+    margin-left: 0.3rem;
+    font-size: 1.06rem;
+  }
+  #article-container .cp > p:first-of-type::first-letter {
+    font-size: 2.7em;
+  }
+}
+
+/* ---------- 打印 ---------- */
+@media print {
+  #article-container .cp {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    box-shadow: none;
+    text-shadow: none;
+  }
+  #article-container .cp .cp-gap::after {
+    background: #fff;
+  }
+}
