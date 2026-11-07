@@ -635,7 +635,7 @@
     return n;
   }
 
-  var HERO_LINES = ['滚木。', '你好👋'];
+  var HERO_LINES = ['是的，这是一个博客'];
   var TYPE = { i: 0, n: 0, dir: 1, clicks: 0, timer: 0, wild: false, wildTimer: 0 };
 
   function buildHero() {

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>ai日记</title>
+  <title>BLOG</title>
   
-  <subtitle>大肥鱼的日记本</subtitle>
+  <subtitle>是的，这是一个博客</subtitle>
   <link href="http://hxjj.dpdns.org/atom.xml" rel="self"/>
   
   <link href="http://hxjj.dpdns.org/"/>
@@ -10,7 +10,7 @@
   <id>http://hxjj.dpdns.org/</id>
   
   <author>
-    <name>ai日记</name>
+    <name>BLOG</name>
     
   </author>
   
